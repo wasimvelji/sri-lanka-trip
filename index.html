@@ -6,6 +6,7 @@
 <title>Sri Lanka Trip</title>
 <link rel="manifest" href="/sri-lanka-trip/manifest.json">
 <meta name="theme-color" content="#1B4D4A">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Sri Lanka">
@@ -19,7 +20,7 @@
     if (window._mapTabOpen && typeof buildMap === 'function') buildMap();
   };
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&libraries=places,directions&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&v=weekly&libraries=places&callback=initMap" async defer></script>
 <style>
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
@@ -131,6 +132,8 @@ body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text)
 .hotel-search-form { display:none; margin-top:8px; }
 .hotel-search-form.open { display:block; }
 .pac-container { z-index:2000 !important; font-family:'Inter',sans-serif !important; border-radius:10px !important; box-shadow:0 4px 20px rgba(0,0,0,.15) !important; }
+/* PlaceAutocompleteElement new API styling */
+gmp-place-autocomplete { width:100%; display:block; }
 .hotel-search-input { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); outline:none; background:white; }
 .hotel-search-input:focus { border-color:var(--teal); }
 .hotel-search-btns { display:flex; gap:8px; margin-top:7px; }
@@ -1221,50 +1224,50 @@ function renderHotelSection(container, day) {
         onclick="openHotelDirections('${day.hotelKey}',event)">Directions</button>
     </div>
     <div class="hotel-search-form" id="hotelForm-${day.id}">
-      <input class="hotel-search-input" id="hotelInput-${day.id}" type="text"
-        placeholder="Search for hotel name..."
-        value="${hotel ? hotel.name : ''}">
-      <div class="hotel-search-btns">
+      <div id="hotelAutocompleteWrapper-${day.id}" style="width:100%; min-height:44px;"></div>
+      <div class="hotel-search-btns" style="margin-top:8px;">
         <button class="hotel-search-cancel" onclick="cancelHotelSearch('${day.id}',event)">Cancel</button>
-        <button class="hotel-search-save" onclick="saveHotelFromInput('${day.id}','${day.hotelKey}',event)">Save</button>
       </div>
       ${hotel?`<button class="hotel-clear-btn" onclick="clearHotel('${day.id}','${day.hotelKey}',event)">Clear hotel</button>`:''}
     </div>`;
 
-  // Init Places Autocomplete once Maps is ready
+  // Init PlaceAutocompleteElement once Maps is ready
   initAutocompleteForDay(day.id, day.hotelKey);
 }
 
 function initAutocompleteForDay(dayId, hotelKey) {
   if (_autocompleteInstances[dayId]) return;
   if (!window.google || !google.maps || !google.maps.places) {
-    // Retry when Maps loads
     setTimeout(() => initAutocompleteForDay(dayId, hotelKey), 500);
     return;
   }
-  const input = document.getElementById('hotelInput-' + dayId);
-  if (!input) return;
 
-  const ac = new google.maps.places.Autocomplete(input, {
+  const wrapper = document.getElementById('hotelAutocompleteWrapper-' + dayId);
+  if (!wrapper || _autocompleteInstances[dayId]) return;
+
+  // Use new PlaceAutocompleteElement API
+  const acEl = new google.maps.places.PlaceAutocompleteElement({
     types: ['lodging'],
     componentRestrictions: { country: 'lk' },
-    fields: ['name', 'geometry', 'place_id', 'formatted_address'],
   });
-  _autocompleteInstances[dayId] = ac;
 
-  ac.addListener('place_changed', () => {
-    const place = ac.getPlace();
-    if (!place.geometry) return;
+  // Style it to match our design
+  acEl.style.cssText = 'width:100%; --gmp-mat-outlined-input-border-radius:10px; font-family:Inter,sans-serif;';
+  wrapper.appendChild(acEl);
+  _autocompleteInstances[dayId] = acEl;
+
+  acEl.addEventListener('gmp-placeselect', async (e) => {
+    const place = e.place;
+    await place.fetchFields({ fields: ['displayName','formattedAddress','location','id'] });
     const hotels = loadHotels();
     hotels[hotelKey] = {
-      name: place.name,
-      address: place.formatted_address || '',
-      placeId: place.place_id,
-      lat: place.geometry.location.lat(),
-      lng: place.geometry.location.lng(),
+      name: place.displayName,
+      address: place.formattedAddress || '',
+      placeId: place.id,
+      lat: place.location.lat(),
+      lng: place.location.lng(),
     };
     saveHotels(hotels);
-    // Clear cached directions since hotel changed
     clearDirCacheForHotel(hotelKey);
     refreshHotelDisplay(dayId, hotelKey);
     collapseHotelForm(dayId);
@@ -1277,11 +1280,8 @@ function toggleHotelSearch(dayId, hotelKey, e) {
   if (!form) return;
   const isOpen = form.classList.toggle('open');
   if (isOpen) {
-    setTimeout(() => {
-      const input = document.getElementById('hotelInput-' + dayId);
-      if (input) { input.focus(); input.select(); }
-      initAutocompleteForDay(dayId, hotelKey);
-    }, 50);
+    // Init the PlaceAutocompleteElement — it renders itself into the wrapper
+    setTimeout(() => initAutocompleteForDay(dayId, hotelKey), 50);
   }
 }
 
