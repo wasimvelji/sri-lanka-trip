@@ -1596,9 +1596,9 @@ function rerenderLogistics(dayId) {
   if (!card) return;
   const body = card.querySelector('.day-body');
   if (body) {
-    // Clear rendered sections — keep hotel section, remove transport + activity sections
+    // Clear ALL rendered sections including hotel, then re-render fresh
     delete body.dataset.rendered;
-    body.querySelectorAll('.logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
+    body.querySelectorAll('.hotel-section, .logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
     // Re-render
     renderDayBody(card, day);
   }
@@ -1610,7 +1610,7 @@ function rerenderLogistics(dayId) {
         const b = document.getElementById(d.id)?.querySelector('.day-body');
         if (b) {
           delete b.dataset.rendered;
-          b.querySelectorAll('.logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
+          b.querySelectorAll('.hotel-section, .logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
         }
       }
       // Also invalidate days whose timeline references this hotel
@@ -1623,7 +1623,7 @@ function rerenderLogistics(dayId) {
           const b = document.getElementById(d.id)?.querySelector('.day-body');
           if (b) {
             delete b.dataset.rendered;
-            b.querySelectorAll('.logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
+            b.querySelectorAll('.hotel-section, .logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
           }
         }
       }
