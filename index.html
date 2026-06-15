@@ -914,7 +914,7 @@ const routeLegs = [
 // STORAGE
 // ═══════════════════════════════════════════════════════════
 const HOTELS_KEY  = 'sl_hotels_v2';
-const DIRS_KEY    = 'sl_dirs_v2';
+const DIRS_KEY    = 'sl_dirs_v3';
 const CHECKS_KEY  = 'sl_checks_v3';
 const DOCS_KEY    = 'sl_docs_v1';
 
@@ -1256,30 +1256,53 @@ function renderDayBody(card, day) {
   tl.className = 'timeline-section';
   body.appendChild(tl);
 
-  let lastPlace = null; // last item's resolved place for connector
+  // Track the last ACTIVITY place — connectors only appear between activities
+  // Transport items (walk/taxi/pickme) ARE the connection, so skip them for connector logic
+  // Train/flight/static are milestones that reset the place chain
+  let lastActivityPlace = null;
 
-  day.timeline.forEach((item, idx) => {
-    // Insert connector between items that have places
-    const itemPlace = item.place ? resolvePlace(item.place) : null;
-
-    if (lastPlace && itemPlace && window._mapsApiReady) {
-      insertConnector(tl, lastPlace, itemPlace);
-    }
-
-    // Render the item
+  day.timeline.forEach((item) => {
     if (item.type === 'transport') {
+      const mode = item.mode;
+
+      if (['walk','taxi','pickme'].includes(mode) && !item.time) {
+        // Silent connector transport — don't render as card, just update place chain
+        // The connector will be drawn between the surrounding activities
+        if (item.dest) {
+          const dest = resolvePlace(item.dest);
+          if (dest) lastActivityPlace = dest;
+          else if (item.dest.startsWith('hotel:')) lastActivityPlace = null;
+        }
+        return; // skip rendering as a card
+      }
+
+      // Train/flight/static/timed taxi — render as full card
+      // These break the connector chain (you've jumped to a new place)
       renderTransportItem(tl, item);
-      // Update lastPlace for explicit dest
+
+      // Update place chain to destination
       if (item.dest) {
         const dest = resolvePlace(item.dest);
-        if (dest) lastPlace = dest;
-        else if (item.dest.startsWith('hotel:')) lastPlace = null; // hotel not set yet
-      } else if (itemPlace) {
-        lastPlace = itemPlace;
+        lastActivityPlace = dest || null;
+      } else if (item.place) {
+        lastActivityPlace = resolvePlace(item.place) || null;
+      } else {
+        lastActivityPlace = null; // unknown location after train etc
       }
+
     } else {
+      // Activity item — insert connector from last known place, then render
+      const itemPlace = item.place ? resolvePlace(item.place) : null;
+
+      if (lastActivityPlace && itemPlace && window._mapsApiReady) {
+        // Only insert connector if places are meaningfully different
+        const same = lastActivityPlace.lat.toFixed(3) === itemPlace.lat.toFixed(3)
+                  && lastActivityPlace.lng.toFixed(3) === itemPlace.lng.toFixed(3);
+        if (!same) insertConnector(tl, lastActivityPlace, itemPlace);
+      }
+
       renderActivityItem(tl, item);
-      if (itemPlace) lastPlace = itemPlace;
+      if (itemPlace) lastActivityPlace = itemPlace;
     }
   });
 }
