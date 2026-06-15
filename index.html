@@ -1228,6 +1228,7 @@ function renderHotelSection(container, day) {
       <div id="hotelAutocompleteWrapper-${day.id}" style="width:100%; min-height:44px;"></div>
       <div class="hotel-search-btns" style="margin-top:8px;">
         <button class="hotel-search-cancel" onclick="cancelHotelSearch('${day.id}',event)">Cancel</button>
+        <button class="hotel-search-save" onclick="saveHotelFromInput('${day.id}','${day.hotelKey}',event)">Save</button>
       </div>
       ${hotel?`<button class="hotel-clear-btn" onclick="clearHotel('${day.id}','${day.hotelKey}',event)">Clear hotel</button>`:''}
     </div>`;
@@ -1244,35 +1245,66 @@ function initAutocompleteForDay(dayId, hotelKey) {
   }
 
   const wrapper = document.getElementById('hotelAutocompleteWrapper-' + dayId);
-  if (!wrapper || _autocompleteInstances[dayId]) return;
+  if (!wrapper) return;
+  if (_autocompleteInstances[dayId]) return;
 
-  // Use new PlaceAutocompleteElement API
-  const acEl = new google.maps.places.PlaceAutocompleteElement({
-    types: ['lodging'],
-    componentRestrictions: { country: 'lk' },
-  });
+  // Mark as initialised immediately to prevent double-init
+  _autocompleteInstances[dayId] = true;
 
-  // Style it to match our design
-  acEl.style.cssText = 'width:100%; --gmp-mat-outlined-input-border-radius:10px; font-family:Inter,sans-serif;';
-  wrapper.appendChild(acEl);
-  _autocompleteInstances[dayId] = acEl;
+  // Try PlaceAutocompleteElement (new API) first, fall back to plain input
+  if (google.maps.places.PlaceAutocompleteElement) {
+    try {
+      const acEl = new google.maps.places.PlaceAutocompleteElement({
+        types: ['lodging'],
+        componentRestrictions: { country: 'lk' },
+      });
+      acEl.style.cssText = 'width:100%; display:block;';
+      wrapper.appendChild(acEl);
+      _autocompleteInstances[dayId] = acEl;
 
-  acEl.addEventListener('gmp-placeselect', async (e) => {
-    const place = e.place;
-    await place.fetchFields({ fields: ['displayName','formattedAddress','location','id'] });
-    const hotels = loadHotels();
-    hotels[hotelKey] = {
-      name: place.displayName,
-      address: place.formattedAddress || '',
-      placeId: place.id,
-      lat: place.location.lat(),
-      lng: place.location.lng(),
-    };
-    saveHotels(hotels);
-    clearDirCacheForHotel(hotelKey);
-    refreshHotelDisplay(dayId, hotelKey);
-    collapseHotelForm(dayId);
-  });
+      acEl.addEventListener('gmp-placeselect', async (e) => {
+        try {
+          const place = e.place;
+          // fetchFields is required to get geometry/location
+          await place.fetchFields({
+            fields: ['displayName', 'formattedAddress', 'location', 'id'],
+          });
+          const name = typeof place.displayName === 'string'
+            ? place.displayName
+            : (place.displayName?.text || place.name || '');
+          const lat = place.location ? place.location.lat() : null;
+          const lng = place.location ? place.location.lng() : null;
+          const hotels = loadHotels();
+          hotels[hotelKey] = {
+            name,
+            address: place.formattedAddress || '',
+            placeId: place.id || '',
+            lat,
+            lng,
+          };
+          saveHotels(hotels);
+          clearDirCacheForHotel(hotelKey);
+          refreshHotelDisplay(dayId, hotelKey);
+          collapseHotelForm(dayId);
+        } catch(err) {
+          console.error('Place select error:', err);
+        }
+      });
+      return;
+    } catch(err) {
+      console.warn('PlaceAutocompleteElement failed, falling back:', err);
+    }
+  }
+
+  // Fallback: plain input with manual save (no autocomplete)
+  const input = document.createElement('input');
+  input.type = 'text';
+  input.className = 'hotel-search-input';
+  input.placeholder = 'Type hotel name and tap Save';
+  const hotel = getHotel(hotelKey);
+  if (hotel) input.value = hotel.name;
+  wrapper.appendChild(input);
+  _autocompleteInstances[dayId] = input;
 }
 
 function toggleHotelSearch(dayId, hotelKey, e) {
@@ -1298,16 +1330,15 @@ function collapseHotelForm(dayId) {
 
 function saveHotelFromInput(dayId, hotelKey, e) {
   e.stopPropagation();
-  // If user typed manually (no Places selection), save as text-only
-  const input = document.getElementById('hotelInput-' + dayId);
+  // Save from fallback plain input inside wrapper
+  const wrapper = document.getElementById('hotelAutocompleteWrapper-' + dayId);
+  const input = wrapper ? wrapper.querySelector('input') : null;
   if (!input || !input.value.trim()) return;
   const hotels = loadHotels();
-  if (!hotels[hotelKey] || hotels[hotelKey].name !== input.value.trim()) {
-    hotels[hotelKey] = { name: input.value.trim(), address:'', placeId:null, lat:null, lng:null };
-    saveHotels(hotels);
-    clearDirCacheForHotel(hotelKey);
-    refreshHotelDisplay(dayId, hotelKey);
-  }
+  hotels[hotelKey] = { name: input.value.trim(), address:'', placeId:null, lat:null, lng:null };
+  saveHotels(hotels);
+  clearDirCacheForHotel(hotelKey);
+  refreshHotelDisplay(dayId, hotelKey);
   collapseHotelForm(dayId);
 }
 
