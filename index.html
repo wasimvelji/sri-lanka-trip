@@ -1480,8 +1480,15 @@ function selectHotelPrediction(dayId, hotelKey, prediction) {
 
   // Get place details for coordinates
   if (!window.google || !google.maps) return;
-  const dummyMap = window._mapObj || new google.maps.Map(document.createElement('div'));
-  const svc = new google.maps.places.PlacesService(dummyMap);
+  // PlacesService needs a map or HTML element — use a persistent hidden div
+  if (!window._placesServiceEl) {
+    window._placesServiceEl = document.createElement('div');
+    document.body.appendChild(window._placesServiceEl);
+  }
+  if (!window._placesService) {
+    window._placesService = new google.maps.places.PlacesService(window._placesServiceEl);
+  }
+  const svc = window._placesService;
   svc.getDetails({
     placeId: prediction.place_id,
     fields: ['name', 'formatted_address', 'geometry', 'place_id'],
@@ -1589,10 +1596,9 @@ function rerenderLogistics(dayId) {
   if (!card) return;
   const body = card.querySelector('.day-body');
   if (body) {
-    // Clear everything except the hotel section (which re-renders itself)
+    // Clear rendered sections — keep hotel section, remove transport + activity sections
     delete body.dataset.rendered;
-    const tl = body.querySelector('.timeline-section');
-    if (tl) tl.remove();
+    body.querySelectorAll('.logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
     // Re-render
     renderDayBody(card, day);
   }
@@ -1604,8 +1610,7 @@ function rerenderLogistics(dayId) {
         const b = document.getElementById(d.id)?.querySelector('.day-body');
         if (b) {
           delete b.dataset.rendered;
-          const t = b.querySelector('.timeline-section');
-          if (t) t.remove();
+          b.querySelectorAll('.logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
         }
       }
       // Also invalidate days whose timeline references this hotel
@@ -1618,8 +1623,7 @@ function rerenderLogistics(dayId) {
           const b = document.getElementById(d.id)?.querySelector('.day-body');
           if (b) {
             delete b.dataset.rendered;
-            const t = b.querySelector('.timeline-section');
-            if (t) t.remove();
+            b.querySelectorAll('.logistics-section, .activities-section, .timeline-section').forEach(el => el.remove());
           }
         }
       }
