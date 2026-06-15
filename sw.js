@@ -1,10 +1,11 @@
 const CACHE_NAME = 'srilanka-trip-v1';
+const BASE = '/sri-lanka-trip';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  BASE + '/',
+  BASE + '/index.html',
+  BASE + '/manifest.json',
+  BASE + '/icon-192.png',
+  BASE + '/icon-512.png',
   'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&display=swap',
 ];
 
@@ -49,7 +50,7 @@ self.addEventListener('fetch', event => {
       }).catch(() => {
         // If offline and not cached, return the main page
         if (event.request.mode === 'navigate') {
-          return caches.match('/index.html');
+          return caches.match(BASE + '/index.html');
         }
       });
     })
