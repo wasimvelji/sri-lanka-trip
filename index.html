@@ -168,6 +168,8 @@ gmp-place-autocomplete { width:100%; display:block; }
 .leg-badge.flight { background:#FFE8DC; color:var(--terra); }
 .leg-maps-btn { font-size:10px; font-weight:700; color:var(--teal); background:none; border:1px solid var(--teal); border-radius:20px; padding:2px 9px; cursor:pointer; font-family:'Inter',sans-serif; white-space:nowrap; }
 .leg-computing { font-size:11px; color:var(--muted); font-style:italic; }
+  .leg-dist { font-size:11px; color:var(--text); }
+  .leg-dist strong { font-weight:600; }
 .leg-unlock { font-size:11px; color:var(--muted); background:var(--sand); border-radius:8px; padding:7px 10px; margin-top:4px; }
 
 /* ── ACTIVITIES SECTION ── */
@@ -1150,9 +1152,9 @@ function updateHotelMeta(day) {
 }
 
 // ═══════════════════════════════════════════════════════════
-// DYNAMIC CONNECTOR BETWEEN TWO PLACES
+// DISTANCE HELPER — walk vs taxi auto-switch
 // ═══════════════════════════════════════════════════════════
-const WALK_MAX_M = 1400; // switch to taxi above this
+const WALK_MAX_M = 1400;
 
 function resolvePlace(ref) {
   if (!ref) return null;
@@ -1163,78 +1165,49 @@ function resolvePlace(ref) {
   return KNOWN[ref] || null;
 }
 
-function insertConnector(container, fromPlace, toPlace) {
-  if (!fromPlace || !toPlace) return;
-  const cacheKey = `${fromPlace.lat.toFixed(4)},${fromPlace.lng.toFixed(4)}|${toPlace.lat.toFixed(4)},${toPlace.lng.toFixed(4)}`;
-
-  const el = document.createElement('div');
-  el.className = 'connector';
-  el.innerHTML = `<span class="connector-line"></span><span class="connector-info loading">Computing…</span>`;
-  container.appendChild(el);
-
-  const infoEl = el.querySelector('.connector-info');
-
-  // Check cache
-  const dirs = loadDirs();
+function computeLegDistance(origin, dest, callback) {
+  const cacheKey = `${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}|${dest.lat.toFixed(4)},${dest.lng.toFixed(4)}`;
   const wKey = 'WALKING:' + cacheKey;
   const dKey = 'DRIVING:' + cacheKey;
+  const dirs = loadDirs();
 
-  function renderConnector(mode, data) {
-    const isWalk = mode === 'WALKING';
-    const icon   = isWalk ? '🚶' : '🚖';
-    const label  = isWalk ? 'Walk' : 'Taxi/PickMe';
-    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${fromPlace.lat},${fromPlace.lng}&destination=${toPlace.lat},${toPlace.lng}&travelmode=${isWalk?'walking':'driving'}`;
-    infoEl.className = 'connector-info';
-    infoEl.innerHTML = `${icon} ${label} · <strong>${data.distance}</strong> · ~${data.duration} <a class="connector-maps" href="${mapsUrl}" target="_blank">Maps ↗</a>`;
-  }
-
-  // Try walking first
   if (dirs[wKey]) {
     const d = dirs[wKey];
-    const mode = d.distanceM <= WALK_MAX_M ? 'WALKING' : 'DRIVING';
-    if (mode === 'DRIVING' && dirs[dKey]) { renderConnector('DRIVING', dirs[dKey]); return; }
-    if (mode === 'WALKING') { renderConnector('WALKING', d); return; }
+    if (d.distanceM <= WALK_MAX_M) { callback('walk', d); return; }
+    if (dirs[dKey]) { callback('taxi', dirs[dKey]); return; }
   }
 
-  // Fetch walking
   const svc = getDirService();
-  if (!svc) { infoEl.className = 'connector-info'; infoEl.textContent = '📍 Add hotel for directions'; return; }
+  if (!svc) { callback(null, null); return; }
 
   svc.route({
-    origin: new google.maps.LatLng(fromPlace.lat, fromPlace.lng),
-    destination: new google.maps.LatLng(toPlace.lat, toPlace.lng),
+    origin: new google.maps.LatLng(origin.lat, origin.lng),
+    destination: new google.maps.LatLng(dest.lat, dest.lng),
     travelMode: google.maps.TravelMode.WALKING,
   }, (res, status) => {
     if (status === 'OK') {
       const leg = res.routes[0].legs[0];
       const data = { distance: leg.distance.text, duration: leg.duration.text, distanceM: leg.distance.value };
-      dirs[wKey] = data; saveDirs(dirs);
-      if (data.distanceM <= WALK_MAX_M) { renderConnector('WALKING', data); return; }
-      // Too far to walk — get driving
+      const d2 = loadDirs(); d2[wKey] = data; saveDirs(d2);
+      if (data.distanceM <= WALK_MAX_M) { callback('walk', data); return; }
       svc.route({
-        origin: new google.maps.LatLng(fromPlace.lat, fromPlace.lng),
-        destination: new google.maps.LatLng(toPlace.lat, toPlace.lng),
+        origin: new google.maps.LatLng(origin.lat, origin.lng),
+        destination: new google.maps.LatLng(dest.lat, dest.lng),
         travelMode: google.maps.TravelMode.DRIVING,
       }, (res2, status2) => {
         if (status2 === 'OK') {
-          const leg2 = res2.routes[0].legs[0];
-          const data2 = { distance: leg2.distance.text, duration: leg2.duration.text, distanceM: leg2.distance.value };
-          dirs[dKey] = data2; saveDirs(dirs);
-          renderConnector('DRIVING', data2);
-        } else {
-          infoEl.className = 'connector-info'; infoEl.textContent = '🚖 Too far to walk — use PickMe/taxi';
-        }
+          const l2 = res2.routes[0].legs[0];
+          const data2 = { distance: l2.distance.text, duration: l2.duration.text, distanceM: l2.distance.value };
+          const d3 = loadDirs(); d3[dKey] = data2; saveDirs(d3);
+          callback('taxi', data2);
+        } else { callback('taxi', null); }
       });
-    } else {
-      infoEl.className = 'connector-info'; infoEl.textContent = '📍 Tap Maps for directions';
-      const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${fromPlace.lat},${fromPlace.lng}&destination=${toPlace.lat},${toPlace.lng}`;
-      infoEl.innerHTML += ` <a class="connector-maps" href="${mapsUrl}" target="_blank">↗</a>`;
-    }
+    } else { callback(null, null); }
   });
 }
 
 // ═══════════════════════════════════════════════════════════
-// UNIFIED TIMELINE RENDERER
+// RENDER DAY BODY — two sections: Getting Around + Activities
 // ═══════════════════════════════════════════════════════════
 function renderDayBody(card, day) {
   const body = card.querySelector('.day-body');
@@ -1252,94 +1225,138 @@ function renderDayBody(card, day) {
 
   if (!day.timeline || !day.timeline.length) return;
 
-  const tl = document.createElement('div');
-  tl.className = 'timeline-section';
-  body.appendChild(tl);
+  // ── Getting Around ──────────────────────────────────────
+  const transportItems = day.timeline.filter(i => i.type === 'transport');
+  if (transportItems.length) {
+    const logSec = document.createElement('div');
+    logSec.className = 'logistics-section';
+    logSec.id = 'logSec-' + day.id;
+    const lbl = document.createElement('div');
+    lbl.className = 'logistics-label';
+    lbl.textContent = 'Getting Around';
+    logSec.appendChild(lbl);
 
-  // Track the last ACTIVITY place — connectors only appear between activities
-  // Transport items (walk/taxi/pickme) ARE the connection, so skip them for connector logic
-  // Train/flight/static are milestones that reset the place chain
-  let lastActivityPlace = null;
+    transportItems.forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'leg';
 
-  day.timeline.forEach((item) => {
-    if (item.type === 'transport') {
-      const mode = item.mode;
+      const iconEl = document.createElement('div');
+      iconEl.className = 'leg-icon';
+      iconEl.textContent = item.icon;
+      el.appendChild(iconEl);
 
-      if (['walk','taxi','pickme'].includes(mode) && !item.time) {
-        // Silent connector transport — don't render as card, just update place chain
-        // The connector will be drawn between the surrounding activities
-        if (item.dest) {
-          const dest = resolvePlace(item.dest);
-          if (dest) lastActivityPlace = dest;
-          else if (item.dest.startsWith('hotel:')) lastActivityPlace = null;
+      const bodyEl = document.createElement('div');
+      bodyEl.className = 'leg-body';
+
+      const title = document.createElement('div');
+      title.className = 'leg-title';
+      title.textContent = item.title;
+      bodyEl.appendChild(title);
+
+      if (item.detail) {
+        const det = document.createElement('div');
+        det.className = 'leg-detail';
+        det.innerHTML = item.detail;
+        bodyEl.appendChild(det);
+      }
+
+      const meta = document.createElement('div');
+      meta.className = 'leg-meta';
+
+      if (item.time) {
+        const tb = document.createElement('span');
+        tb.className = 'leg-badge train';
+        tb.textContent = item.time;
+        meta.appendChild(tb);
+      }
+
+      if (item.badge) {
+        const bb = document.createElement('span');
+        bb.className = `leg-badge ${item.badge}`;
+        bb.textContent = badgeLabel(item.badge);
+        meta.appendChild(bb);
+      }
+
+      // Dynamic distance for walk/taxi/pickme legs
+      if (['walk','taxi','pickme'].includes(item.mode) && item.place && item.dest) {
+        const origin = resolvePlace(item.place);
+        const dest   = resolvePlace(item.dest);
+
+        if (!origin || !dest) {
+          const unlock = document.createElement('div');
+          unlock.className = 'leg-unlock';
+          unlock.textContent = 'Add hotel to see distance';
+          bodyEl.appendChild(unlock);
+        } else {
+          const distEl = document.createElement('span');
+          distEl.className = 'leg-computing';
+          distEl.textContent = 'Computing…';
+          meta.appendChild(distEl);
+
+          const mapsBtn = document.createElement('button');
+          mapsBtn.className = 'leg-maps-btn';
+          mapsBtn.textContent = 'Maps →';
+          meta.appendChild(mapsBtn);
+
+          if (window._mapsApiReady) {
+            computeLegDistance(origin, dest, (mode, data) => {
+              if (data) {
+                // Update badge to reflect actual mode
+                const existingBadge = meta.querySelector('.leg-badge:not(:first-child)') || meta.querySelector('.leg-badge');
+                if (existingBadge && ['walk','taxi','pickme'].includes(item.badge)) {
+                  existingBadge.className = `leg-badge ${mode}`;
+                  existingBadge.textContent = mode === 'walk' ? 'Walk' : 'PickMe/Taxi';
+                }
+                distEl.className = 'leg-dist';
+                distEl.innerHTML = `<strong>${data.distance}</strong> · ~${data.duration}`;
+              } else {
+                distEl.textContent = '';
+              }
+              const mapsMode = mode === 'walk' ? 'walking' : 'driving';
+              mapsBtn.onclick = () => window.open(
+                `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}&travelmode=${mapsMode}`, '_blank'
+              );
+            });
+          } else {
+            distEl.textContent = '';
+            mapsBtn.onclick = () => window.open(
+              `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}`, '_blank'
+            );
+          }
         }
-        return; // skip rendering as a card
       }
 
-      // Train/flight/static/timed taxi — render as full card
-      // These break the connector chain (you've jumped to a new place)
-      renderTransportItem(tl, item);
+      bodyEl.appendChild(meta);
+      el.appendChild(bodyEl);
+      logSec.appendChild(el);
+    });
 
-      // Update place chain to destination
-      if (item.dest) {
-        const dest = resolvePlace(item.dest);
-        lastActivityPlace = dest || null;
-      } else if (item.place) {
-        lastActivityPlace = resolvePlace(item.place) || null;
-      } else {
-        lastActivityPlace = null; // unknown location after train etc
-      }
+    body.appendChild(logSec);
+  }
 
-    } else {
-      // Activity item — insert connector from last known place, then render
-      const itemPlace = item.place ? resolvePlace(item.place) : null;
+  // ── Activities ──────────────────────────────────────────
+  const actItems = day.timeline.filter(i => i.type === 'activity');
+  if (actItems.length) {
+    const actSec = document.createElement('div');
+    actSec.className = 'activities-section';
 
-      if (lastActivityPlace && itemPlace && window._mapsApiReady) {
-        // Only insert connector if places are meaningfully different
-        const same = lastActivityPlace.lat.toFixed(3) === itemPlace.lat.toFixed(3)
-                  && lastActivityPlace.lng.toFixed(3) === itemPlace.lng.toFixed(3);
-        if (!same) insertConnector(tl, lastActivityPlace, itemPlace);
-      }
+    actItems.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'activity';
+      div.innerHTML = `
+        <div class="act-left"><div class="act-icon ${item.atype||'culture'}">${item.icon}</div></div>
+        <div class="act-right">
+          ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
+          <div class="act-name">${item.name}</div>
+          <div class="act-desc">${item.desc}</div>
+          ${item.tip  ? `<div class="act-tip">${item.tip}</div>`  : ''}
+          ${item.cost ? `<span class="act-cost">${item.cost}</span>` : ''}
+        </div>`;
+      actSec.appendChild(div);
+    });
 
-      renderActivityItem(tl, item);
-      if (itemPlace) lastActivityPlace = itemPlace;
-    }
-  });
-}
-
-function renderTransportItem(container, item) {
-  // Skip walk/taxi/pickme legs that are just connectors — they'll be shown as connectors
-  // But show train, flight, static, and explicitly timed pickme/taxi
-  const showAsCard = ['train','flight','static'].includes(item.mode)
-    || (item.time && ['taxi','pickme','walk'].includes(item.mode));
-  if (!showAsCard) return;
-
-  const el = document.createElement('div');
-  el.className = `transport-item transport-${item.mode}`;
-  el.innerHTML = `
-    <div class="ti-icon">${item.icon}</div>
-    <div class="ti-body">
-      ${item.time ? `<div class="ti-time">${item.time}</div>` : ''}
-      <div class="ti-title">${item.title}</div>
-      <div class="ti-detail">${item.detail || ''}</div>
-      ${item.badge ? `<span class="leg-badge ${item.badge}">${badgeLabel(item.badge)}</span>` : ''}
-    </div>`;
-  container.appendChild(el);
-}
-
-function renderActivityItem(container, item) {
-  const el = document.createElement('div');
-  el.className = 'activity';
-  el.innerHTML = `
-    <div class="act-left"><div class="act-icon ${item.atype||'culture'}">${item.icon}</div></div>
-    <div class="act-right">
-      ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
-      <div class="act-name">${item.name}</div>
-      <div class="act-desc">${item.desc}</div>
-      ${item.tip  ? `<div class="act-tip">${item.tip}</div>`  : ''}
-      ${item.cost ? `<span class="act-cost">${item.cost}</span>` : ''}
-    </div>`;
-  container.appendChild(el);
+    body.appendChild(actSec);
+  }
 }
 
 function badgeLabel(type) {
