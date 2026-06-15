@@ -4,8 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Sri Lanka Trip</title>
-
-<!-- PWA -->
 <link rel="manifest" href="/sri-lanka-trip/manifest.json">
 <meta name="theme-color" content="#1B4D4A">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -14,385 +12,268 @@
 <link rel="apple-touch-icon" href="/sri-lanka-trip/icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <script>
-  // Define globals early so the Maps API callback can set them regardless of load order
   window._mapsApiReady = false;
-  window._mapTabOpen = false;
-  window._mapPendingStop = null;
-  // initMap is called by Google Maps API once it has loaded
+  window._mapTabOpen   = false;
   window.initMap = function() {
     window._mapsApiReady = true;
-    // If user already opened the Map tab, build immediately
     if (window._mapTabOpen && typeof buildMap === 'function') buildMap();
   };
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&libraries=directions&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&libraries=places,directions&callback=initMap" async defer></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --teal:#1B4D4A; --teal-mid:#2A6B67; --teal-light:#3D8B86;
-    --sand:#F2E8D5; --sand-dark:#E5D8BF; --saffron:#E8A030;
-    --terra:#C4613A; --card:#FDFAF5; --text:#1A1A18;
-    --muted:#6B6B62; --border:#E0D8C8; --green:#2D7A4F;
-  }
-  html,body { height:100%; }
-  body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text); max-width:480px; margin:0 auto; display:flex; flex-direction:column; }
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --teal:#1B4D4A; --teal-mid:#2A6B67; --teal-light:#3D8B86;
+  --sand:#F2E8D5; --sand-dark:#E5D8BF; --saffron:#E8A030;
+  --terra:#C4613A; --card:#FDFAF5; --text:#1A1A18;
+  --muted:#6B6B62; --border:#E0D8C8; --green:#2D7A4F; --purple:#5B3A8A;
+}
+html,body { height:100%; }
+body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text); max-width:480px; margin:0 auto; display:flex; flex-direction:column; }
 
-  /* ── HERO ── */
-  .hero {
-    position:relative; flex-shrink:0; overflow:hidden;
-    height:200px;
-  }
-  .hero-img {
-    width:100%; height:100%; object-fit:cover; object-position:center 40%;
-    display:block;
-  }
-  .hero-overlay {
-    position:absolute; inset:0;
-    background:linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 100%);
-  }
-  .hero-inner {
-    position:absolute; inset:0;
-    display:flex; flex-direction:column; justify-content:space-between;
-    padding:16px 20px 0;
-  }
-  .hero-top {
-    display:flex; justify-content:space-between; align-items:flex-start;
-  }
-  .hero-title {
-    font-family:'Playfair Display',serif; font-size:28px; font-weight:700;
-    color:#fff; line-height:1.1; text-shadow:0 1px 4px rgba(0,0,0,0.4);
-  }
-  .hero-sub {
-    font-size:12px; color:rgba(255,255,255,0.8); font-weight:400;
-    margin-top:2px; text-shadow:0 1px 3px rgba(0,0,0,0.4);
-  }
+/* ── HERO ── */
+.hero { position:relative; flex-shrink:0; overflow:visible; height:180px; }
+.hero-img { width:100%; height:100%; object-fit:cover; object-position:center 40%; display:block; }
+.hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.6) 100%); }
+.hero-inner { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:12px 16px; }
+.hero-bottom { display:flex; justify-content:space-between; align-items:flex-end; }
+.hero-sub { font-size:12px; color:rgba(255,255,255,.85); font-weight:500; letter-spacing:.03em; }
+.menu-btn { width:38px; height:38px; border:none; background:rgba(0,0,0,.35); border-radius:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; backdrop-filter:blur(4px); flex-shrink:0; }
+.menu-btn span { display:block; width:16px; height:2px; background:white; border-radius:2px; transition:all .2s; }
 
-  /* ── HAMBURGER MENU ── */
-  .menu-btn {
-    width:40px; height:40px; border:none; background:rgba(0,0,0,0.35);
-    border-radius:10px; cursor:pointer; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:5px; flex-shrink:0;
-    backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
-  }
-  .menu-btn span {
-    display:block; width:18px; height:2px; background:white; border-radius:2px; transition:all .2s;
-  }
-  .menu-open .menu-btn span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
-  .menu-open .menu-btn span:nth-child(2) { opacity:0; }
-  .menu-open .menu-btn span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+/* ── DROPDOWN ── */
+.menu-dropdown { position:fixed; top:48px; right:12px; z-index:1000; background:white; border-radius:14px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,.25); display:none; min-width:180px; }
+.menu-dropdown.open { display:block; }
+.menu-item { display:flex; align-items:center; gap:12px; padding:13px 18px; border:none; background:none; width:100%; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:var(--text); cursor:pointer; text-align:left; border-bottom:1px solid var(--border); transition:background .12s; }
+.menu-item:last-child { border-bottom:none; }
+.menu-item:hover { background:var(--sand); }
+.menu-item.active { color:var(--teal); }
+.menu-item-icon { font-size:17px; width:22px; text-align:center; }
+.menu-item-check { color:var(--saffron); font-size:13px; margin-left:auto; }
 
-  /* ── DROPDOWN MENU ── */
-  .menu-dropdown {
-    position:fixed; top:56px; right:16px; z-index:1000;
-    background:white; border-radius:14px; overflow:hidden;
-    box-shadow:0 8px 30px rgba(0,0,0,0.25);
-    display:none; min-width:180px;
-    max-width:calc(100vw - 32px);
-  }
-  .menu-dropdown.open { display:block; }
-  .menu-item {
-    display:flex; align-items:center; gap:12px;
-    padding:14px 18px; border:none; background:none; width:100%;
-    font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
-    color:var(--text); cursor:pointer; text-align:left;
-    transition:background .12s; border-bottom:1px solid var(--border);
-  }
-  .menu-item:last-child { border-bottom:none; }
-  .menu-item:hover { background:var(--sand); }
-  .menu-item.active { color:var(--teal); background:var(--sand); }
-  .menu-item-icon { font-size:18px; width:24px; text-align:center; }
-  .menu-item-label { flex:1; }
-  .menu-item-check { color:var(--saffron); font-size:14px; }
+/* ── NAV BAR ── */
+.nav-bar { background:var(--teal); padding:8px 16px 10px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; box-shadow:0 2px 10px rgba(0,0,0,.2); }
+.nav-label { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.7); }
 
-  /* ── NAV BAR (below hero, teal strip) ── */
-  .nav-bar {
-    background:var(--teal); padding:10px 20px 12px;
-    display:flex; align-items:center; justify-content:space-between;
-    flex-shrink:0; box-shadow:0 2px 12px rgba(0,0,0,.18);
-  }
-  .nav-section-label {
-    font-size:11px; font-weight:700; letter-spacing:.12em;
-    text-transform:uppercase; color:rgba(255,255,255,.6);
-  }
+/* ── PANELS ── */
+.main-panel { display:none; flex-direction:column; flex:1; min-height:0; }
+.main-panel.active { display:flex; }
 
-  /* ── PANELS ── */
-  .main-panel { display:none; flex-direction:column; min-height:0; }
-  .main-panel.active { display:flex; }
+/* ── DAY NAV ── */
+.day-nav-wrapper { background:var(--teal); padding:2px 0 12px; flex-shrink:0; }
+.day-nav { display:flex; gap:5px; overflow-x:auto; padding:0 14px; scrollbar-width:none; }
+.day-nav::-webkit-scrollbar { display:none; }
+.day-pip { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; padding:6px 9px; border-radius:8px; border:1.5px solid transparent; background:none; transition:background .15s; min-width:40px; }
+.day-pip:hover { background:rgba(255,255,255,.08); }
+.day-pip.active { background:var(--saffron); border-color:var(--saffron); }
+.day-pip-num { font-size:14px; font-weight:600; color:rgba(255,255,255,.9); line-height:1; }
+.day-pip.active .day-pip-num { color:var(--teal); }
+.day-pip-lbl { font-size:8px; letter-spacing:.05em; text-transform:uppercase; color:rgba(255,255,255,.45); font-weight:500; }
+.day-pip.active .day-pip-lbl { color:var(--teal); }
 
-  /* ── PREP ── */
-  .prep-content { padding:20px 16px 60px; overflow-y:auto; flex:1; }
-  .prep-tabs    { display:flex; gap:0; margin-bottom:16px; background:var(--sand-dark); border-radius:12px; padding:3px; }
-  .prep-tab-btn { flex:1; padding:8px 4px; border:none; background:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; color:var(--muted); border-radius:9px; transition:all .15s; }
-  .prep-tab-btn.active { background:var(--card); color:var(--teal); box-shadow:0 1px 4px rgba(0,0,0,.1); }
-  .prep-panel   { display:none; }
-  .prep-panel.active { display:block; }
+/* ── TRIP PANELS ── */
+.trip-panel { display:none; flex:1; overflow-y:auto; }
+.trip-panel.active { display:block; }
+.itinerary-content { padding:14px 14px 80px; }
 
-  /* ── TRIP ── */
-  .trip-inner   { display:flex; flex-direction:column; flex:1; min-height:0; }
+/* ── MAP ── */
+#trip-map { display:none; flex-direction:column; flex:1; }
+#map { width:100%; height:calc(100vh - 300px); min-height:300px; }
+.map-legend { background:var(--card); padding:10px 14px; border-top:1px solid var(--border); flex-shrink:0; overflow-x:auto; }
+.map-legend-stops { display:flex; gap:6px; scrollbar-width:none; flex-wrap:nowrap; }
+.map-legend-stops::-webkit-scrollbar { display:none; }
+.legend-stop { flex-shrink:0; background:var(--teal); color:white; border:none; padding:5px 11px; border-radius:20px; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.legend-stop:hover { background:var(--teal-mid); }
+.legend-stop.active { background:var(--saffron); color:var(--teal); }
+.map-route-key { display:flex; gap:14px; padding:6px 0 2px; }
+.map-route-key span { font-size:10px; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:4px; }
 
-  /* Trip sub-tab bar */
-  .trip-tabs    { background:var(--teal); display:flex; gap:0; padding:0 16px 12px; flex-shrink:0; }
-  .trip-tab-btn { flex:1; padding:8px 6px; border:none; background:rgba(255,255,255,.1); cursor:pointer; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:rgba(255,255,255,.6); transition:all .15s; }
-  .trip-tab-btn:first-child { border-radius:8px 0 0 8px; }
-  .trip-tab-btn:last-child  { border-radius:0 8px 8px 0; }
-  .trip-tab-btn.active { background:var(--saffron); color:var(--teal); }
+/* ── PREP ── */
+.prep-content { padding:16px 14px 80px; overflow-y:auto; flex:1; }
+.prep-tabs { display:flex; gap:0; margin-bottom:14px; background:var(--sand-dark); border-radius:12px; padding:3px; }
+.prep-tab-btn { flex:1; padding:7px 2px; border:none; background:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:10px; font-weight:600; color:var(--muted); border-radius:9px; transition:all .15s; }
+.prep-tab-btn.active { background:var(--card); color:var(--teal); box-shadow:0 1px 4px rgba(0,0,0,.1); }
+.prep-panel { display:none; }
+.prep-panel.active { display:block; }
 
-  /* Day nav */
-  .day-nav-wrapper { background:var(--teal); padding:4px 0 14px; flex-shrink:0; box-shadow:0 2px 12px rgba(0,0,0,.18); }
-  .day-nav { display:flex; gap:6px; overflow-x:auto; padding:0 16px; scrollbar-width:none; }
-  .day-nav::-webkit-scrollbar { display:none; }
-  .day-pip { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:7px 10px; border-radius:8px; transition:background .15s; border:1.5px solid transparent; min-width:44px; background:none; }
-  .day-pip:hover { background:rgba(255,255,255,.08); }
-  .day-pip.active { background:var(--saffron); border-color:var(--saffron); }
-  .day-pip-num  { font-size:15px; font-weight:600; color:rgba(255,255,255,.9); line-height:1; }
-  .day-pip.active .day-pip-num { color:var(--teal); }
-  .day-pip-lbl  { font-size:8px; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.45); font-weight:500; }
-  .day-pip.active .day-pip-lbl { color:var(--teal); }
+/* ── DAY CARD ── */
+.day-card { background:var(--card); border-radius:14px; margin-bottom:12px; border:1px solid var(--border); overflow:hidden; }
+.day-header { display:flex; align-items:stretch; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+.day-accent { width:4px; flex-shrink:0; background:var(--teal-light); transition:background .2s; }
+.day-card.open .day-accent { background:var(--saffron); }
+.day-header-inner { flex:1; padding:12px 12px 12px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.day-header-left { flex:1; min-width:0; }
+.day-date-row { display:flex; align-items:center; gap:7px; margin-bottom:2px; flex-wrap:wrap; }
+.day-date { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.day-badge { font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--saffron); color:var(--teal); padding:2px 6px; border-radius:20px; }
+.day-badge.transit { background:var(--sand-dark); color:var(--muted); }
+.day-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:600; color:var(--text); line-height:1.2; }
+.day-meta { font-size:11px; color:var(--muted); margin-top:2px; }
+.day-actions { display:flex; align-items:center; gap:5px; flex-shrink:0; }
+.map-btn { background:var(--teal); border:none; border-radius:7px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; transition:background .15s; }
+.map-btn:hover { background:var(--teal-mid); }
+.day-chevron { font-size:17px; color:var(--muted); transition:transform .25s; line-height:1; }
+.day-card.open .day-chevron { transform:rotate(180deg); }
+.day-body { display:none; border-top:1px solid var(--border); }
+.day-card.open .day-body { display:block; }
 
-  /* Trip sub-panels */
-  .trip-panel   { display:none; flex:1; overflow-y:auto; }
-  .trip-panel.active { display:block; }
-  .itinerary-content { padding:16px 16px 60px; }
+/* ── HOTEL SECTION ── */
+.hotel-section { padding:10px 14px; border-bottom:1px solid var(--border); }
+.hotel-row { display:flex; align-items:center; gap:8px; }
+.hotel-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+.hotel-name-display { flex:1; font-size:13px; font-weight:600; color:var(--teal); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hotel-name-display.empty { color:var(--muted); font-weight:400; font-style:italic; }
+.hotel-edit-btn { background:var(--sand-dark); border:none; border-radius:7px; padding:5px 9px; font-size:11px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; flex-shrink:0; }
+.hotel-dir-btn { background:var(--teal); color:white; border:none; border-radius:7px; padding:5px 9px; font-size:11px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; flex-shrink:0; }
+.hotel-dir-btn:disabled { background:var(--sand-dark); color:var(--muted); cursor:default; }
 
-  /* ── MAP PANEL ── */
-  #mapPanel { display:none; flex-direction:column; }
-  #mapPanel.active { display:flex; }
-  #map { flex:1; min-height:420px; width:100%; }
-  .map-legend { background:var(--card); padding:12px 16px; border-top:1px solid var(--border); flex-shrink:0; }
-  .map-legend-title { font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
-  .map-legend-stops { display:flex; gap:6px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
-  .map-legend-stops::-webkit-scrollbar { display:none; }
-  .legend-stop { flex-shrink:0; background:var(--teal); color:white; border:none; padding:6px 12px; border-radius:20px; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; cursor:pointer; transition:background .15s; white-space:nowrap; }
-  .legend-stop:hover { background:var(--teal-mid); }
-  .legend-stop.active { background:var(--saffron); color:var(--teal); }
+/* Places autocomplete form */
+.hotel-search-form { display:none; margin-top:8px; }
+.hotel-search-form.open { display:block; }
+.pac-container { z-index:2000 !important; font-family:'Inter',sans-serif !important; border-radius:10px !important; box-shadow:0 4px 20px rgba(0,0,0,.15) !important; }
+.hotel-search-input { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); outline:none; background:white; }
+.hotel-search-input:focus { border-color:var(--teal); }
+.hotel-search-btns { display:flex; gap:8px; margin-top:7px; }
+.hotel-search-save { flex:1; padding:9px; background:var(--teal); color:white; border:none; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.hotel-search-cancel { padding:9px 14px; background:var(--sand-dark); color:var(--muted); border:none; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
+.hotel-clear-btn { width:100%; padding:7px; background:none; border:1px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:11px; color:var(--muted); cursor:pointer; margin-top:6px; }
 
-  /* ── BUDGET ── */
-  .budget-card { background:var(--teal); border-radius:16px; padding:18px 20px; margin-bottom:16px; color:white; }
-  .budget-title { font-size:10px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--saffron); margin-bottom:12px; }
-  .budget-grid  { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-  .budget-item  { background:rgba(255,255,255,.08); border-radius:10px; padding:10px 12px; }
-  .budget-cat   { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
-  .budget-range { font-size:14px; font-weight:600; color:white; }
-  .budget-total { margin-top:12px; border-top:1px solid rgba(255,255,255,.1); padding-top:12px; display:flex; justify-content:space-between; align-items:center; }
-  .budget-total-label { font-size:12px; color:rgba(255,255,255,.6); }
-  .budget-total-val   { font-family:'Playfair Display',serif; font-size:20px; font-weight:600; color:var(--saffron); }
+/* ── LOGISTICS SECTION ── */
+.logistics-section { padding:10px 14px; border-bottom:1px solid var(--border); }
+.logistics-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.leg { display:flex; gap:10px; padding:8px 0; border-bottom:1px dashed var(--border); align-items:flex-start; }
+.leg:last-child { border-bottom:none; padding-bottom:0; }
+.leg-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.leg-body { flex:1; min-width:0; }
+.leg-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; line-height:1.3; }
+.leg-detail { font-size:12px; color:var(--muted); line-height:1.45; }
+.leg-detail strong { color:var(--text); font-weight:600; }
+.leg-meta { display:flex; align-items:center; gap:8px; margin-top:5px; flex-wrap:wrap; }
+.leg-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; }
+.leg-badge.train  { background:#FFF0DC; color:#8A5500; }
+.leg-badge.walk   { background:#DCFAEA; color:var(--green); }
+.leg-badge.taxi   { background:#F0DCFF; color:var(--purple); }
+.leg-badge.pickme { background:#F0DCFF; color:var(--purple); }
+.leg-badge.bus    { background:#DCF0FF; color:#1A5A8A; }
+.leg-badge.flight { background:#FFE8DC; color:var(--terra); }
+.leg-maps-btn { font-size:10px; font-weight:700; color:var(--teal); background:none; border:1px solid var(--teal); border-radius:20px; padding:2px 9px; cursor:pointer; font-family:'Inter',sans-serif; white-space:nowrap; }
+.leg-computing { font-size:11px; color:var(--muted); font-style:italic; }
+.leg-unlock { font-size:11px; color:var(--muted); background:var(--sand); border-radius:8px; padding:7px 10px; margin-top:4px; }
 
-  /* ── CHECKLIST ── */
-  .checklist-section { background:var(--card); border-radius:16px; padding:18px 20px; margin-bottom:14px; border:1px solid var(--border); }
-  .cl-group-title    { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
-  .cl-progress       { font-size:11px; font-weight:600; color:var(--green); letter-spacing:0; text-transform:none; }
-  .check-item  { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); cursor:pointer; -webkit-tap-highlight-color:transparent; user-select:none; }
-  .check-item:last-child  { border-bottom:none; padding-bottom:0; }
-  .check-item:first-child { padding-top:0; }
-  .check-box   { width:22px; height:22px; border-radius:6px; border:2px solid var(--border); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; transition:all .15s; background:white; }
-  .check-item.done .check-box { background:var(--green); border-color:var(--green); }
-  .check-tick  { font-size:13px; color:white; display:none; }
-  .check-item.done .check-tick { display:block; }
-  .check-content { flex:1; }
-  .check-name  { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; transition:color .15s; }
-  .check-item.done .check-name { color:var(--muted); text-decoration:line-through; }
-  .check-detail { font-size:12px; color:var(--muted); line-height:1.45; }
-  .check-detail a { color:var(--teal-mid); text-decoration:none; font-weight:500; }
-  .check-when  { display:inline-block; margin-top:4px; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:2px 7px; border-radius:20px; }
-  .when-asap   { background:#FFE8DC; color:var(--terra); }
-  .when-weeks  { background:#FFF5DC; color:#8A6500; }
-  .when-days   { background:#DCFAEA; color:var(--green); }
-  .when-pack   { background:#DCF0FF; color:#1A5A8A; }
-  .reset-btn   { width:100%; padding:10px; background:none; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; margin-top:4px; transition:all .15s; }
-  .reset-btn:hover { border-color:var(--terra); color:var(--terra); }
+/* ── ACTIVITIES SECTION ── */
+.activities-section { padding:4px 14px 14px; }
+.activity { display:flex; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); }
+.activity:last-child { border-bottom:none; padding-bottom:0; }
+.act-left { width:34px; flex-shrink:0; }
+.act-icon { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.act-icon.temple  { background:#FFF0DC; }
+.act-icon.museum  { background:#DCF0FF; }
+.act-icon.nature  { background:#DCFAEA; }
+.act-icon.food    { background:#FFE8DC; }
+.act-icon.travel  { background:#F0DCFF; }
+.act-icon.beach   { background:#DCF5FF; }
+.act-icon.culture { background:#FFDCF0; }
+.act-icon.shop    { background:#FFFBDC; }
+.act-icon.night   { background:#2A2A3A; }
+.act-icon.info    { background:#F0F0F0; }
+.act-right { flex:1; }
+.act-time  { font-size:10px; font-weight:700; letter-spacing:.06em; color:var(--saffron); margin-bottom:2px; }
+.act-name  { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; line-height:1.3; }
+.act-desc  { font-size:12px; color:var(--muted); line-height:1.45; }
+.act-tip   { margin-top:5px; background:var(--sand); border-left:3px solid var(--saffron); border-radius:0 6px 6px 0; padding:6px 9px; font-size:11px; color:var(--text); line-height:1.4; }
+.act-tip strong { color:var(--terra); font-weight:600; }
+.act-cost  { display:inline-block; margin-top:5px; font-size:10px; font-weight:700; color:var(--teal); background:rgba(27,77,74,.08); padding:2px 7px; border-radius:20px; }
 
-  /* ── INFO CARDS ── */
-  .info-card  { background:var(--card); border-radius:16px; padding:18px 20px; margin-bottom:14px; border:1px solid var(--border); }
-  .info-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); margin-bottom:14px; }
-  .info-row   { display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid var(--border); }
-  .info-row:last-child  { border-bottom:none; padding-bottom:0; }
-  .info-row:first-child { padding-top:0; }
-  .info-icon  { font-size:16px; width:28px; text-align:center; flex-shrink:0; margin-top:1px; }
-  .info-name  { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
-  .info-detail { font-size:12px; color:var(--muted); line-height:1.45; }
-  .info-detail a { color:var(--teal-mid); text-decoration:none; font-weight:500; }
+/* ── CHECKLIST ── */
+.checklist-section { background:var(--card); border-radius:14px; padding:16px 18px; margin-bottom:12px; border:1px solid var(--border); }
+.cl-group-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+.cl-progress { font-size:11px; font-weight:600; color:var(--green); letter-spacing:0; text-transform:none; }
+.check-item { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); cursor:pointer; -webkit-tap-highlight-color:transparent; user-select:none; }
+.check-item:last-child { border-bottom:none; padding-bottom:0; }
+.check-item:first-child { padding-top:0; }
+.check-box { width:22px; height:22px; border-radius:6px; border:2px solid var(--border); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; transition:all .15s; background:white; }
+.check-item.done .check-box { background:var(--green); border-color:var(--green); }
+.check-tick { font-size:12px; color:white; display:none; }
+.check-item.done .check-tick { display:block; }
+.check-content { flex:1; }
+.check-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.check-item.done .check-name { color:var(--muted); text-decoration:line-through; }
+.check-detail { font-size:11px; color:var(--muted); line-height:1.4; }
+.check-detail a { color:var(--teal-mid); text-decoration:none; font-weight:500; }
+.check-when { display:inline-block; margin-top:3px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:2px 6px; border-radius:20px; }
+.when-asap  { background:#FFE8DC; color:var(--terra); }
+.when-weeks { background:#FFF5DC; color:#8A6500; }
+.when-days  { background:#DCFAEA; color:var(--green); }
+.when-pack  { background:#DCF0FF; color:#1A5A8A; }
+.reset-btn  { width:100%; padding:9px; background:none; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; margin-top:4px; }
 
-  /* ── DAY CARDS ── */
-  .day-card   { background:var(--card); border-radius:16px; margin-bottom:14px; border:1px solid var(--border); overflow:hidden; }
-  .day-header { display:flex; align-items:stretch; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
-  .day-accent { width:5px; background:var(--teal-light); flex-shrink:0; transition:background .2s; }
-  .day-card.open .day-accent { background:var(--saffron); }
-  .day-header-inner { flex:1; padding:14px 12px 14px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
-  .day-header-left  { flex:1; min-width:0; }
-  .day-date-row     { display:flex; align-items:center; gap:8px; margin-bottom:3px; flex-wrap:wrap; }
-  .day-date  { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
-  .day-badge { font-size:9px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; background:var(--saffron); color:var(--teal); padding:2px 7px; border-radius:20px; }
-  .day-badge.transit { background:var(--sand-dark); color:var(--muted); }
-  .day-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:600; color:var(--text); line-height:1.25; }
-  .day-meta  { font-size:11px; color:var(--muted); margin-top:3px; }
-  .day-actions  { display:flex; align-items:center; gap:6px; flex-shrink:0; }
-  .map-btn   { background:var(--teal); border:none; border-radius:8px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:14px; flex-shrink:0; transition:background .15s; }
-  .map-btn:hover { background:var(--teal-mid); }
-  .day-chevron  { font-size:18px; color:var(--muted); transition:transform .25s; flex-shrink:0; line-height:1; }
-  .day-card.open .day-chevron { transform:rotate(180deg); }
-  .day-body  { display:none; padding:0 16px 16px 18px; border-top:1px solid var(--border); }
-  .day-card.open .day-body { display:block; }
+/* ── INFO CARDS ── */
+.info-card { background:var(--card); border-radius:14px; padding:16px 18px; margin-bottom:12px; border:1px solid var(--border); }
+.info-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); margin-bottom:12px; }
+.info-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.info-row:last-child { border-bottom:none; padding-bottom:0; }
+.info-row:first-child { padding-top:0; }
+.info-icon { font-size:15px; width:26px; text-align:center; flex-shrink:0; margin-top:1px; }
+.info-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.info-detail { font-size:11px; color:var(--muted); line-height:1.4; }
+.info-detail a { color:var(--teal-mid); text-decoration:none; font-weight:500; }
 
-  /* ── ACTIVITIES ── */
-  .activity  { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid var(--border); }
-  .activity:last-child { border-bottom:none; padding-bottom:0; }
-  .act-left  { display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:36px; }
-  .act-icon  { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
-  .act-icon.temple  { background:#FFF0DC; }
-  .act-icon.museum  { background:#DCF0FF; }
-  .act-icon.nature  { background:#DCFAEA; }
-  .act-icon.food    { background:#FFE8DC; }
-  .act-icon.travel  { background:#F0DCFF; }
-  .act-icon.beach   { background:#DCF5FF; }
-  .act-icon.culture { background:#FFDCF0; }
-  .act-icon.shop    { background:#FFFBDC; }
-  .act-icon.night   { background:#2A2A3A; }
-  .act-icon.info    { background:#F0F0F0; }
-  .act-right { flex:1; }
-  .act-time  { font-size:11px; font-weight:700; letter-spacing:.06em; color:var(--saffron); margin-bottom:3px; }
-  .act-name  { font-size:14px; font-weight:600; color:var(--text); margin-bottom:4px; line-height:1.3; }
-  .act-desc  { font-size:12px; color:var(--muted); line-height:1.5; }
-  .act-tip   { margin-top:6px; background:var(--sand); border-left:3px solid var(--saffron); border-radius:0 6px 6px 0; padding:7px 10px; font-size:11px; color:var(--text); line-height:1.45; }
-  .act-tip strong { color:var(--terra); font-weight:600; }
-  .act-cost  { display:inline-block; margin-top:6px; font-size:11px; font-weight:600; color:var(--teal); background:rgba(27,77,74,.08); padding:2px 8px; border-radius:20px; }
-  .transport-note { background:rgba(27,77,74,.06); border-radius:10px; padding:10px 14px; margin-top:12px; font-size:12px; color:var(--teal); display:flex; gap:8px; align-items:flex-start; line-height:1.45; }
-  .t-icon    { font-size:14px; flex-shrink:0; margin-top:1px; }
+/* ── BUDGET ── */
+.budget-card { background:var(--teal); border-radius:14px; padding:16px 18px; margin-bottom:12px; color:white; }
+.budget-title { font-size:10px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--saffron); margin-bottom:10px; }
+.budget-grid  { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.budget-item  { background:rgba(255,255,255,.08); border-radius:9px; padding:9px 11px; }
+.budget-cat   { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+.budget-range { font-size:13px; font-weight:600; color:white; }
+.budget-total { margin-top:10px; border-top:1px solid rgba(255,255,255,.1); padding-top:10px; display:flex; justify-content:space-between; align-items:center; }
+.budget-total-label { font-size:12px; color:rgba(255,255,255,.6); }
+.budget-total-val { font-family:'Playfair Display',serif; font-size:19px; font-weight:600; color:var(--saffron); }
 
-  /* ── MAP INFOWINDOW overrides ── */
-  .gm-iw-content { font-family:'Inter',sans-serif !important; }
+/* ── DOCUMENTS ── */
+.docs-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.docs-title  { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); }
+.docs-add-btn { padding:6px 13px; background:var(--teal); color:white; border:none; border-radius:20px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; cursor:pointer; }
+.doc-card { background:var(--card); border-radius:13px; padding:13px 15px; margin-bottom:9px; border:1px solid var(--border); }
+.doc-name  { font-size:13px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.doc-ref   { font-size:11px; color:var(--muted); margin-bottom:7px; }
+.doc-actions { display:flex; gap:5px; flex-wrap:wrap; }
+.doc-btn { padding:5px 10px; border-radius:7px; border:none; cursor:pointer; font-size:11px; font-weight:600; font-family:'Inter',sans-serif; }
+.doc-btn-open   { background:var(--teal); color:white; }
+.doc-btn-edit   { background:var(--sand-dark); color:var(--text); }
+.doc-btn-delete { background:#FFE8E8; color:#C0392B; }
+.doc-empty { text-align:center; padding:28px 20px; color:var(--muted); font-size:13px; line-height:1.6; }
 
-  @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+/* ── MODAL ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:600; display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal-sheet { background:white; border-radius:20px 20px 0 0; padding:22px 18px 38px; width:100%; max-width:480px; max-height:85vh; overflow-y:auto; }
+.modal-title { font-family:'Playfair Display',serif; font-size:19px; font-weight:700; color:var(--text); margin-bottom:16px; }
+.modal-field { margin-bottom:13px; }
+.modal-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; display:block; }
+.modal-input { width:100%; padding:10px 13px; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); outline:none; }
+.modal-input:focus { border-color:var(--teal); }
+.modal-btns { display:flex; gap:9px; margin-top:18px; }
+.modal-btn { flex:1; padding:12px; border:none; border-radius:11px; cursor:pointer; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; }
+.modal-btn.primary  { background:var(--teal); color:white; }
+.modal-btn.secondary { background:var(--sand-dark); color:var(--muted); }
 
-  /* ── OFFLINE INDICATOR ── */
-  .offline-pill {
-    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
-    padding:7px 16px; border-radius:20px; font-size:12px; font-weight:600;
-    display:flex; align-items:center; gap:6px; z-index:500;
-    box-shadow:0 2px 12px rgba(0,0,0,0.2); transition:all .3s;
-    pointer-events:none; opacity:0;
-  }
-  .offline-pill.show { opacity:1; }
-  .offline-pill.offline { background:#C4613A; color:white; }
-  .offline-pill.online  { background:var(--green); color:white; }
-  .offline-dot { width:7px; height:7px; border-radius:50%; background:white; }
-
-  /* ── HOTEL FIELD ON DAY CARD ── */
-  .hotel-row {
-    display:flex; align-items:center; gap:8px;
-    padding:10px 0; border-bottom:1px solid var(--border);
-  }
-  .hotel-icon { font-size:15px; flex-shrink:0; }
-  .hotel-name {
-    flex:1; font-size:13px; font-weight:600; color:var(--teal);
-    min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .hotel-name.empty { color:var(--muted); font-weight:400; font-style:italic; }
-  .hotel-actions { display:flex; gap:6px; flex-shrink:0; }
-  .hotel-btn {
-    padding:5px 10px; border-radius:8px; border:none; cursor:pointer;
-    font-size:11px; font-weight:600; font-family:'Inter',sans-serif;
-  }
-  .hotel-btn-edit  { background:var(--sand-dark); color:var(--text); }
-  .hotel-btn-dir   { background:var(--teal); color:white; }
-  .hotel-btn-dir:disabled { background:var(--sand-dark); color:var(--muted); }
-
-  /* Hotel edit inline form */
-  .hotel-edit-form {
-    display:none; padding:10px 0 6px; border-bottom:1px solid var(--border);
-    flex-direction:column; gap:8px;
-  }
-  .hotel-edit-form.open { display:flex; }
-  .hotel-input {
-    width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px;
-    font-family:'Inter',sans-serif; font-size:13px; color:var(--text);
-    background:white; outline:none;
-  }
-  .hotel-input:focus { border-color:var(--teal); }
-  .hotel-save-row { display:flex; gap:8px; }
-  .hotel-save-btn {
-    flex:1; padding:8px; border:none; border-radius:8px; cursor:pointer;
-    font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
-  }
-  .hotel-save-btn.save    { background:var(--teal); color:white; }
-  .hotel-save-btn.cancel  { background:var(--sand-dark); color:var(--muted); }
-
-  /* ── DOCUMENTS ── */
-  .docs-header {
-    display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;
-  }
-  .docs-title {
-    font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra);
-  }
-  .docs-add-btn {
-    padding:7px 14px; background:var(--teal); color:white; border:none;
-    border-radius:20px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
-    cursor:pointer;
-  }
-  .doc-card {
-    background:var(--card); border-radius:14px; padding:14px 16px;
-    margin-bottom:10px; border:1px solid var(--border);
-  }
-  .doc-card-header {
-    display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
-  }
-  .doc-name  { font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px; }
-  .doc-ref   { font-size:12px; color:var(--muted); margin-bottom:8px; }
-  .doc-actions { display:flex; gap:6px; flex-shrink:0; }
-  .doc-btn {
-    padding:5px 10px; border-radius:8px; border:none; cursor:pointer;
-    font-size:11px; font-weight:600; font-family:'Inter',sans-serif;
-  }
-  .doc-btn-open   { background:var(--teal); color:white; }
-  .doc-btn-edit   { background:var(--sand-dark); color:var(--text); }
-  .doc-btn-delete { background:#FFE8E8; color:#C0392B; }
-  .doc-empty {
-    text-align:center; padding:32px 20px; color:var(--muted); font-size:13px; line-height:1.6;
-  }
-
-  /* Doc edit modal */
-  .modal-overlay {
-    position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:600;
-    display:none; align-items:flex-end; justify-content:center;
-  }
-  .modal-overlay.open { display:flex; }
-  .modal-sheet {
-    background:white; border-radius:20px 20px 0 0; padding:24px 20px 40px;
-    width:100%; max-width:480px; max-height:85vh; overflow-y:auto;
-  }
-  .modal-title {
-    font-family:'Playfair Display',serif; font-size:20px; font-weight:700;
-    color:var(--text); margin-bottom:18px;
-  }
-  .modal-field { margin-bottom:14px; }
-  .modal-label {
-    font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--muted); margin-bottom:5px; display:block;
-  }
-  .modal-input {
-    width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px;
-    font-family:'Inter',sans-serif; font-size:14px; color:var(--text); outline:none;
-  }
-  .modal-input:focus { border-color:var(--teal); }
-  .modal-btns { display:flex; gap:10px; margin-top:20px; }
-  .modal-btn {
-    flex:1; padding:13px; border:none; border-radius:12px; cursor:pointer;
-    font-family:'Inter',sans-serif; font-size:14px; font-weight:700;
-  }
-  .modal-btn.primary  { background:var(--teal); color:white; }
-  .modal-btn.secondary { background:var(--sand-dark); color:var(--muted); }
+/* ── OFFLINE PILL ── */
+.offline-pill { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); padding:7px 16px; border-radius:20px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; z-index:500; box-shadow:0 2px 12px rgba(0,0,0,.2); pointer-events:none; opacity:0; transition:opacity .3s; white-space:nowrap; }
+.offline-pill.show { opacity:1; }
+.offline-pill.offline { background:var(--terra); color:white; }
+.offline-pill.online  { background:var(--green); color:white; }
+.offline-dot { width:6px; height:6px; border-radius:50%; background:white; flex-shrink:0; }
 </style>
 </head>
 <body>
 
 <!-- HERO -->
 <div class="hero" id="heroEl">
-  <img class="hero-img" src="hero.jpg" alt="Sri Lanka">
+  <img class="hero-img" src="hero.jpg" alt="Sri Lanka — Sigiriya">
   <div class="hero-overlay"></div>
   <div class="hero-inner">
-    <div class="hero-top">
-      <div>
-        <div class="hero-sub" style="font-size:13px; margin-top:0;">20 Sep — 2 Oct 2026</div>
-      </div>
+    <div class="hero-bottom">
+      <div class="hero-sub">20 Sep — 2 Oct 2026</div>
       <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -400,37 +281,57 @@
   </div>
 </div>
 
-<!-- DROPDOWN MENU (outside hero so z-index stacks above nav bar) -->
+<!-- DROPDOWN -->
 <div class="menu-dropdown" id="menuDropdown">
-  <button class="menu-item" id="mi-itinerary" onclick="selectSection('itinerary')">
+  <button class="menu-item active" id="mi-itinerary" onclick="selectSection('itinerary')">
     <span class="menu-item-icon">📅</span>
-    <span class="menu-item-label">Itinerary</span>
-    <span class="menu-item-check" id="mc-itinerary"></span>
+    <span>Itinerary</span>
+    <span class="menu-item-check" id="mc-itinerary">✓</span>
   </button>
   <button class="menu-item" id="mi-map" onclick="selectSection('map')">
     <span class="menu-item-icon">🗺️</span>
-    <span class="menu-item-label">Map</span>
+    <span>Map</span>
     <span class="menu-item-check" id="mc-map"></span>
   </button>
   <button class="menu-item" id="mi-prep" onclick="selectSection('prep')">
     <span class="menu-item-icon">✅</span>
-    <span class="menu-item-label">Prep</span>
+    <span>Prep</span>
     <span class="menu-item-check" id="mc-prep"></span>
   </button>
 </div>
 
 <!-- NAV BAR -->
-<div class="nav-bar" id="navBar">
-  <span class="nav-section-label" id="navLabel">Itinerary</span>
+<div class="nav-bar">
+  <span class="nav-label" id="navLabel">Itinerary</span>
 </div>
 
-<!-- ══════════════════ PREP PANEL ══════════════════ -->
+<!-- ══ TRIP PANEL ══ -->
+<div class="main-panel active" id="main-trip">
+  <!-- Day nav -->
+  <div class="day-nav-wrapper" id="dayNavWrapper">
+    <div class="day-nav" id="dayNav"></div>
+  </div>
+  <!-- Itinerary -->
+  <div class="trip-panel active" id="trip-itinerary">
+    <div class="itinerary-content" id="dayCards"></div>
+  </div>
+  <!-- Map -->
+  <div id="trip-map">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="map-route-key" id="mapRouteKey"></div>
+      <div class="map-legend-stops" id="mapLegend"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PREP PANEL ══ -->
 <div class="main-panel" id="main-prep">
   <div class="prep-content">
     <div class="prep-tabs">
-      <button class="prep-tab-btn active" onclick="switchPrep('checklist',this)">✅ Checklist</button>
+      <button class="prep-tab-btn active" onclick="switchPrep('checklist',this)">✅ List</button>
       <button class="prep-tab-btn" onclick="switchPrep('budget',this)">💰 Budget</button>
-      <button class="prep-tab-btn" onclick="switchPrep('essentials',this)">📋 Essentials</button>
+      <button class="prep-tab-btn" onclick="switchPrep('essentials',this)">📋 Info</button>
       <button class="prep-tab-btn" onclick="switchPrep('docs',this)">📎 Docs</button>
     </div>
 
@@ -439,36 +340,35 @@
       <div class="checklist-section">
         <div class="cl-group-title">Do Immediately<span class="cl-progress" id="prog-asap"></span></div>
         <div class="check-item" data-id="eta" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Apply for Sri Lanka ETA Visa</div><div class="check-detail">Apply at <a href="https://eta.gov.lk" target="_blank">eta.gov.lk</a> — ~$35–50, usually approved within 24hrs.</div><span class="check-when when-asap">Do now</span></div></div>
-        <div class="check-item" data-id="trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Book hill country train tickets</div><div class="check-detail">Colombo–Galle coastal = no booking needed, buy unreserved on the day. The Colombo→Kandy and Anuradhapura→Kandy (via Polgahawela) legs have reserved cars that sell out — book via <a href="https://12go.asia" target="_blank">12go.asia</a> or <a href="https://bookaway.com" target="_blank">Bookaway.com</a>. ⚠️ Verify hill country route is running — cyclone damage in 2025.</div><span class="check-when when-asap">Do now</span></div></div>
-        <div class="check-item" data-id="hotels" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Book accommodation</div><div class="check-detail">Booking.com, 3-star, score 8.0+. 8 bases: Colombo (Sep 20–21), Anuradhapura (Sep 21–23), Kandy (Sep 23–25), Colombo (Sep 25–26), Galle (Sep 26–28), Tangalle (Sep 28–30), Colombo (Sep 30–Oct 2).</div><span class="check-when when-asap">Do now</span></div></div>
-        <div class="check-item" data-id="bank" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Notify your bank</div><div class="check-detail">Tell your bank you're in Sri Lanka Sep 20 – Oct 2, otherwise cards may be blocked on first use.</div><span class="check-when when-asap">Do now</span></div></div>
+        <div class="check-item" data-id="trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Book hill country train tickets</div><div class="check-detail">Colombo–Galle coastal = no booking needed. Colombo→Kandy and Anuradhapura→Kandy reserved cars sell out — book via <a href="https://12go.asia" target="_blank">12go.asia</a> or <a href="https://bookaway.com" target="_blank">Bookaway.com</a>. ⚠️ Verify hill country route running — cyclone damage in 2025.</div><span class="check-when when-asap">Do now</span></div></div>
+        <div class="check-item" data-id="hotels" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Book accommodation (same hotel all 3 Colombo stays)</div><div class="check-detail">Booking.com, 3-star, score 8.0+. Colombo (Sep 20–21, 25–26, 30–Oct 2), Anuradhapura (Sep 21–23), Kandy (Sep 23–25), Galle (Sep 26–28), Tangalle (Sep 28–30).</div><span class="check-when when-asap">Do now</span></div></div>
+        <div class="check-item" data-id="bank" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Notify your bank</div><div class="check-detail">Tell your bank you're in Sri Lanka Sep 20 – Oct 2.</div><span class="check-when when-asap">Do now</span></div></div>
       </div>
       <div class="checklist-section">
         <div class="cl-group-title">6–8 Weeks Before<span class="cl-progress" id="prog-weeks"></span></div>
         <div class="check-item" data-id="gp" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">GP / travel health appointment</div><div class="check-detail">Hep A, Typhoid, Tetanus booster. Ask about malaria tablets for Anuradhapura. Book 6–8 weeks out.</div><span class="check-when when-weeks">6–8 weeks before</span></div></div>
-        <div class="check-item" data-id="insurance" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Get travel insurance</div><div class="check-detail">Cover medical evacuation, cancellation, lost luggage. Single-trip policies ~£20–40.</div><span class="check-when when-weeks">6–8 weeks before</span></div></div>
-        <div class="check-item" data-id="pickme" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download PickMe app</div><div class="check-detail">Sri Lanka's metered ride-hailing app. Set up before you go — you'll need it from day one.</div><span class="check-when when-weeks">Before you leave</span></div></div>
-        <div class="check-item" data-id="booking-acc" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Create 12go.asia account</div><div class="check-detail">Register at <a href="https://12go.asia" target="_blank">12go.asia</a> before booking hill country trains.</div><span class="check-when when-weeks">Before booking trains</span></div></div>
+        <div class="check-item" data-id="insurance" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Get travel insurance</div><div class="check-detail">Cover medical evacuation, cancellation, lost luggage. ~£20–40 for a single trip.</div><span class="check-when when-weeks">6–8 weeks before</span></div></div>
+        <div class="check-item" data-id="pickme" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download PickMe app</div><div class="check-detail">Sri Lanka's metered ride-hailing app. Set up before you go.</div><span class="check-when when-weeks">Before you leave</span></div></div>
+        <div class="check-item" data-id="booking-acc" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Create 12go.asia account</div><div class="check-detail">For booking hill country train reserved seats.</div><span class="check-when when-weeks">Before booking trains</span></div></div>
       </div>
       <div class="checklist-section">
         <div class="cl-group-title">Day Before Flying<span class="cl-progress" id="prog-days"></span></div>
-        <div class="check-item" data-id="print-eta" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot your ETA</div><div class="check-detail">Needed at check-in and Sri Lankan immigration. Screenshot it — don't rely on signal.</div><span class="check-when when-days">Day before</span></div></div>
-        <div class="check-item" data-id="print-hotels" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot hotel confirmations</div><div class="check-detail">Immigration may ask for your first accommodation address. Screenshot Colombo at minimum.</div><span class="check-when when-days">Day before</span></div></div>
-        <div class="check-item" data-id="print-trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot hill country train tickets</div><div class="check-detail">Download 12go.asia / Bookaway tickets offline. Coastal train needs no advance ticket.</div><span class="check-when when-days">Day before</span></div></div>
-        <div class="check-item" data-id="cash" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check your travel card works</div><div class="check-detail">You'll withdraw rupees at the airport ATM on arrival. Memorise your PIN.</div><span class="check-when when-days">Day before</span></div></div>
-        <div class="check-item" data-id="maps" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download offline maps</div><div class="check-detail">Google Maps or Maps.me — download Sri Lanka offline before you travel.</div><span class="check-when when-days">Day before</span></div></div>
-        <div class="check-item" data-id="save-guide" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Save this guide offline</div><div class="check-detail">Open once on Wi-Fi to cache fonts, then works fully offline.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="print-eta" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot your ETA</div><div class="check-detail">Needed at check-in and Sri Lankan immigration.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="print-hotels" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot hotel confirmations</div><div class="check-detail">Immigration may ask for your first accommodation address.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="print-trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot train tickets</div><div class="check-detail">Download 12go.asia / Bookaway tickets offline. Coastal train buy on the day.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="cash" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check travel card works</div><div class="check-detail">Withdraw rupees at airport ATM on arrival. Memorise your PIN.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="maps-dl" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download offline maps</div><div class="check-detail">Google Maps — download Sri Lanka before you travel.</div><span class="check-when when-days">Day before</span></div></div>
       </div>
       <div class="checklist-section">
         <div class="cl-group-title">Pack<span class="cl-progress" id="prog-pack"></span></div>
-        <div class="check-item" data-id="p-adapter" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Type G plug adapter</div><div class="check-detail">Sri Lanka uses UK-style 3-pin plugs. If not from UK, bring an adapter.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-deet" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">DEET insect repellent</div><div class="check-detail">Dengue fever island-wide. Use at dawn and dusk especially.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-sun" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">SPF 50+ sunscreen + hat</div><div class="check-detail">The equatorial sun is brutal. Reapply constantly.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-temple" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Temple clothes</div><div class="check-detail">Two outfits covering shoulders and knees. Lightweight linen is ideal.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-rain" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Light waterproof jacket</div><div class="check-detail">Tail end of monsoon in late September. Short heavy rain. Packable mac.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-bag" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Small daypack</div><div class="check-detail">Main luggage stays at each hotel. Just need a light bag for daily use.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-water" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Reusable water bottle</div><div class="check-detail">Never drink tap water. Avoids endless single-use plastic.</div><span class="check-when when-pack">Pack</span></div></div>
-        <div class="check-item" data-id="p-bank" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Power bank</div><div class="check-detail">Long train journeys with no plugs. 10,000mAh keeps your phone alive all day.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-adapter" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Type G plug adapter</div><div class="check-detail">UK-style 3-pin plugs. Not from UK — bring an adapter.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-deet" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">DEET insect repellent</div><div class="check-detail">Dengue fever island-wide. Use at dawn and dusk.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-sun" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">SPF 50+ sunscreen + hat</div><div class="check-detail">Equatorial sun. Reapply constantly.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-temple" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Temple clothes</div><div class="check-detail">Shoulders and knees covered. Lightweight linen.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-rain" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Light waterproof jacket</div><div class="check-detail">Tail end of monsoon. Short heavy rain. Packable mac.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-bag" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Travel backpack (35–45L)</div><div class="check-detail">Main luggage stays in Colombo. Not a wheeled suitcase.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-water" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Reusable water bottle</div><div class="check-detail">Never drink tap water.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-bank" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Power bank (10,000mAh+)</div><div class="check-detail">Long train journeys with no plugs.</div><span class="check-when when-pack">Pack</span></div></div>
       </div>
       <button class="reset-btn" onclick="resetAll()">Reset all checks</button>
     </div>
@@ -495,12 +395,12 @@
         <div class="info-row"><div class="info-icon">🛕</div><div><div class="info-name">Temple of the Tooth, Kandy</div><div class="info-detail">~$10</div></div></div>
         <div class="info-row"><div class="info-icon">🌿</div><div><div class="info-name">Royal Botanic Gardens</div><div class="info-detail">~$15</div></div></div>
         <div class="info-row"><div class="info-icon">🚢</div><div><div class="info-name">Maritime Museum, Galle</div><div class="info-detail">~$3</div></div></div>
-        <div class="info-row"><div class="info-icon">🏛️</div><div><div class="info-name">National Museum, Colombo</div><div class="info-detail">~$5 · Closed Mondays</div></div></div>
+        <div class="info-row"><div class="info-icon">🏛️</div><div><div class="info-name">National Museum, Colombo</div><div class="info-detail">~$5 · Closed Tuesdays</div></div></div>
       </div>
       <div class="info-card">
         <div class="info-title">Money Tips</div>
         <div class="info-row"><div class="info-icon">💱</div><div><div class="info-name">Exchange rate</div><div class="info-detail">~300 LKR = $1. Check nearer the time.</div></div></div>
-        <div class="info-row"><div class="info-icon">🏧</div><div><div class="info-name">ATMs</div><div class="info-detail">Withdraw before Tangalle — fewer ATMs there. Anuradhapura also has limited ATMs so withdraw in Colombo before heading north.</div></div></div>
+        <div class="info-row"><div class="info-icon">🏧</div><div><div class="info-name">ATMs</div><div class="info-detail">Withdraw before Tangalle — fewer ATMs there. Also withdraw in Colombo before heading north to Anuradhapura.</div></div></div>
         <div class="info-row"><div class="info-icon">💵</div><div><div class="info-name">Cash is king</div><div class="info-detail">Local restaurants, tuk-tuks, smaller hotels often won't take cards.</div></div></div>
         <div class="info-row"><div class="info-icon">🍛</div><div><div class="info-name">Food costs</div><div class="info-detail">Rice and curry: $2–4. Kottu roti: ~$2. Tourist restaurant: $6–12. Budget $15–20/day.</div></div></div>
       </div>
@@ -511,15 +411,15 @@
       <div class="info-card">
         <div class="info-title">Key Info</div>
         <div class="info-row"><div class="info-icon">🛂</div><div><div class="info-name">ETA Visa</div><div class="info-detail">Apply at <a href="https://eta.gov.lk" target="_blank">eta.gov.lk</a> — ~$35–50.</div></div></div>
-        <div class="info-row"><div class="info-icon">🚆</div><div><div class="info-name">Train Bookings</div><div class="info-detail">Hill country reserved: <a href="https://12go.asia" target="_blank">12go.asia</a> or <a href="https://bookaway.com" target="_blank">Bookaway.com</a>. Colombo–Galle coastal: unreserved, buy at the station on the day. ⚠️ Check hill country route status — cyclone damage in 2025.</div></div></div>
+        <div class="info-row"><div class="info-icon">🚆</div><div><div class="info-name">Train Bookings</div><div class="info-detail">Hill country reserved: <a href="https://12go.asia" target="_blank">12go.asia</a> or <a href="https://bookaway.com" target="_blank">Bookaway.com</a>. Colombo–Galle coastal: unreserved, buy at the station. ⚠️ Check hill country route status — cyclone damage in 2025.</div></div></div>
         <div class="info-row"><div class="info-icon">📱</div><div><div class="info-name">Apps</div><div class="info-detail"><strong>PickMe</strong> — metered tuk-tuks, no haggling. Dialog SIM at arrivals (~$5–10).</div></div></div>
         <div class="info-row"><div class="info-icon">💊</div><div><div class="info-name">Health</div><div class="info-detail">Hep A + Typhoid recommended. Malaria tablets for Anuradhapura. DEET repellent. Bottled water only.</div></div></div>
-        <div class="info-row"><div class="info-icon">🌧️</div><div><div class="info-name">Weather</div><div class="info-detail">Tail end of south-west monsoon. Short heavy rain, usually clears. Cultural Triangle drier than south coast.</div></div></div>
+        <div class="info-row"><div class="info-icon">🌧️</div><div><div class="info-name">Weather</div><div class="info-detail">Tail end of south-west monsoon. Short heavy rain. Cultural Triangle drier than south coast.</div></div></div>
         <div class="info-row"><div class="info-icon">🔌</div><div><div class="info-name">Plugs + Time</div><div class="info-detail">Type G (UK) plugs. UTC+5:30. Late Sep: 4.5 hrs ahead of UK (BST).</div></div></div>
         <div class="info-row"><div class="info-icon">🛕</div><div><div class="info-name">Temple Etiquette</div><div class="info-detail">Cover shoulders + knees. Shoes off. No selfies with Buddha statues.</div></div></div>
         <div class="info-row"><div class="info-icon">🛺</div><div><div class="info-name">Tuk-tuks</div><div class="info-detail">Use PickMe where possible. If flagging one down, always agree price before getting in.</div></div></div>
       </div>
-    </div><!-- /prep-essentials -->
+    </div>
 
     <!-- DOCUMENTS -->
     <div class="prep-panel" id="prep-docs">
@@ -528,885 +428,11 @@
         <button class="docs-add-btn" onclick="openDocModal()">+ Add</button>
       </div>
       <div id="docsList"></div>
-    </div><!-- /prep-docs -->
-
-  </div>
-</div><!-- /main-prep -->
-
-<!-- ══════════════════ TRIP PANEL ══════════════════ -->
-<div class="main-panel active" id="main-trip">
-  <div class="trip-inner">
-    <!-- Day nav strip — shown for itinerary and map -->
-    <div class="day-nav-wrapper" id="dayNavWrapper">
-      <div class="day-nav" id="dayNav"></div>
     </div>
-
-    <!-- Itinerary sub-panel -->
-    <div class="trip-panel active" id="trip-itinerary">
-      <div class="itinerary-content">
-        <div id="dayCards"></div>
-      </div>
-    </div>
-
-    <!-- Map sub-panel -->
-    <div id="trip-map" style="display:none; flex-direction:column;">
-      <div id="map" style="width:100%; height:calc(100vh - 376px); min-height:320px;"></div>
-      <div class="map-legend">
-        <div class="map-legend-title">Jump to stop</div>
-        <div class="map-legend-stops" id="mapLegend"></div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- Google Maps API -->
-<script>
-// ── DATA ──────────────────────────────────────────────────
-const stops = [
-  { id:'colombo',      label:'Colombo',       lat:6.9271,  lng:79.8612, dates:'Sep 20 + Sep 25–26 + Sep 30–Oct 2', desc:'Arrival night, transit/sightseeing nights, and departure day. National Museum, Gangaramaya Temple, Pettah Bazaar, Fort District, Galle Face Green.', color:'#1B4D4A' },
-  { id:'anuradhapura', label:'Anuradhapura',  lat:8.3114,  lng:80.4037, dates:'Sep 21–23', desc:'2 nights. One of the oldest cities in the world — cycle the ancient sacred city at your own pace. Day trips to Dambulla & Sigiriya.', color:'#C4613A' },
-  { id:'sigiriya',     label:'Sigiriya',      lat:7.9570,  lng:80.7603, dates:'Sep 22 day trip', desc:'5th-century rock fortress atop a 200m granite rock. $30 entry. Go early.', color:'#8B4513' },
-  { id:'dambulla',     label:'Dambulla',      lat:7.8549,  lng:80.6506, dates:'Sep 22 day trip', desc:'Cave temple with 2,000-year-old Buddhist frescoes and 150+ statues. $15 entry.', color:'#8B4513' },
-  { id:'kandy',        label:'Kandy',         lat:7.2906,  lng:80.6337, dates:'Sep 23–25', desc:'2 nights. Temple of the Tooth evening pooja (18:30), Royal Botanic Gardens at Peradeniya.', color:'#2A6B67' },
-  { id:'galle',        label:'Galle',         lat:6.0535,  lng:80.2210, dates:'Sep 26–28', desc:'2 nights. Arrive via the famous coastal train. Dutch Fort, Maritime Museum, Book Studio cafe, rampart sunsets.', color:'#E8A030' },
-  { id:'tangalle',     label:'Tangalle',      lat:6.0227,  lng:80.8008, dates:'Sep 28–30', desc:'2 nights. Quiet beach, very few tourists. Rekawa turtle nesting at 20:00.', color:'#2D7A4F' },
-  { id:'matara',       label:'Matara',        lat:5.9549,  lng:80.5550, dates:'Sep 30 transit', desc:'Eastern end of the coastal railway. Short bus from Tangalle, then coastal train back north to Colombo.', color:'#888888' },
-];
-
-const routeCoords = [
-  {lat:6.9271, lng:79.8612},
-  {lat:8.3114, lng:80.4037},
-  {lat:7.2906, lng:80.6337},
-  {lat:6.9271, lng:79.8612},
-  {lat:6.0535, lng:80.2210},
-  {lat:6.0227, lng:80.8008},
-  {lat:5.9549, lng:80.5550},
-  {lat:6.9271, lng:79.8612},
-];
-
-const days = [
-  { id:'d1', date:'Sat 20 Sep', shortDate:'20', month:'Sep',
-    title:'Arrival · Colombo', location:'Colombo', mapStop:'colombo',
-    badge:'Arrival', badgeType:'transit', nights:1,
-    transport:'Land 16:20 at BIA. Grab Dialog SIM in arrivals (~$5-10). Taxi or Uber to Fort district - ~45 mins, ~$10.',
-    activities:[
-      {time:'16:20',icon:'✈️',type:'travel',name:'Land at Bandaranaike Airport',
-       desc:'Clear immigration. Head to arrivals hall SIM stalls before exiting.',
-       tip:'<strong>Tip:</strong> Get a Dialog SIM ~$8 including data. ATMs also in arrivals — withdraw rupees here.'},
-      {time:'17:30',icon:'🚖',type:'travel',name:'Taxi to Colombo Fort',
-       desc:'~45 mins to the Fort district hotel. Easy first night.',
-       tip:'<strong>Tip:</strong> Use PickMe app or ask hotel to arrange pickup. Agree fare before any non-metered taxi.'},
-      {time:'19:30',icon:'🍛',type:'food',name:'First rice and curry',
-       desc:'Find a local place near the hotel. A plate piled with several curries costs $2-4.',
-       tip:'<strong>Note:</strong> Go easy on the chilli the first evening.'},
-    ]},
-
-  { id:'d2', date:'Sun 21 Sep', shortDate:'21', month:'Sep',
-    title:'Colombo to Anuradhapura', location:'Anuradhapura', mapStop:'anuradhapura',
-    badge:'Travel day', badgeType:'transit', nights:2,
-    transport:'Train Colombo Fort to Anuradhapura. Depart 13:45, arrive 18:36. ~4hrs. Unreserved 2nd class — buy at Counter 1 at Colombo Fort on the day.',
-    activities:[
-      {time:'Morning',icon:'🚶',type:'culture',name:'Free morning in Colombo',
-       desc:'Slow breakfast, short walk around the Fort area or along Galle Face Green.',
-       tip:'<strong>Tip:</strong> Check out but ask hotel to store luggage until you leave for the station at 13:00.'},
-      {time:'13:00',icon:'🚆',type:'travel',name:'Head to Colombo Fort station',
-       desc:'Buy unreserved ticket at Counter 1. Depart 13:45, arrive Anuradhapura 18:36.',
-       tip:'<strong>Tip:</strong> Pick up snacks and water before boarding.'},
-      {time:'18:36',icon:'🏨',type:'travel',name:'Arrive Anuradhapura',
-       desc:'Check in and get an early night — big day tomorrow.',
-       tip:'<strong>Tip:</strong> Ask hotel about bicycle rental and the first bus to Dambulla tomorrow morning.'},
-    ]},
-
-  { id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
-    title:'Anuradhapura - Sigiriya and Dambulla', location:'Anuradhapura', mapStop:'anuradhapura',
-    badge:'Day trips',
-    activities:[
-      {time:'06:00',icon:'🚌',type:'travel',name:'Early bus to Dambulla',
-       desc:'~1 hour from Anuradhapura. Go early to beat the heat and tour groups.',
-       tip:'<strong>Tip:</strong> Ask hotel the night before for the first morning departure time.'},
-      {time:'07:30',icon:'🕌',type:'temple',name:'Dambulla Cave Temple',
-       desc:'Five caves of 2,000-year-old Buddhist frescoes and 150+ statues. Allow 1.5-2 hours.',
-       tip:'<strong>Entry:</strong> ~$15. Opens 7am. Remove shoes outside.',cost:'~$15'},
-      {time:'10:30',icon:'🚌',type:'travel',name:'Bus or tuk-tuk to Sigiriya',
-       desc:'~30 mins east of Dambulla.',
-       tip:'<strong>Tuk-tuk direct:</strong> ~$5.'},
-      {time:'11:00',icon:'🪨',type:'culture',name:'Sigiriya Rock Fortress',
-       desc:'5th-century palace atop a 200m granite rock. Ancient frescoes halfway up. Climb ~45 mins up, 30 down.',
-       tip:'<strong>Entry:</strong> $30. Opens 5am — earlier the better. Bring plenty of water.',cost:'$30'},
-      {time:'14:00',icon:'🚌',type:'travel',name:'Bus back to Anuradhapura',
-       desc:'Return via Dambulla. Stop for a late lunch on the way.',
-       tip:'<strong>Tip:</strong> Confirm last return bus time in the morning.'},
-      {time:'16:00',icon:'🚲',type:'culture',name:'Sacred City by Bicycle',
-       desc:'Hire a bicycle (~$3-5) and explore the ancient sacred city. Jetavanaramaya, Abhayagiri, moonstone carvings.',
-       tip:'<strong>Entry:</strong> ~$25 day pass covers all sites. Peaceful by late afternoon.',cost:'~$25'},
-    ]},
-
-  { id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
-    title:'Anuradhapura to Kandy', location:'Kandy', mapStop:'kandy',
-    badge:'Travel day', badgeType:'transit', nights:2,
-    transport:'Train: Anuradhapura depart 09:15, arrive Polgahawela 11:48. 12 min transfer. Then Polgahawela depart 12:00, arrive Kandy 14:00. Total ~5hrs, 1 change.',
-    activities:[
-      {time:'09:15',icon:'🚆',type:'travel',name:'Train to Polgahawela Junction',
-       desc:'Depart Anuradhapura 09:15, arrive Polgahawela 11:48. 12 minute transfer to the Kandy train.',
-       tip:'<strong>Tip:</strong> Polgahawela is a simple junction — 12 minutes is enough time to change platforms.'},
-      {time:'12:00',icon:'🚆',type:'travel',name:'Train Polgahawela to Kandy',
-       desc:'Train 1019, depart 12:00, arrive Kandy 14:00. 10 stops through beautiful central hill country.',
-       tip:'<strong>Tip:</strong> Sit on the right side for good valley views on the approach to Kandy.'},
-      {time:'14:30',icon:'🚶',type:'nature',name:'Kandy Lake Walk',
-       desc:'Check in, then walk around Kandy Lake before the evening ceremony.',
-       tip:'<strong>Free.</strong> Good way to get your bearings.'},
-      {time:'18:30',icon:'🛕',type:'temple',name:'Temple of the Tooth Evening Pooja',
-       desc:'One of Buddhism\'s most sacred sites. Drums, chanting, incense. Simply stand and observe. ~45 minutes.',
-       tip:'<strong>Entry:</strong> ~$10. Cover shoulders and knees. Shoes off.',cost:'~$10'},
-    ]},
-
-  { id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
-    title:'Kandy', location:'Kandy', mapStop:'kandy',
-    activities:[
-      {time:'08:00',icon:'🚖',type:'travel',name:'Tuk-tuk to Peradeniya Gardens',
-       desc:'~20 mins from Kandy centre. ~$2-3 each way.',},
-      {time:'08:30',icon:'🌿',type:'nature',name:'Royal Botanic Gardens Peradeniya',
-       desc:'147 acres — giant fruit bat colony, orchid house, royal palm avenue. Allow 3-4 hours.',
-       tip:'<strong>Entry:</strong> ~$15. Opens 7:30am. Go early before tour groups.',cost:'~$15'},
-      {time:'13:00',icon:'🍛',type:'food',name:'Lunch back in Kandy',
-       desc:'Return by tuk-tuk. Local rice and curry near the lake.',
-       tip:'<strong>Try:</strong> Kottu roti — chopped flatbread stir-fried with veg and egg, ~$2.'},
-      {time:'15:00',icon:'🏛️',type:'museum',name:'Kandy National Museum (optional)',
-       desc:'Kandyan-era royal artifacts inside the former palace complex. 45-60 mins.',
-       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
-      {time:'18:00',icon:'🌆',type:'culture',name:'Evening on the Lake',
-       desc:'Temple of the Tooth is lit up from 18:30. Peaceful waterfront walk.',
-       tip:'<strong>Free.</strong>'},
-    ]},
-
-  { id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
-    title:'Kandy to Colombo', location:'Colombo', mapStop:'colombo',
-    badge:'Travel day', badgeType:'transit', nights:1,
-    transport:'Train Kandy to Colombo Fort. Depart 13:10, arrive 15:41. ~2.5hrs direct.',
-    activities:[
-      {time:'Morning',icon:'🚶',type:'culture',name:'Slow morning in Kandy',
-       desc:'Walk the lake, have a good breakfast. Check out but ask hotel to store luggage.',
-       tip:'<strong>Train departs 13:10</strong> — plenty of time for a relaxed morning.'},
-      {time:'13:10',icon:'🚆',type:'travel',name:'Train Kandy to Colombo Fort',
-       desc:'Depart 13:10, arrive 15:41. Direct, ~2.5 hours.',
-       tip:'<strong>Tip:</strong> Sit on the left side heading west for good views descending from the hills.'},
-      {time:'16:00',icon:'🏨',type:'travel',name:'Check in Colombo Fort',
-       desc:'Drop bags. You have the rest of the afternoon and evening.',
-       tip:'<strong>Tip:</strong> Same Fort area as your arrival night.'},
-      {time:'16:30',icon:'🛕',type:'temple',name:'Gangaramaya Temple',
-       desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia.',
-       tip:'<strong>Entry:</strong> ~$3. Open until 10pm.',cost:'~$3'},
-      {time:'18:30',icon:'🏛️',type:'culture',name:'Pettah Bazaar evening wander',
-       desc:'The old bazaar district. Each street specialises in something different — spices, fabric, electronics.',
-       tip:'<strong>Free.</strong> Good atmosphere in the evening as it cools down.'},
-    ]},
-
-  { id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
-    title:'Colombo - Coastal Train - Galle', location:'Galle', mapStop:'galle',
-    badge:'Highlight', nights:2,
-    transport:'Train Colombo Maradana to Galle. Depart ~08:35, arrive ~10:49. No booking needed — unreserved, buy at station. Sit on the RIGHT side.',
-    activities:[
-      {time:'07:45',icon:'🚆',type:'travel',name:'Walk to Maradana station',
-       desc:'Board at Maradana rather than Colombo Fort — you get a window seat before the train fills up at Fort.',
-       tip:'<strong>Seat 61 tip:</strong> Maradana boarding = best chance of a right-side ocean window seat.'},
-      {time:'08:35',icon:'🚆',type:'travel',name:'The Coastal Train',
-       desc:'The tracks hug the shoreline all the way south. Waves, palms, fishing villages, river estuaries. ~2 hours.',
-       tip:'<strong>Sit on the RIGHT side</strong> heading south — that\'s the ocean. Unreserved, buy at station. 2nd class ~500 rupees (~$1.70).'},
-      {time:'10:49',icon:'🏰',type:'culture',name:'Arrive Galle - Check in',
-       desc:'Galle station is just outside the Fort walls. Drop bag and start wandering.',
-       tip:'<strong>Tip:</strong> Hotels inside the Fort walls ~$45-60/night. Worth it for the atmosphere.'},
-      {time:'11:30',icon:'🕌',type:'culture',name:'Dutch Reformed Church 1755',
-       desc:'One of the oldest colonial buildings in Sri Lanka. Floor lined with Dutch colonial tombstones.',
-       tip:'<strong>Free entry.</strong> 20-minute stop.'},
-      {time:'17:45',icon:'🌅',type:'nature',name:'Rampart Sunset',
-       desc:'Walk the fort ramparts at golden hour. Ocean on three sides.',
-       tip:'<strong>Free.</strong> Sunset ~18:00.'},
-    ]},
-
-  { id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
-    title:'Galle', location:'Galle', mapStop:'galle',
-    activities:[
-      {time:'09:30',icon:'🚢',type:'museum',name:'Maritime Archaeology Museum',
-       desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, ancient trade route maps. ~1.5 hours.',
-       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
-      {time:'11:30',icon:'☕',type:'shop',name:'Book Studio - Coffee and Browse',
-       desc:'Bookshop-cafe inside the Fort. Cosy, calm, great coffee. Rated 5.0.',
-       tip:'<strong>Hours:</strong> Mon-Fri 06:30-20:00. Sat-Sun 08:00-20:00'},
-      {time:'14:00',icon:'📗',type:'shop',name:'Samudra Book Shop',
-       desc:'10 min walk outside the Fort gate on Wakwella Rd. Small, personal, owner has genuine book knowledge. Rated 5.0.',
-       tip:'<strong>Hours:</strong> Mon-Sat 08:00-20:00. Sun 08:00-17:00'},
-      {time:'16:00',icon:'🚶',type:'culture',name:'Second Fort Wander',
-       desc:'By now you know every street. Revisit anything you liked, read on the ramparts.',
-       tip:'<strong>Free.</strong> Best in late afternoon when day-trippers leave.'},
-      {time:'17:45',icon:'🌅',type:'nature',name:'Rampart Sunset',
-       desc:'Try the lighthouse end tonight for a different angle.',
-       tip:'<strong>Free.</strong> Last evening in Galle.'},
-    ]},
-
-  { id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
-    title:'Galle to Tangalle', location:'Tangalle', mapStop:'tangalle',
-    badge:'Travel day', badgeType:'transit', nights:2,
-    transport:'Bus Galle to Tangalle. ~1.5 hours east along the coast. Short, easy, runs regularly.',
-    activities:[
-      {time:'10:00',icon:'💳',type:'info',name:'Withdraw cash before leaving Galle',
-       desc:'Fewer ATMs in Tangalle. Withdraw enough for 2 nights.',
-       tip:'<strong>Tip:</strong> Withdraw in Galle Fort area before the bus station.'},
-      {time:'11:00',icon:'🚌',type:'travel',name:'Bus to Tangalle',
-       desc:'1.5hr ride east along the south coast. Tangalle is far quieter than Mirissa — genuinely local.',
-       tip:'<strong>Note:</strong> This and the Tangalle to Matara leg are the only two buses in the whole trip. Both short.'},
-      {time:'13:00',icon:'🏨',type:'travel',name:'Check in Tangalle',
-       desc:'Beautiful, uncrowded beach. October is shoulder season.',
-       tip:'<strong>Tip:</strong> Ask hotel which beach section is safest for swimming.'},
-      {time:'14:00',icon:'🏖️',type:'beach',name:'Tangalle Beach',
-       desc:'Long quiet golden beach. Swim, read, decompress.',
-       tip:'<strong>Free.</strong>'},
-      {time:'20:00',icon:'🐢',type:'nature',name:'Rekawa Turtle Beach',
-       desc:'Tuk-tuk from Tangalle ~20 mins. Sea turtles nest at night — October is peak season.',
-       tip:'<strong>Just show up ~20:00.</strong> Conservation fee ~$5. Local team guides you quietly. No flash photography.',cost:'~$5-8'},
-    ]},
-
-  { id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
-    title:'Tangalle', location:'Tangalle', mapStop:'tangalle',
-    activities:[
-      {time:'All day',icon:'🏖️',type:'beach',name:'Beach day',
-       desc:'Swim, read, do absolutely nothing. One of the quietest beaches on the south coast.',
-       tip:'<strong>Tip:</strong> Walk east toward Rekawa for a more secluded stretch.'},
-      {time:'20:00',icon:'🐢',type:'nature',name:'Rekawa Turtle Beach optional second visit',
-       desc:'Different species nest on different nights — worth a second visit.',
-       tip:'<strong>Optional.</strong> Same drill — tuk-tuk, ~20:00, conservation fee.'},
-    ]},
-
-  { id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
-    title:'Tangalle to Matara to Colombo', location:'Colombo', mapStop:'colombo',
-    badge:'Travel day', badgeType:'transit', nights:1,
-    transport:'Bus Tangalle to Matara (~45 mins), then coastal train Matara to Colombo Fort (~2.5 hrs). Sit on the LEFT side heading north.',
-    activities:[
-      {time:'08:30',icon:'🚌',type:'travel',name:'Bus Tangalle to Matara',
-       desc:'Short 45-min bus to Matara — the eastern end of the coastal railway.',
-       tip:'<strong>Tip:</strong> Buses to Matara run regularly from Tangalle bus station.'},
-      {time:'09:19',icon:'🚆',type:'travel',name:'Coastal train Matara to Colombo',
-       desc:'The return coastal journey — same stunning scenery in reverse. Ocean on your LEFT heading north. ~2.5 hours.',
-       tip:'<strong>Sit on the LEFT side</strong> heading north. No reservation needed — buy unreserved at Matara station. Arrives Colombo ~12:00.'},
-      {time:'12:30',icon:'🏨',type:'travel',name:'Check in Colombo Fort',
-       desc:'Back in Colombo for your final two nights.',
-       tip:'<strong>Tip:</strong> You have the whole afternoon free.'},
-      {time:'14:00',icon:'🏰',type:'culture',name:'Fort District Architecture',
-       desc:'Walk the colonial Fort area — Cargills building, Dutch Hospital, old lighthouse.',
-       tip:'<strong>Free.</strong> Rohan\'s Bookstore (Liberty Plaza) and Sarath Books nearby for a last browse.'},
-      {time:'16:30',icon:'🏛️',type:'culture',name:'Pettah Bazaar',
-       desc:'The old bazaar district — chaotic and fascinating.',
-       tip:'<strong>Free.</strong>'},
-    ]},
-
-  { id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
-    title:'Colombo Sightseeing', location:'Colombo', mapStop:'colombo',
-    activities:[
-      {time:'09:00',icon:'🛕',type:'temple',name:'Gangaramaya Temple',
-       desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia. ~2 hours.',
-       tip:'<strong>Entry:</strong> ~$3. Opens 6am. Cover shoulders and knees.',cost:'~$3'},
-      {time:'11:30',icon:'🏛️',type:'museum',name:'National Museum of Colombo',
-       desc:'3,000 years of Sri Lankan history across 15 rooms. Allow 2 hours.',
-       tip:'<strong>Closed Tuesdays.</strong> Oct 1 is a Wednesday — fine. Entry ~$5.',cost:'~$5'},
-      {time:'14:00',icon:'🏛️',type:'culture',name:'Pettah Bazaar',
-       desc:'If you have energy for more — the old bazaar is endlessly interesting.',
-       tip:'<strong>Free.</strong>'},
-      {time:'17:00',icon:'🌊',type:'nature',name:'Galle Face Green',
-       desc:'The wide oceanfront promenade south of the Fort. Local families, kite flying, street food. Beautiful at sunset.',
-       tip:'<strong>Free.</strong> A very local Colombo experience. Sunset ~18:00.'},
-    ]},
-
-  { id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
-    title:'Fly Home', location:'Colombo', mapStop:'colombo',
-    badge:'Departure', badgeType:'transit',
-    activities:[
-      {time:'Morning',icon:'🌅',type:'nature',name:'Free morning',
-       desc:'Slow breakfast, last walk along Galle Face Green or the Fort area.',
-       tip:'<strong>Tip:</strong> Check out but ask hotel to store luggage until you leave for the airport.'},
-      {time:'17:00',icon:'🚖',type:'travel',name:'Taxi to Airport',
-       desc:'Colombo Fort to BIA airport is ~45 mins.',
-       tip:'<strong>Leave by 17:00</strong> for a 20:20 flight. Use PickMe or ask hotel to book. ~$10-15.'},
-      {time:'18:00',icon:'✈️',type:'travel',name:'Arrive at Airport',
-       desc:'Be at Bandaranaike International Airport by 18:00 for your 20:20 departure.',
-       tip:'<strong>Flight departs 20:20.</strong> Check-in closes ~2 hours before.'},
-    ]},
-];
-
-// ── CHECKLIST ─────────────────────────────────────────────
-const STORAGE_KEY = 'sl_checks_v3';
-function loadChecks()  { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; } catch(e) { return {}; } }
-function saveChecks(o) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(o)); } catch(e) {} }
-
-function toggleCheck(el) {
-  el.classList.toggle('done');
-  const c = loadChecks(); c[el.dataset.id] = el.classList.contains('done');
-  saveChecks(c); updateProgress();
-}
-function updateProgress() {
-  const groups = {
-    asap:  ['eta','trains','hotels','bank'],
-    weeks: ['gp','insurance','pickme','booking-acc'],
-    days:  ['print-eta','print-hotels','print-trains','cash','maps','save-guide'],
-    pack:  ['p-adapter','p-deet','p-sun','p-temple','p-rain','p-bag','p-water','p-bank'],
-  };
-  Object.entries(groups).forEach(([g,ids]) => {
-    const done = ids.filter(id => document.querySelector(`[data-id="${id}"]`)?.classList.contains('done')).length;
-    const el = document.getElementById('prog-'+g);
-    if (el) el.textContent = done===ids.length ? '✓ All done' : `${done}/${ids.length}`;
-  });
-}
-function resetAll() {
-  if (!confirm('Reset all checklist items?')) return;
-  document.querySelectorAll('.check-item').forEach(el => el.classList.remove('done'));
-  saveChecks({}); updateProgress();
-}
-function initChecks() {
-  const c = loadChecks();
-  Object.entries(c).forEach(([id,done]) => { if (done) { const el = document.querySelector(`[data-id="${id}"]`); if (el) el.classList.add('done'); } });
-  updateProgress();
-}
-
-// ── MENU ──────────────────────────────────────────────────
-let currentSection = 'itinerary';
-
-function toggleMenu() {
-  const dropdown = document.getElementById('menuDropdown');
-  const hero = document.getElementById('heroEl');
-  const isOpen = dropdown.classList.toggle('open');
-  hero.classList.toggle('menu-open', isOpen);
-  if (isOpen) {
-    setTimeout(() => document.addEventListener('click', closeMenuOutside, {once:true, capture:true}), 10);
-  }
-}
-
-function closeMenuOutside(e) {
-  if (!e.target.closest('#menuDropdown') && !e.target.closest('#menuBtn')) {
-    document.getElementById('menuDropdown').classList.remove('open');
-    document.getElementById('heroEl').classList.remove('menu-open');
-  }
-}
-
-function selectSection(name) {
-  currentSection = name;
-  document.getElementById('menuDropdown').classList.remove('open');
-  document.getElementById('heroEl').classList.remove('menu-open');
-
-  // Update menu item states
-  ['itinerary','map','prep'].forEach(n => {
-    const mi = document.getElementById('mi-'+n);
-    const mc = document.getElementById('mc-'+n);
-    if (mi) mi.classList.toggle('active', n===name);
-    if (mc) mc.textContent = n===name ? '✓' : '';
-  });
-
-  // Update nav label
-  const labels = {itinerary:'Itinerary', map:'Map', prep:'Prep'};
-  const navLabel = document.getElementById('navLabel');
-  if (navLabel) navLabel.textContent = labels[name] || '';
-
-  // Day nav visible for itinerary and map
-  const dayNav = document.getElementById('dayNavWrapper');
-  if (dayNav) dayNav.style.display = (name==='itinerary' || name==='map') ? 'block' : 'none';
-
-  if (name === 'prep') {
-    document.getElementById('main-trip').classList.remove('active');
-    document.getElementById('main-prep').classList.add('active');
-  } else {
-    document.getElementById('main-prep').classList.remove('active');
-    document.getElementById('main-trip').classList.add('active');
-    const itinerary = document.getElementById('trip-itinerary');
-    const mapPanel  = document.getElementById('trip-map');
-    if (name === 'itinerary') {
-      itinerary.style.display = 'block';
-      mapPanel.style.display  = 'none';
-      updateActivePip();
-    } else {
-      itinerary.style.display = 'none';
-      mapPanel.style.display  = 'block';
-      initMapIfNeeded();
-      setTimeout(() => { if (map) google.maps.event.trigger(map, 'resize'); }, 100);
-    }
-  }
-}
-
-function switchPrep(name, btn) {
-  document.querySelectorAll('.prep-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.prep-tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('prep-'+name).classList.add('active'); btn.classList.add('active');
-}
-
-// Legacy aliases kept for showStopOnMap compatibility
-function switchTrip(name, btn) { selectSection(name); }
-
-// ── DAY NAV ───────────────────────────────────────────────
-const nav = document.getElementById('dayNav');
-days.forEach((day, i) => {
-  const pip = document.createElement('button');
-  pip.className = 'day-pip' + (i===0 ? ' active' : '');
-  pip.innerHTML = `<span class="day-pip-num">${day.shortDate}</span><span class="day-pip-lbl">${day.month}</span>`;
-  pip.onclick = () => {
-    document.querySelectorAll('.day-pip').forEach(p => p.classList.remove('active'));
-    pip.classList.add('active');
-    const card = document.getElementById(day.id);
-    if (card) { card.scrollIntoView({behavior:'smooth',block:'start'}); card.classList.add('open'); }
-    pip.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-  };
-  nav.appendChild(pip);
-});
-
-// ── BUILD DAY CARDS ───────────────────────────────────────
-const container = document.getElementById('dayCards');
-days.forEach(day => {
-  const card = document.createElement('div');
-  card.className = 'day-card'; card.id = day.id;
-  const badgeHTML = day.badge ? `<span class="day-badge ${day.badgeType||''}">${day.badge}</span>` : '';
-  const transportHTML = day.transport ? `<div class="transport-note"><span class="t-icon">🗺️</span><span>${day.transport}</span></div>` : '';
-  const actHTML = day.activities.map(a => `
-    <div class="activity">
-      <div class="act-left"><div class="act-icon ${a.type}">${a.icon}</div></div>
-      <div class="act-right">
-        ${a.time ? `<div class="act-time">${a.time}</div>` : ''}
-        <div class="act-name">${a.name}</div>
-        <div class="act-desc">${a.desc}</div>
-        ${a.tip  ? `<div class="act-tip">${a.tip}</div>` : ''}
-        ${a.cost ? `<span class="act-cost">${a.cost}</span>` : ''}
-      </div>
-    </div>`).join('');
-
-  const hotelData = loadHotel(day.id);
-  const hotelName = hotelData || '';
-  const hotelDisplay = hotelName
-    ? `<span class="hotel-name">${hotelName}</span>`
-    : `<span class="hotel-name empty">Tap to add hotel</span>`;
-  const hotelRowHTML = day.nights ? `
-    <div class="hotel-row" id="hotelRow-${day.id}">
-      <span class="hotel-icon">🏨</span>
-      ${hotelDisplay}
-      <div class="hotel-actions">
-        <button class="hotel-btn hotel-btn-edit" onclick="toggleHotelEdit('${day.id}',event)">✏️</button>
-        <button class="hotel-btn hotel-btn-dir" ${hotelName?'':'disabled'}
-          onclick="openDirections('${day.id}','${day.location}',event)"
-          id="dirBtn-${day.id}">Directions</button>
-      </div>
-    </div>
-    <div class="hotel-edit-form" id="hotelForm-${day.id}">
-      <input class="hotel-input" id="hotelInput-${day.id}" type="text"
-        placeholder="Hotel name (e.g. Grand Oriental Hotel, Colombo)"
-        value="${hotelName}">
-      <div class="hotel-save-row">
-        <button class="hotel-save-btn cancel" onclick="cancelHotelEdit('${day.id}',event)">Cancel</button>
-        <button class="hotel-save-btn save" onclick="saveHotel('${day.id}',event)">Save</button>
-      </div>
-    </div>` : '';
-
-  card.innerHTML = `
-    <div class="day-header">
-      <div class="day-accent"></div>
-      <div class="day-header-inner">
-        <div class="day-header-left">
-          <div class="day-date-row"><span class="day-date">${day.date}</span>${badgeHTML}</div>
-          <div class="day-title">${day.title}</div>
-          <div class="day-meta">📍 ${day.location}${day.nights ? ` · ${day.nights} night${day.nights>1?'s':''}` : ''}</div>
-        </div>
-        <div class="day-actions">
-          <button class="map-btn" title="Show on map" onclick="showStopOnMap('${day.mapStop}',event)">🗺️</button>
-          <span class="day-chevron">⌄</span>
-        </div>
-      </div>
-    </div>
-    <div class="day-body">${hotelRowHTML}${transportHTML}${actHTML}</div>`;
-
-  card.querySelector('.day-header').addEventListener('click', e => {
-    if (e.target.closest('.map-btn')) return;
-    card.classList.toggle('open');
-  });
-  container.appendChild(card);
-});
-
-document.querySelector('.day-card').classList.add('open');
-
-// ── SCROLL SPY ────────────────────────────────────────────
-function updateActivePip() {
-  const pips  = document.querySelectorAll('.day-pip');
-  const cards = document.querySelectorAll('.day-card');
-  let idx = 0;
-  cards.forEach((c,i) => { if (c.getBoundingClientRect().top <= 140) idx = i; });
-  pips.forEach((p,i) => p.classList.toggle('active', i===idx));
-  pips[idx]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
-}
-window.addEventListener('scroll', updateActivePip, {passive:true});
-document.getElementById('trip-itinerary').addEventListener('scroll', updateActivePip, {passive:true});
-
-// ── GOOGLE MAPS ───────────────────────────────────────────
-let map, markers = {}, infoWindow, mapInited = false;
-
-function initMapIfNeeded() {
-  window._mapTabOpen = true;
-  if (mapInited) return;
-  if (window._mapsApiReady) {
-    buildMap();
-  }
-  // else: window.initMap() will call buildMap() once the API finishes loading
-}
-
-function buildMap() {
-  if (mapInited) return;
-  mapInited = true;
-
-  map = new google.maps.Map(document.getElementById('map'), {
-    center: {lat:7.5, lng:80.7},
-    zoom: 7,
-    mapTypeId: 'roadmap',
-    styles: [
-      {featureType:'water',elementType:'geometry',stylers:[{color:'#b8d9f0'}]},
-      {featureType:'landscape',elementType:'geometry',stylers:[{color:'#f5f0e8'}]},
-      {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'},{weight:0.5}]},
-      {featureType:'poi',stylers:[{visibility:'off'}]},
-      {featureType:'transit',stylers:[{visibility:'off'}]},
-      {featureType:'administrative',elementType:'labels.text.fill',stylers:[{color:'#555555'}]},
-    ],
-    disableDefaultUI: false,
-    zoomControl: true,
-    mapTypeControl: false,
-    streetViewControl: false,
-    fullscreenControl: true,
-  });
-
-  infoWindow = new google.maps.InfoWindow();
-
-  // Draw real routes using Directions API
-  // Legs: type 'TRAIN' or 'DRIVING'
-  const routeLegs = [
-    { from:{lat:6.9271,lng:79.8612}, to:{lat:8.3114,lng:80.4037}, mode:'DRIVING', type:'train' },   // Colombo→Anuradhapura (train)
-    { from:{lat:8.3114,lng:80.4037}, to:{lat:7.2906,lng:80.6337}, mode:'DRIVING', type:'train' },   // Anuradhapura→Kandy
-    { from:{lat:7.2906,lng:80.6337}, to:{lat:6.9271,lng:79.8612}, mode:'DRIVING', type:'train' },   // Kandy→Colombo
-    { from:{lat:6.9271,lng:79.8612}, to:{lat:6.0535,lng:80.2210}, mode:'DRIVING', type:'train' },   // Colombo→Galle (coastal)
-    { from:{lat:6.0535,lng:80.2210}, to:{lat:6.0227,lng:80.8008}, mode:'DRIVING', type:'pickme' },  // Galle→Tangalle (PickMe/bus)
-    { from:{lat:6.0227,lng:80.8008}, to:{lat:5.9549,lng:80.5550}, mode:'DRIVING', type:'pickme' },  // Tangalle→Matara (PickMe/bus)
-    { from:{lat:5.9549,lng:80.5550}, to:{lat:6.9271,lng:79.8612}, mode:'DRIVING', type:'train' },   // Matara→Colombo (coastal train)
-  ];
-
-  const dirService = new google.maps.DirectionsService();
-  const trainStyle   = { strokeColor:'#E8A030', strokeOpacity:0.85, strokeWeight:4 };
-  const pickmeStyle  = { strokeColor:'#5B3A8A', strokeOpacity:0.8,  strokeWeight:3, strokeDashArray:'8 5' };
-
-  routeLegs.forEach(leg => {
-    dirService.route({
-      origin: leg.from,
-      destination: leg.to,
-      travelMode: google.maps.TravelMode[leg.mode],
-    }, (result, status) => {
-      if (status === 'OK') {
-        const style = leg.type === 'train' ? trainStyle : pickmeStyle;
-        const renderer = new google.maps.DirectionsRenderer({
-          map: map,
-          directions: result,
-          suppressMarkers: true,
-          polylineOptions: {
-            strokeColor:   style.strokeColor,
-            strokeOpacity: style.strokeOpacity,
-            strokeWeight:  style.strokeWeight,
-          },
-        });
-        // Dashed line for pickme/bus legs using icons
-        if (leg.type === 'pickme') {
-          const path = result.routes[0].overview_path;
-          new google.maps.Polyline({
-            path: path,
-            strokeColor: style.strokeColor,
-            strokeOpacity: 0,
-            strokeWeight: 3,
-            icons: [{
-              icon: { path:'M 0,-1 0,1', strokeOpacity:0.8, scale:3, strokeColor:style.strokeColor },
-              offset:'0', repeat:'12px'
-            }],
-            map: map,
-          });
-        }
-      } else {
-        // Fallback to straight line if directions fail
-        const style = leg.type === 'train' ? trainStyle : pickmeStyle;
-        new google.maps.Polyline({
-          path: [leg.from, leg.to],
-          strokeColor: style.strokeColor,
-          strokeOpacity: style.strokeOpacity * 0.6,
-          strokeWeight: style.strokeWeight,
-          map: map,
-        });
-      }
-    });
-  });
-
-  // Legend for route types
-  const legendEl = document.getElementById('mapLegend');
-  const routeLegend = document.createElement('div');
-  routeLegend.style.cssText = 'display:flex;gap:14px;padding:8px 0 4px;width:100%;';
-  routeLegend.innerHTML = `
-    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#6B6B62;font-weight:600;">
-      <div style="width:20px;height:3px;background:#E8A030;border-radius:2px;"></div> Train
-    </div>
-    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#6B6B62;font-weight:600;">
-      <div style="width:20px;height:3px;background:#5B3A8A;border-radius:2px;border:none;
-        background-image:repeating-linear-gradient(90deg,#5B3A8A 0,#5B3A8A 6px,transparent 6px,transparent 10px);
-        background-color:transparent;"></div> PickMe/Bus
-    </div>`;
-
-  // Markers
-  stops.forEach(stop => {
-    const isBase = ['colombo','anuradhapura','kandy','galle','tangalle'].includes(stop.id);
-    const marker = new google.maps.Marker({
-      position: {lat: stop.lat, lng: stop.lng},
-      map: map,
-      title: stop.label,
-      icon: {
-        path: google.maps.SymbolPath.CIRCLE,
-        scale: isBase ? 10 : 7,
-        fillColor: stop.color,
-        fillOpacity: 1,
-        strokeColor: '#ffffff',
-        strokeWeight: isBase ? 2.5 : 1.5,
-      },
-      label: isBase ? {
-        text: stop.label.substring(0,3).toUpperCase(),
-        color: '#ffffff',
-        fontSize: '8px',
-        fontWeight: '700',
-      } : null,
-      zIndex: isBase ? 10 : 5,
-    });
-
-    marker.addListener('click', () => {
-      infoWindow.setContent(`
-        <div style="font-family:sans-serif; max-width:200px; padding:4px;">
-          <div style="font-size:13px; font-weight:700; color:#1B4D4A; margin-bottom:4px;">${stop.label}</div>
-          <div style="font-size:11px; color:#E8A030; font-weight:600; margin-bottom:6px;">${stop.dates}</div>
-          <div style="font-size:12px; color:#444; line-height:1.45;">${stop.desc}</div>
-        </div>`);
-      infoWindow.open(map, marker);
-      updateLegendActive(stop.id);
-    });
-
-    markers[stop.id] = marker;
-  });
-
-  // Legend buttons
-  const legend = document.getElementById('mapLegend');
-  stops.filter(s => ['colombo','anuradhapura','kandy','galle','tangalle'].includes(s.id))
-    .forEach(stop => {
-      const btn = document.createElement('button');
-      btn.className = 'legend-stop';
-      btn.id = 'leg-' + stop.id;
-      btn.textContent = stop.label;
-      btn.onclick = () => flyToStop(stop.id);
-      legend.appendChild(btn);
-    });
-  // Insert route type legend before stop buttons
-  if (legendEl) legendEl.parentNode.insertBefore(routeLegend, legendEl);
-}
-
-function updateLegendActive(stopId) {
-  document.querySelectorAll('.legend-stop').forEach(b => b.classList.remove('active'));
-  if (stopId) { const el = document.getElementById('leg-'+stopId); if (el) el.classList.add('active'); }
-}
-
-function flyToStop(stopId) {
-  const stop = stops.find(s => s.id === stopId);
-  if (!stop || !map) return;
-  map.panTo({lat: stop.lat, lng: stop.lng});
-  map.setZoom(12);
-  setTimeout(() => {
-    if (markers[stopId]) google.maps.event.trigger(markers[stopId], 'click');
-  }, 300);
-  updateLegendActive(stopId);
-}
-
-function showStopOnMap(stopId, e) {
-  e.stopPropagation();
-  selectSection('map');
-  // Store the stop to fly to once map is ready
-  window._mapPendingStop = stopId;
-  const tryFly = setInterval(() => {
-    if (map) {
-      clearInterval(tryFly);
-      if (window._mapPendingStop) {
-        const s = window._mapPendingStop;
-        window._mapPendingStop = null;
-        flyToStop(s);
-      }
-    }
-  }, 150);
-}
-
-// ── HOTEL STORAGE ─────────────────────────────────────────
-const HOTEL_KEY = 'sl_hotels_v1';
-function loadHotels()  { try { return JSON.parse(localStorage.getItem(HOTEL_KEY)) || {}; } catch(e) { return {}; } }
-function saveHotels(o) { try { localStorage.setItem(HOTEL_KEY, JSON.stringify(o)); } catch(e) {} }
-function loadHotel(dayId) { return loadHotels()[dayId] || ''; }
-
-function toggleHotelEdit(dayId, e) {
-  e.stopPropagation();
-  const form = document.getElementById('hotelForm-' + dayId);
-  if (form) form.classList.toggle('open');
-}
-function cancelHotelEdit(dayId, e) {
-  e.stopPropagation();
-  const form = document.getElementById('hotelForm-' + dayId);
-  if (form) form.classList.remove('open');
-}
-function saveHotel(dayId, e) {
-  e.stopPropagation();
-  const input = document.getElementById('hotelInput-' + dayId);
-  const val = input ? input.value.trim() : '';
-  const hotels = loadHotels();
-  if (val) hotels[dayId] = val; else delete hotels[dayId];
-  saveHotels(hotels);
-  // Update display
-  const row = document.getElementById('hotelRow-' + dayId);
-  if (row) {
-    const nameEl = row.querySelector('.hotel-name');
-    const dirBtn = document.getElementById('dirBtn-' + dayId);
-    if (nameEl) {
-      nameEl.textContent = val || 'Tap to add hotel';
-      nameEl.classList.toggle('empty', !val);
-    }
-    if (dirBtn) dirBtn.disabled = !val;
-  }
-  const form = document.getElementById('hotelForm-' + dayId);
-  if (form) form.classList.remove('open');
-}
-function openDirections(dayId, location, e) {
-  e.stopPropagation();
-  const hotel = loadHotel(dayId);
-  if (!hotel) return;
-  const query = encodeURIComponent(hotel + ' ' + location + ' Sri Lanka');
-  window.open('https://maps.google.com/?q=' + query, '_blank');
-}
-
-// ── DOCUMENTS STORAGE ─────────────────────────────────────
-const DOCS_KEY = 'sl_docs_v1';
-function loadDocs()  { try { return JSON.parse(localStorage.getItem(DOCS_KEY)) || []; } catch(e) { return []; } }
-function saveDocs(a) { try { localStorage.setItem(DOCS_KEY, JSON.stringify(a)); } catch(e) {} }
-
-let editingDocId = null;
-
-function renderDocs() {
-  const list = document.getElementById('docsList');
-  if (!list) return;
-  const docs = loadDocs();
-  if (docs.length === 0) {
-    list.innerHTML = '<div class="doc-empty">No bookings added yet.<br>Tap <strong>+ Add</strong> to save your hotel confirmations, train tickets, and other links.</div>';
-    return;
-  }
-  list.innerHTML = docs.map(doc => `
-    <div class="doc-card">
-      <div class="doc-card-header">
-        <div>
-          <div class="doc-name">${doc.name}</div>
-          ${doc.ref ? `<div class="doc-ref">Ref: ${doc.ref}</div>` : ''}
-        </div>
-        <div class="doc-actions">
-          ${doc.url ? `<button class="doc-btn doc-btn-open" onclick="openDoc('${doc.id}')">Open</button>` : ''}
-          <button class="doc-btn doc-btn-edit" onclick="openDocModal('${doc.id}')">Edit</button>
-          <button class="doc-btn doc-btn-delete" onclick="deleteDoc('${doc.id}')">✕</button>
-        </div>
-      </div>
-    </div>`).join('');
-}
-
-function openDoc(id) {
-  const doc = loadDocs().find(d => d.id === id);
-  if (doc && doc.url) window.open(doc.url, '_blank');
-}
-
-function deleteDoc(id) {
-  if (!confirm('Remove this booking?')) return;
-  saveDocs(loadDocs().filter(d => d.id !== id));
-  renderDocs();
-}
-
-function openDocModal(id) {
-  editingDocId = id || null;
-  const modal = document.getElementById('docModal');
-  const title = document.getElementById('docModalTitle');
-  if (id) {
-    const doc = loadDocs().find(d => d.id === id);
-    if (doc) {
-      document.getElementById('docModalName').value = doc.name || '';
-      document.getElementById('docModalRef').value  = doc.ref  || '';
-      document.getElementById('docModalUrl').value  = doc.url  || '';
-    }
-    title.textContent = 'Edit Booking';
-  } else {
-    document.getElementById('docModalName').value = '';
-    document.getElementById('docModalRef').value  = '';
-    document.getElementById('docModalUrl').value  = '';
-    title.textContent = 'Add Booking';
-  }
-  modal.classList.add('open');
-}
-
-function closeDocModal() {
-  document.getElementById('docModal').classList.remove('open');
-  editingDocId = null;
-}
-
-function closeDocModalOutside(e) {
-  if (e.target === document.getElementById('docModal')) closeDocModal();
-}
-
-function saveDoc() {
-  const name = document.getElementById('docModalName').value.trim();
-  const ref  = document.getElementById('docModalRef').value.trim();
-  const url  = document.getElementById('docModalUrl').value.trim();
-  if (!name) { document.getElementById('docModalName').focus(); return; }
-  const docs = loadDocs();
-  if (editingDocId) {
-    const idx = docs.findIndex(d => d.id === editingDocId);
-    if (idx >= 0) docs[idx] = { ...docs[idx], name, ref, url };
-  } else {
-    docs.push({ id: Date.now().toString(), name, ref, url });
-  }
-  saveDocs(docs);
-  renderDocs();
-  closeDocModal();
-}
-
-// ── OFFLINE INDICATOR ──────────────────────────────────────
-function showOfflinePill(isOnline) {
-  const pill = document.getElementById('offlinePill');
-  const text = document.getElementById('offlineText');
-  if (!pill || !text) return;
-  if (isOnline) {
-    pill.className = 'offline-pill online show';
-    text.textContent = 'Back online';
-    setTimeout(() => pill.classList.remove('show'), 2500);
-  } else {
-    pill.className = 'offline-pill offline show';
-    text.textContent = 'Offline — map unavailable';
-  }
-}
-window.addEventListener('online',  () => showOfflinePill(true));
-window.addEventListener('offline', () => showOfflinePill(false));
-// Show on load if already offline
-if (!navigator.onLine) showOfflinePill(false);
-
-// ── INIT ──────────────────────────────────────────────────
-initChecks();
-renderDocs();
-// Set initial menu state
-document.getElementById('mi-itinerary').classList.add('active');
-document.getElementById('mc-itinerary').textContent = '✓';
-
-// ── SERVICE WORKER ─────────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sri-lanka-trip/sw.js')
-      .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.log('SW failed:', err));
-  });
-}
-</script>
-<!-- OFFLINE INDICATOR -->
+<!-- OFFLINE PILL -->
 <div class="offline-pill" id="offlinePill">
   <span class="offline-dot"></span>
   <span id="offlineText">Offline — map unavailable</span>
@@ -1435,5 +461,1300 @@ if ('serviceWorker' in navigator) {
   </div>
 </div>
 
+<script>
+// ═══════════════════════════════════════════════════════════
+// KNOWN LOCATIONS (fixed waypoints)
+// ═══════════════════════════════════════════════════════════
+const KNOWN = {
+  airport:          { lat:7.1801, lng:79.8843, name:'Bandaranaike International Airport' },
+  colombo_fort_stn: { lat:6.9347, lng:79.8503, name:'Colombo Fort Railway Station' },
+  colombo_maradana: { lat:6.9293, lng:79.8553, name:'Colombo Maradana Station' },
+  anuradhapura_stn: { lat:8.3350, lng:80.4089, name:'Anuradhapura Railway Station' },
+  polgahawela_stn:  { lat:7.3307, lng:80.3310, name:'Polgahawela Junction Station' },
+  kandy_stn:        { lat:7.2953, lng:80.6361, name:'Kandy Railway Station' },
+  peradeniya_jn:    { lat:7.2688, lng:80.5973, name:'Peradeniya Junction Station' },
+  galle_stn:        { lat:6.0480, lng:80.2193, name:'Galle Railway Station' },
+  matara_stn:       { lat:5.9490, lng:80.5370, name:'Matara Railway Station' },
+  sigiriya:         { lat:7.9570, lng:80.7603, name:'Sigiriya Rock Fortress' },
+  dambulla:         { lat:7.8549, lng:80.6506, name:'Dambulla Cave Temple' },
+  peradeniya_gardens:{ lat:7.2682, lng:80.5966, name:'Royal Botanic Gardens, Peradeniya' },
+  temple_tooth:     { lat:7.2937, lng:80.6414, name:'Temple of the Tooth, Kandy' },
+  rekawa:           { lat:6.0256, lng:80.8372, name:'Rekawa Turtle Beach' },
+  gangaramaya:      { lat:6.9167, lng:79.8566, name:'Gangaramaya Temple, Colombo' },
+  national_museum:  { lat:6.9100, lng:79.8609, name:'National Museum of Colombo' },
+  maritime_museum:  { lat:6.0280, lng:80.2178, name:'Maritime Archaeology Museum, Galle' },
+  galle_face_green: { lat:6.9194, lng:79.8451, name:'Galle Face Green, Colombo' },
+};
+
+// ═══════════════════════════════════════════════════════════
+// DAY DATA
+// Each day has: id, date, title, location, mapStop, badge,
+//   nights (if overnight stay), hotelKey (localStorage key),
+//   legs (logistics chain), activities
+//
+// Leg types:
+//   'flight'  — fixed, no dynamic routing
+//   'train'   — fixed schedule, no dynamic routing
+//   'pickme'  — dynamic: origin → dest via Directions API
+//   'walk'    — dynamic: origin → dest
+//   'taxi'    — dynamic: origin → dest
+//   'static'  — text-only, no routing
+//
+// For dynamic legs, origin/dest can be:
+//   A KNOWN key string (e.g. 'airport')
+//   'hotel:dayId' — uses stored hotel Place for that day
+// ═══════════════════════════════════════════════════════════
+const days = [
+  {
+    id:'d1', date:'Sat 20 Sep', shortDate:'20', month:'Sep',
+    title:'Arrival · Colombo', location:'Colombo', mapStop:'colombo',
+    badge:'Arrival', badgeType:'transit', nights:1, hotelKey:'colombo',
+    legs:[
+      { type:'flight', icon:'✈️',
+        title:'Flight arrives at Bandaranaike Airport',
+        detail:'Land 16:20. Clear immigration — follow signs to Arrivals. Allow 45–60 mins for immigration and baggage.',
+        badge:'flight', time:'16:20' },
+      { type:'static', icon:'📱',
+        title:'Get a Dialog SIM card',
+        detail:'SIM stalls are in the Arrivals hall before you exit. Get a tourist SIM — ~$8 including data. Dialog has the best coverage island-wide.',
+        badge:null },
+      { type:'static', icon:'🏧',
+        title:'Withdraw rupees at airport ATM',
+        detail:'ATMs are in Arrivals. Withdraw ~15,000–20,000 LKR (~$50–65) to cover the first couple of days. More ATMs in Colombo Fort area.',
+        badge:null },
+      { type:'taxi', icon:'🚖',
+        title:'Taxi to hotel',
+        origin:'airport', dest:'hotel:colombo',
+        detail:'Use PickMe app for a metered fare. Agree price before getting in any non-metered taxi.',
+        badge:'taxi' },
+    ],
+    activities:[
+      {time:'19:30',icon:'🍛',type:'food',name:'First rice and curry',
+       desc:'Find a local place near the hotel. A plate piled with several curries costs $2–4.',
+       tip:'<strong>Note:</strong> Go easy on the chilli the first evening — let your stomach adjust.'},
+    ]
+  },
+
+  {
+    id:'d2', date:'Sun 21 Sep', shortDate:'21', month:'Sep',
+    title:'Colombo → Anuradhapura', location:'Anuradhapura', mapStop:'anuradhapura',
+    badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'anuradhapura',
+    legs:[
+      { type:'walk', icon:'🚶',
+        title:'Walk to Colombo Fort station',
+        origin:'hotel:colombo', dest:'colombo_fort_stn',
+        detail:'Head to Colombo Fort station for the afternoon train north.',
+        badge:'walk' },
+      { type:'train', icon:'🚆',
+        title:'Train: Colombo Fort → Anuradhapura',
+        detail:'Depart <strong>13:45</strong> · Arrive <strong>18:36</strong> · ~4 hours. Unreserved 2nd class — buy at <strong>Counter 1</strong> at Colombo Fort station on the day. ~$3.',
+        badge:'train', time:'13:45' },
+      { type:'taxi', icon:'🚖',
+        title:'PickMe to hotel',
+        origin:'anuradhapura_stn', dest:'hotel:anuradhapura',
+        detail:'PickMe or tuk-tuk from Anuradhapura station to your hotel.',
+        badge:'taxi' },
+    ],
+    activities:[
+      {time:'Morning',icon:'🚶',type:'culture',name:'Free morning in Colombo',
+       desc:'Slow breakfast, short walk around the Fort area or along Galle Face Green before the afternoon train.',
+       tip:'<strong>Tip:</strong> Check out and ask hotel to store main luggage — this is one of the Colombo stays so your bag can wait here.'},
+      {time:'18:36',icon:'🏨',type:'travel',name:'Arrive Anuradhapura · Check in',
+       desc:'Check in and get an early night — big day tomorrow.',
+       tip:'<strong>Tip:</strong> Ask hotel about bicycle rental and the first PickMe to Dambulla tomorrow morning.'},
+    ]
+  },
+
+  {
+    id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
+    title:'Sigiriya + Dambulla Day Trips', location:'Anuradhapura', mapStop:'sigiriya',
+    badge:'Day trips',
+    legs:[
+      { type:'taxi', icon:'🚖',
+        title:'PickMe to Dambulla Cave Temple',
+        origin:'hotel:anuradhapura', dest:'dambulla',
+        detail:'Book a PickMe intercity ride to Dambulla the night before. ~1 hour, ~$12–15.',
+        badge:'pickme' },
+      { type:'static', icon:'🕌',
+        title:'Dambulla Cave Temple',
+        detail:'Five caves of 2,000-year-old Buddhist frescoes. Allow 1.5–2 hours. Entry ~$15. Opens 7am.',
+        badge:null, time:'08:00' },
+      { type:'taxi', icon:'🚖',
+        title:'PickMe Dambulla → Sigiriya',
+        origin:'dambulla', dest:'sigiriya',
+        detail:'~30 mins east of Dambulla. ~$5.',
+        badge:'pickme' },
+      { type:'static', icon:'🪨',
+        title:'Sigiriya Rock Fortress',
+        detail:'5th-century palace atop a 200m granite rock. Climb ~45 mins up. Entry $30. Go early for cooler temperatures.',
+        badge:null, time:'11:00' },
+      { type:'taxi', icon:'🚖',
+        title:'PickMe back to hotel',
+        origin:'sigiriya', dest:'hotel:anuradhapura',
+        detail:'Return PickMe to Anuradhapura. Stop for a late lunch on the way.',
+        badge:'pickme' },
+    ],
+    activities:[
+      {time:'15:00',icon:'🚲',type:'culture',name:'Sacred City by Bicycle',
+       desc:'Hire a bicycle (~$3–5) and explore the ancient sacred city at your own pace. Jetavanaramaya, Abhayagiri, moonstone carvings.',
+       tip:'<strong>Entry:</strong> ~$25 day pass covers all sites. Very peaceful in the late afternoon.',cost:'~$25'},
+    ]
+  },
+
+  {
+    id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
+    title:'Anuradhapura → Kandy', location:'Kandy', mapStop:'kandy',
+    badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'kandy',
+    legs:[
+      { type:'walk', icon:'🚶',
+        title:'Walk or PickMe to Anuradhapura station',
+        origin:'hotel:anuradhapura', dest:'anuradhapura_stn',
+        detail:'Head to Anuradhapura station for the 09:15 train.',
+        badge:'walk', time:'09:00' },
+      { type:'train', icon:'🚆',
+        title:'Train: Anuradhapura → Polgahawela Junction',
+        detail:'Depart <strong>09:15</strong> · Arrive Polgahawela <strong>11:48</strong> · 2h 33min · 4 stops. Buy unreserved ticket at Anuradhapura station.',
+        badge:'train', time:'09:15' },
+      { type:'static', icon:'🔄',
+        title:'Transfer at Polgahawela Junction',
+        detail:'<strong>12 minute transfer</strong> — follow signs for Kandy / Badulla. Platform change. Train 1019 departs at 12:00.',
+        badge:null, time:'11:48' },
+      { type:'train', icon:'🚆',
+        title:'Train: Polgahawela → Kandy',
+        detail:'Train <strong>1019</strong> · Depart <strong>12:00</strong> · Arrive Kandy <strong>14:00</strong> · 2 hours · 10 stops. Through beautiful central hill country.',
+        badge:'train', time:'12:00' },
+      { type:'walk', icon:'🚶',
+        title:'Walk to hotel from Kandy station',
+        origin:'kandy_stn', dest:'hotel:kandy',
+        detail:'Kandy town centre is compact and walkable from the station.',
+        badge:'walk' },
+    ],
+    activities:[
+      {time:'14:30',icon:'🚶',type:'nature',name:'Kandy Lake Walk',
+       desc:'Walk around Kandy Lake to get your bearings before the evening ceremony.',
+       tip:'<strong>Free.</strong>'},
+      {time:'18:30',icon:'🛕',type:'temple',name:'Temple of the Tooth · Evening Pooja',
+       desc:'Drums, chanting, incense — one of Buddhism\'s most sacred sites. Simply stand and observe. ~45 minutes.',
+       tip:'<strong>Entry:</strong> ~$10. Cover shoulders and knees. Shoes off.',cost:'~$10'},
+    ]
+  },
+
+  {
+    id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
+    title:'Kandy', location:'Kandy', mapStop:'kandy',
+    legs:[
+      { type:'taxi', icon:'🚖',
+        title:'Tuk-tuk to Peradeniya Gardens',
+        origin:'hotel:kandy', dest:'peradeniya_gardens',
+        detail:'~20 mins from Kandy centre. ~$2–3 each way.',
+        badge:'taxi' },
+      { type:'taxi', icon:'🚖',
+        title:'Tuk-tuk back to Kandy',
+        origin:'peradeniya_gardens', dest:'hotel:kandy',
+        detail:'Return after the gardens.',
+        badge:'taxi' },
+    ],
+    activities:[
+      {time:'08:30',icon:'🌿',type:'nature',name:'Royal Botanic Gardens · Peradeniya',
+       desc:'147 acres — giant fruit bat colony, orchid house, royal palm avenue. Allow 3–4 hours.',
+       tip:'<strong>Entry:</strong> ~$15. Opens 7:30am. Go early.',cost:'~$15'},
+      {time:'13:00',icon:'🍛',type:'food',name:'Lunch in Kandy',
+       desc:'Local rice and curry near the lake.',
+       tip:'<strong>Try:</strong> Kottu roti — ~$2.'},
+      {time:'15:00',icon:'🏛️',type:'museum',name:'Kandy National Museum (optional)',
+       desc:'Kandyan-era royal artifacts. 45–60 mins.',
+       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
+      {time:'18:00',icon:'🌆',type:'culture',name:'Evening on the Lake',
+       desc:'Temple of the Tooth lit up from 18:30.',
+       tip:'<strong>Free.</strong>'},
+    ]
+  },
+
+  {
+    id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
+    title:'Kandy → Colombo', location:'Colombo', mapStop:'colombo',
+    badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'colombo',
+    legs:[
+      { type:'walk', icon:'🚶',
+        title:'Walk to Kandy station',
+        origin:'hotel:kandy', dest:'kandy_stn',
+        detail:'Head to Kandy station for the afternoon train back to Colombo.',
+        badge:'walk', time:'13:00' },
+      { type:'train', icon:'🚆',
+        title:'Train: Kandy → Colombo Fort',
+        detail:'Depart <strong>13:10</strong> · Arrive <strong>15:41</strong> · ~2.5 hours direct.',
+        badge:'train', time:'13:10' },
+      { type:'walk', icon:'🚶',
+        title:'Walk to Colombo hotel',
+        origin:'colombo_fort_stn', dest:'hotel:colombo',
+        detail:'Back to the same hotel as Day 1. Pick up your stored luggage.',
+        badge:'walk' },
+    ],
+    activities:[
+      {time:'Morning',icon:'🚶',type:'culture',name:'Slow morning in Kandy',
+       desc:'Walk the lake, have a good breakfast. Check out — your main luggage is in Colombo.',
+       tip:'<strong>Train departs 13:10.</strong>'},
+      {time:'16:00',icon:'🛕',type:'temple',name:'Gangaramaya Temple',
+       desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia.',
+       tip:'<strong>Entry:</strong> ~$3. Open until 10pm.',cost:'~$3'},
+      {time:'18:30',icon:'🏛️',type:'culture',name:'Pettah Bazaar evening wander',
+       desc:'The old bazaar district — each street specialises in something different.',
+       tip:'<strong>Free.</strong>'},
+    ]
+  },
+
+  {
+    id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
+    title:'Colombo → Coastal Train → Galle', location:'Galle', mapStop:'galle',
+    badge:'⭐ Highlight', nights:2, hotelKey:'galle',
+    legs:[
+      { type:'walk', icon:'🚶',
+        title:'Walk to Colombo Maradana station',
+        origin:'hotel:colombo', dest:'colombo_maradana',
+        detail:'Board at Maradana rather than Colombo Fort — you get a window seat before the train fills up.',
+        badge:'walk', time:'08:15' },
+      { type:'train', icon:'🚆',
+        title:'Coastal Train: Maradana → Galle',
+        detail:'Depart <strong>08:35</strong> · Arrive <strong>10:49</strong> · ~2 hours. <strong>Sit on the RIGHT side</strong> — ocean the whole way. Unreserved, buy at station. ~$1.70.',
+        badge:'train', time:'08:35' },
+      { type:'walk', icon:'🚶',
+        title:'Walk from Galle station to hotel',
+        origin:'galle_stn', dest:'hotel:galle',
+        detail:'Galle station is just outside the Fort walls.',
+        badge:'walk' },
+    ],
+    activities:[
+      {time:'07:30',icon:'🏛️',type:'museum',name:'National Museum of Colombo',
+       desc:'Opens 9am — visit before the train if time allows. 3,000 years of history across 15 rooms.',
+       tip:'<strong>Closed Tuesdays.</strong> Sep 26 is a Friday — you\'re fine. Entry ~$5. Leave for Maradana by 08:00.',cost:'~$5'},
+      {time:'11:00',icon:'🕌',type:'culture',name:'Dutch Reformed Church (1755)',
+       desc:'One of the oldest colonial buildings in Sri Lanka. Floor lined with Dutch tombstones.',
+       tip:'<strong>Free entry.</strong>'},
+      {time:'17:45',icon:'🌅',type:'nature',name:'Rampart Sunset',
+       desc:'Walk the fort ramparts at golden hour. Ocean on three sides.',
+       tip:'<strong>Free.</strong> Sunset ~18:00.'},
+    ]
+  },
+
+  {
+    id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
+    title:'Galle', location:'Galle', mapStop:'galle',
+    legs:[
+      { type:'walk', icon:'🚶',
+        title:'Everything within the Fort is walkable',
+        origin:'hotel:galle', dest:'maritime_museum',
+        detail:'The Fort is compact — all activities today are on foot.',
+        badge:'walk' },
+    ],
+    activities:[
+      {time:'09:30',icon:'🚢',type:'museum',name:'Maritime Archaeology Museum',
+       desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, trade route maps. ~1.5 hours.',
+       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
+      {time:'11:30',icon:'☕',type:'shop',name:'Book Studio · Coffee + Browse',
+       desc:'Bookshop-café inside the Fort. Cosy, calm, great coffee. Rated 5.0.',
+       tip:'<strong>Hours:</strong> Mon–Fri 06:30–20:00 · Sat–Sun 08:00–20:00'},
+      {time:'14:00',icon:'📗',type:'shop',name:'Samudra Book Shop',
+       desc:'10 min walk outside the Fort gate on Wakwella Rd. Rated 5.0.',
+       tip:'<strong>Hours:</strong> Mon–Sat 08:00–20:00 · Sun 08:00–17:00'},
+      {time:'17:45',icon:'🌅',type:'nature',name:'Rampart Sunset (lighthouse end)',
+       desc:'Different angle tonight — try the lighthouse end.',
+       tip:'<strong>Free.</strong>'},
+    ]
+  },
+
+  {
+    id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
+    title:'Galle → Tangalle', location:'Tangalle', mapStop:'tangalle',
+    badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'tangalle',
+    legs:[
+      { type:'pickme', icon:'🚖',
+        title:'PickMe: Galle → Tangalle',
+        origin:'hotel:galle', dest:'hotel:tangalle',
+        detail:'~1.5 hours east along the coast. Book a PickMe intercity ride.',
+        badge:'pickme' },
+    ],
+    activities:[
+      {time:'10:00',icon:'💳',type:'info',name:'Withdraw cash before leaving Galle',
+       desc:'Fewer ATMs in Tangalle. Withdraw enough for 2 nights.',
+       tip:'<strong>Tip:</strong> Withdraw in Galle Fort area before leaving.'},
+      {time:'13:00',icon:'🏖️',type:'beach',name:'Tangalle Beach',
+       desc:'Long quiet golden beach. October is shoulder season — very few tourists.',
+       tip:'<strong>Ask hotel</strong> which beach section is safest for swimming.'},
+      {time:'20:00',icon:'🐢',type:'nature',name:'Rekawa Turtle Beach',
+       desc:'Tuk-tuk ~20 mins. Sea turtles nest at night — October is peak season.',
+       tip:'<strong>Just show up ~20:00.</strong> Conservation fee ~$5. No flash photography.',cost:'~$5–8'},
+    ]
+  },
+
+  {
+    id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
+    title:'Tangalle', location:'Tangalle', mapStop:'tangalle',
+    legs:[
+      { type:'taxi', icon:'🚖',
+        title:'Tuk-tuk to Rekawa Turtle Beach (evening)',
+        origin:'hotel:tangalle', dest:'rekawa',
+        detail:'~20 mins east of Tangalle. Agree price before getting in — ~$3 each way.',
+        badge:'taxi' },
+    ],
+    activities:[
+      {time:'All day',icon:'🏖️',type:'beach',name:'Beach day',
+       desc:'Swim, read, decompress. One of the quietest beaches on the south coast.',
+       tip:'<strong>Tip:</strong> Walk east toward Rekawa for a more secluded stretch.'},
+      {time:'20:00',icon:'🐢',type:'nature',name:'Rekawa Turtle Beach (second visit)',
+       desc:'Different species nest on different nights.',
+       tip:'<strong>Optional.</strong> Same drill — tuk-tuk, ~20:00, conservation fee.'},
+    ]
+  },
+
+  {
+    id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
+    title:'Tangalle → Matara → Colombo', location:'Colombo', mapStop:'colombo',
+    badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'colombo',
+    legs:[
+      { type:'pickme', icon:'🚖',
+        title:'PickMe: Tangalle → Matara station',
+        origin:'hotel:tangalle', dest:'matara_stn',
+        detail:'~45 mins west to Matara — the eastern end of the coastal railway.',
+        badge:'pickme' },
+      { type:'train', icon:'🚆',
+        title:'Coastal Train: Matara → Colombo Fort',
+        detail:'Depart Matara ~<strong>09:19</strong> · Arrive Colombo ~<strong>12:00</strong> · ~2.5 hours. <strong>Sit on the LEFT side</strong> heading north — ocean the whole way. Unreserved, buy at Matara station.',
+        badge:'train', time:'09:19' },
+      { type:'walk', icon:'🚶',
+        title:'Walk to Colombo hotel',
+        origin:'colombo_fort_stn', dest:'hotel:colombo',
+        detail:'Back to your Colombo hotel. Pick up main luggage stored there.',
+        badge:'walk' },
+    ],
+    activities:[
+      {time:'13:00',icon:'🏰',type:'culture',name:'Fort District Architecture',
+       desc:'Walk the colonial Fort area — Cargills building, Dutch Hospital, old lighthouse.',
+       tip:'<strong>Free.</strong> Rohan\'s Bookstore (Liberty Plaza) nearby.'},
+      {time:'16:30',icon:'🏛️',type:'culture',name:'Pettah Bazaar',
+       desc:'The old bazaar district — chaotic and fascinating.',
+       tip:'<strong>Free.</strong>'},
+    ]
+  },
+
+  {
+    id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
+    title:'Colombo · Sightseeing', location:'Colombo', mapStop:'colombo',
+    legs:[
+      { type:'walk', icon:'🚶',
+        title:'Walk to Gangaramaya Temple',
+        origin:'hotel:colombo', dest:'gangaramaya',
+        detail:'Morning walk to the temple.',
+        badge:'walk', time:'09:00' },
+      { type:'walk', icon:'🚶',
+        title:'Walk to National Museum',
+        origin:'gangaramaya', dest:'national_museum',
+        detail:'Short walk between the two.',
+        badge:'walk', time:'11:30' },
+      { type:'walk', icon:'🚶',
+        title:'Evening walk to Galle Face Green',
+        origin:'hotel:colombo', dest:'galle_face_green',
+        detail:'10-minute walk from the Fort area hotels.',
+        badge:'walk', time:'17:00' },
+    ],
+    activities:[
+      {time:'09:00',icon:'🛕',type:'temple',name:'Gangaramaya Temple',
+       desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia. ~2 hours.',
+       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
+      {time:'11:30',icon:'🏛️',type:'museum',name:'National Museum of Colombo',
+       desc:'3,000 years of Sri Lankan history across 15 rooms. Allow 2 hours.',
+       tip:'<strong>Closed Tuesdays.</strong> Oct 1 is a Wednesday — fine. Entry ~$5.',cost:'~$5'},
+      {time:'17:00',icon:'🌊',type:'nature',name:'Galle Face Green',
+       desc:'Wide oceanfront promenade. Local families, kite flying, street food. Beautiful at sunset.',
+       tip:'<strong>Free.</strong> Sunset ~18:00.'},
+    ]
+  },
+
+  {
+    id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
+    title:'Fly Home', location:'Colombo', mapStop:'colombo',
+    badge:'Departure', badgeType:'transit',
+    legs:[
+      { type:'taxi', icon:'🚖',
+        title:'Taxi to Bandaranaike Airport',
+        origin:'hotel:colombo', dest:'airport',
+        detail:'Use PickMe or ask hotel to book. Allow plenty of time.',
+        badge:'taxi', time:'17:00' },
+      { type:'flight', icon:'✈️',
+        title:'Flight departs 20:20',
+        detail:'Be at the airport by <strong>18:00</strong>. Check-in closes ~2 hours before departure. Have your passport, ETA reference, and boarding pass ready.',
+        badge:'flight', time:'20:20' },
+    ],
+    activities:[
+      {time:'Morning',icon:'🌅',type:'nature',name:'Free morning',
+       desc:'Slow breakfast, last walk along Galle Face Green.',
+       tip:'<strong>Leave for airport by 17:00 at the latest.</strong>'},
+    ]
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+// MAP DATA
+// ═══════════════════════════════════════════════════════════
+const mapStops = [
+  { id:'colombo',      label:'Colombo',       lat:6.9271, lng:79.8612, dates:'Sep 20 + Sep 25–26 + Sep 30–Oct 2', desc:'Arrival, transit, and final sightseeing. National Museum, Gangaramaya, Pettah, Galle Face Green.', color:'#1B4D4A' },
+  { id:'anuradhapura', label:'Anuradhapura',  lat:8.3114, lng:80.4037, dates:'Sep 21–23', desc:'2 nights. Ancient sacred city — cycle the ruins. Day trips to Dambulla and Sigiriya.', color:'#C4613A' },
+  { id:'sigiriya',     label:'Sigiriya',      lat:7.9570, lng:80.7603, dates:'Sep 22 day trip', desc:'5th-century rock fortress atop a 200m granite rock. $30 entry.', color:'#8B4513' },
+  { id:'dambulla',     label:'Dambulla',      lat:7.8549, lng:80.6506, dates:'Sep 22 day trip', desc:'Cave temple with 2,000-year-old Buddhist frescoes. $15 entry.', color:'#8B4513' },
+  { id:'kandy',        label:'Kandy',         lat:7.2906, lng:80.6337, dates:'Sep 23–25', desc:'2 nights. Temple of the Tooth evening pooja (18:30), Royal Botanic Gardens.', color:'#2A6B67' },
+  { id:'galle',        label:'Galle',         lat:6.0535, lng:80.2210, dates:'Sep 26–28', desc:'2 nights. Arrive via the famous coastal train. Dutch Fort, Maritime Museum, bookshops.', color:'#E8A030' },
+  { id:'tangalle',     label:'Tangalle',      lat:6.0227, lng:80.8008, dates:'Sep 28–30', desc:'2 nights. Quiet beach. Rekawa turtle nesting at 20:00.', color:'#2D7A4F' },
+  { id:'matara',       label:'Matara',        lat:5.9549, lng:80.5550, dates:'Sep 30 transit', desc:'Eastern end of coastal railway. PickMe from Tangalle, then coastal train back north.', color:'#888888' },
+];
+const routeLegs = [
+  { from:{lat:6.9271,lng:79.8612}, to:{lat:8.3114,lng:80.4037}, type:'train'  },
+  { from:{lat:8.3114,lng:80.4037}, to:{lat:7.2906,lng:80.6337}, type:'train'  },
+  { from:{lat:7.2906,lng:80.6337}, to:{lat:6.9271,lng:79.8612}, type:'train'  },
+  { from:{lat:6.9271,lng:79.8612}, to:{lat:6.0535,lng:80.2210}, type:'train'  },
+  { from:{lat:6.0535,lng:80.2210}, to:{lat:6.0227,lng:80.8008}, type:'pickme' },
+  { from:{lat:6.0227,lng:80.8008}, to:{lat:5.9549,lng:80.5550}, type:'pickme' },
+  { from:{lat:5.9549,lng:80.5550}, to:{lat:6.9271,lng:79.8612}, type:'train'  },
+];
+
+// ═══════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════
+const HOTELS_KEY  = 'sl_hotels_v2';
+const DIRS_KEY    = 'sl_dirs_v2';
+const CHECKS_KEY  = 'sl_checks_v3';
+const DOCS_KEY    = 'sl_docs_v1';
+
+function loadHotels()   { try { return JSON.parse(localStorage.getItem(HOTELS_KEY)) || {}; } catch(e) { return {}; } }
+function saveHotels(o)  { try { localStorage.setItem(HOTELS_KEY, JSON.stringify(o)); } catch(e) {} }
+function loadDirs()     { try { return JSON.parse(localStorage.getItem(DIRS_KEY)) || {}; } catch(e) { return {}; } }
+function saveDirs(o)    { try { localStorage.setItem(DIRS_KEY, JSON.stringify(o)); } catch(e) {} }
+function loadChecks()   { try { return JSON.parse(localStorage.getItem(CHECKS_KEY)) || {}; } catch(e) { return {}; } }
+function saveChecks(o)  { try { localStorage.setItem(CHECKS_KEY, JSON.stringify(o)); } catch(e) {} }
+function loadDocs()     { try { return JSON.parse(localStorage.getItem(DOCS_KEY)) || []; } catch(e) { return []; } }
+function saveDocs(a)    { try { localStorage.setItem(DOCS_KEY, JSON.stringify(a)); } catch(e) {} }
+
+// Get stored hotel for a given hotelKey
+function getHotel(key) { return loadHotels()[key] || null; }
+
+// Resolve a leg endpoint to a LatLng-like object or null
+function resolveEndpoint(ref) {
+  if (!ref) return null;
+  if (typeof ref === 'object') return ref;
+  if (ref.startsWith('hotel:')) {
+    const h = getHotel(ref.slice(6));
+    return h ? { lat: h.lat, lng: h.lng, name: h.name } : null;
+  }
+  return KNOWN[ref] || null;
+}
+
+// ═══════════════════════════════════════════════════════════
+// DIRECTIONS CACHE + COMPUTE
+// ═══════════════════════════════════════════════════════════
+let _dirService = null;
+function getDirService() {
+  if (!_dirService && window.google && google.maps) _dirService = new google.maps.DirectionsService();
+  return _dirService;
+}
+
+function dirCacheKey(origin, dest) {
+  return `${origin.lat.toFixed(4)},${origin.lng.toFixed(4)}|${dest.lat.toFixed(4)},${dest.lng.toFixed(4)}`;
+}
+
+function getDirections(origin, dest, mode, callback) {
+  const key = `${mode}:${dirCacheKey(origin, dest)}`;
+  const cache = loadDirs();
+  if (cache[key]) { callback(null, cache[key]); return; }
+  const svc = getDirService();
+  if (!svc) { callback('Maps not ready', null); return; }
+  svc.route({
+    origin: new google.maps.LatLng(origin.lat, origin.lng),
+    destination: new google.maps.LatLng(dest.lat, dest.lng),
+    travelMode: google.maps.TravelMode[mode],
+  }, (result, status) => {
+    if (status === 'OK') {
+      const leg = result.routes[0].legs[0];
+      const data = {
+        distance: leg.distance.text,
+        duration: leg.duration.text,
+        steps: leg.steps.map(s => s.instructions.replace(/<[^>]+>/g,''))
+      };
+      cache[key] = data;
+      saveDirs(cache);
+      callback(null, data);
+    } else {
+      callback(status, null);
+    }
+  });
+}
+
+// Compute mode for a leg type
+function legMode(type) {
+  if (type === 'walk') return 'WALKING';
+  return 'DRIVING';
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER LEGS
+// ═══════════════════════════════════════════════════════════
+function modeIcon(type) {
+  return { walk:'🚶', taxi:'🚖', pickme:'🟣', train:'🚆', bus:'🚌', flight:'✈️', static:'ℹ️' }[type] || '📍';
+}
+function badgeLabel(type) {
+  return { walk:'Walk', taxi:'PickMe/Taxi', pickme:'PickMe', train:'Train', bus:'Bus', flight:'Flight' }[type] || '';
+}
+
+function renderLeg(leg, container) {
+  const el = document.createElement('div');
+  el.className = 'leg';
+
+  const iconEl = document.createElement('div');
+  iconEl.className = 'leg-icon';
+  iconEl.textContent = leg.icon || modeIcon(leg.type);
+  el.appendChild(iconEl);
+
+  const body = document.createElement('div');
+  body.className = 'leg-body';
+
+  const title = document.createElement('div');
+  title.className = 'leg-title';
+  title.textContent = leg.title;
+  body.appendChild(title);
+
+  const detail = document.createElement('div');
+  detail.className = 'leg-detail';
+  detail.innerHTML = leg.detail || '';
+  body.appendChild(detail);
+
+  const meta = document.createElement('div');
+  meta.className = 'leg-meta';
+
+  if (leg.time) {
+    const timeBadge = document.createElement('span');
+    timeBadge.className = 'leg-badge train';
+    timeBadge.textContent = leg.time;
+    meta.appendChild(timeBadge);
+  }
+  if (leg.badge) {
+    const badge = document.createElement('span');
+    badge.className = `leg-badge ${leg.badge}`;
+    badge.textContent = badgeLabel(leg.badge);
+    meta.appendChild(badge);
+  }
+
+  // Dynamic legs
+  if ((leg.type === 'walk' || leg.type === 'taxi' || leg.type === 'pickme') && leg.origin && leg.dest) {
+    const origin = resolveEndpoint(leg.origin);
+    const dest   = resolveEndpoint(leg.dest);
+
+    if (!origin || !dest) {
+      // Locked — needs hotel
+      const unlock = document.createElement('div');
+      unlock.className = 'leg-unlock';
+      const missing = [];
+      if (!origin && leg.origin && leg.origin.startsWith('hotel:')) missing.push('origin hotel');
+      if (!dest   && leg.dest   && leg.dest.startsWith('hotel:'))   missing.push('destination hotel');
+      unlock.textContent = `Add ${missing.join(' and ')} to see directions`;
+      body.appendChild(unlock);
+    } else {
+      // Show distance/duration (from cache or fetch)
+      const infoEl = document.createElement('div');
+      infoEl.className = 'leg-computing';
+      infoEl.textContent = 'Getting directions…';
+      meta.appendChild(infoEl);
+
+      const mapsBtn = document.createElement('button');
+      mapsBtn.className = 'leg-maps-btn';
+      mapsBtn.textContent = 'Open in Maps →';
+      mapsBtn.onclick = () => {
+        const url = `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}&travelmode=${leg.type==='walk'?'walking':'driving'}`;
+        window.open(url, '_blank');
+      };
+      meta.appendChild(mapsBtn);
+
+      const mode = legMode(leg.type);
+      getDirections(origin, dest, mode, (err, data) => {
+        if (data) {
+          infoEl.className = '';
+          infoEl.innerHTML = `<strong>${data.distance}</strong> · ~${data.duration}`;
+          // Add dist/duration badges
+          const distBadge = document.createElement('span');
+          distBadge.className = `leg-badge ${leg.type}`;
+          distBadge.textContent = `${data.distance} · ${data.duration}`;
+          meta.insertBefore(distBadge, infoEl);
+          meta.removeChild(infoEl);
+        } else {
+          infoEl.textContent = 'Tap Maps for directions';
+        }
+      });
+    }
+  }
+
+  body.appendChild(meta);
+  el.appendChild(body);
+  container.appendChild(el);
+}
+
+// ═══════════════════════════════════════════════════════════
+// BUILD DAY CARDS
+// ═══════════════════════════════════════════════════════════
+function buildDayCards() {
+  const container = document.getElementById('dayCards');
+  container.innerHTML = '';
+
+  days.forEach(day => {
+    const card = document.createElement('div');
+    card.className = 'day-card';
+    card.id = day.id;
+
+    // Header
+    const badgeHTML = day.badge ? `<span class="day-badge ${day.badgeType||''}">${day.badge}</span>` : '';
+    card.innerHTML = `
+      <div class="day-header">
+        <div class="day-accent"></div>
+        <div class="day-header-inner">
+          <div class="day-header-left">
+            <div class="day-date-row"><span class="day-date">${day.date}</span>${badgeHTML}</div>
+            <div class="day-title">${day.title}</div>
+            <div class="day-meta">📍 ${day.location}${day.nights?` · ${day.nights} night${day.nights>1?'s':''}`:''}${day.hotelKey?` · <span class="hotel-inline-name" id="hotelMeta-${day.id}"></span>`:''}</div>
+          </div>
+          <div class="day-actions">
+            <button class="map-btn" title="Show on map" onclick="showStopOnMap('${day.mapStop}',event)">🗺️</button>
+            <span class="day-chevron">⌄</span>
+          </div>
+        </div>
+      </div>
+      <div class="day-body"></div>`;
+
+    card.querySelector('.day-header').addEventListener('click', e => {
+      if (e.target.closest('.map-btn')) return;
+      const wasOpen = card.classList.contains('open');
+      card.classList.toggle('open');
+      if (!wasOpen) renderDayBody(card, day);
+    });
+
+    container.appendChild(card);
+    updateHotelMeta(day);
+  });
+
+  // Open first card
+  const first = document.querySelector('.day-card');
+  if (first) {
+    first.classList.add('open');
+    renderDayBody(first, days[0]);
+  }
+}
+
+function updateHotelMeta(day) {
+  const el = document.getElementById('hotelMeta-' + day.id);
+  if (!el) return;
+  if (day.hotelKey) {
+    const h = getHotel(day.hotelKey);
+    el.textContent = h ? h.name : 'No hotel set';
+    el.style.color = h ? 'var(--teal)' : 'var(--muted)';
+    el.style.fontStyle = h ? 'normal' : 'italic';
+  }
+}
+
+function renderDayBody(card, day) {
+  const body = card.querySelector('.day-body');
+  if (body.dataset.rendered) return;
+  body.dataset.rendered = '1';
+
+  // ── Hotel section ──
+  if (day.hotelKey) {
+    const hotelSec = document.createElement('div');
+    hotelSec.className = 'hotel-section';
+    hotelSec.id = 'hotelSec-' + day.id;
+    renderHotelSection(hotelSec, day);
+    body.appendChild(hotelSec);
+  }
+
+  // ── Logistics section ──
+  if (day.legs && day.legs.length) {
+    const logSec = document.createElement('div');
+    logSec.className = 'logistics-section';
+    logSec.id = 'logSec-' + day.id;
+    const lbl = document.createElement('div');
+    lbl.className = 'logistics-label';
+    lbl.textContent = 'Getting Around';
+    logSec.appendChild(lbl);
+    day.legs.forEach(leg => renderLeg(leg, logSec));
+    body.appendChild(logSec);
+  }
+
+  // ── Activities section ──
+  if (day.activities && day.activities.length) {
+    const actSec = document.createElement('div');
+    actSec.className = 'activities-section';
+    day.activities.forEach(a => {
+      const div = document.createElement('div');
+      div.className = 'activity';
+      div.innerHTML = `
+        <div class="act-left"><div class="act-icon ${a.type}">${a.icon}</div></div>
+        <div class="act-right">
+          ${a.time?`<div class="act-time">${a.time}</div>`:''}
+          <div class="act-name">${a.name}</div>
+          <div class="act-desc">${a.desc}</div>
+          ${a.tip?`<div class="act-tip">${a.tip}</div>`:''}
+          ${a.cost?`<span class="act-cost">${a.cost}</span>`:''}
+        </div>`;
+      actSec.appendChild(div);
+    });
+    body.appendChild(actSec);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// HOTEL SECTION WITH PLACES AUTOCOMPLETE
+// ═══════════════════════════════════════════════════════════
+let _autocompleteInstances = {};
+
+function renderHotelSection(container, day) {
+  const hotel = getHotel(day.hotelKey);
+  container.innerHTML = `
+    <div class="hotel-label">🏨 Staying at</div>
+    <div class="hotel-row">
+      <div class="hotel-name-display ${hotel?'':'empty'}" id="hotelDisplay-${day.id}">
+        ${hotel ? hotel.name : 'Tap ✏️ to add hotel'}
+      </div>
+      <button class="hotel-edit-btn" onclick="toggleHotelSearch('${day.id}','${day.hotelKey}',event)">✏️</button>
+      <button class="hotel-dir-btn" id="hotelDirBtn-${day.id}" ${hotel?'':'disabled'}
+        onclick="openHotelDirections('${day.hotelKey}',event)">Directions</button>
+    </div>
+    <div class="hotel-search-form" id="hotelForm-${day.id}">
+      <input class="hotel-search-input" id="hotelInput-${day.id}" type="text"
+        placeholder="Search for hotel name..."
+        value="${hotel ? hotel.name : ''}">
+      <div class="hotel-search-btns">
+        <button class="hotel-search-cancel" onclick="cancelHotelSearch('${day.id}',event)">Cancel</button>
+        <button class="hotel-search-save" onclick="saveHotelFromInput('${day.id}','${day.hotelKey}',event)">Save</button>
+      </div>
+      ${hotel?`<button class="hotel-clear-btn" onclick="clearHotel('${day.id}','${day.hotelKey}',event)">Clear hotel</button>`:''}
+    </div>`;
+
+  // Init Places Autocomplete once Maps is ready
+  initAutocompleteForDay(day.id, day.hotelKey);
+}
+
+function initAutocompleteForDay(dayId, hotelKey) {
+  if (_autocompleteInstances[dayId]) return;
+  if (!window.google || !google.maps || !google.maps.places) {
+    // Retry when Maps loads
+    setTimeout(() => initAutocompleteForDay(dayId, hotelKey), 500);
+    return;
+  }
+  const input = document.getElementById('hotelInput-' + dayId);
+  if (!input) return;
+
+  const ac = new google.maps.places.Autocomplete(input, {
+    types: ['lodging'],
+    componentRestrictions: { country: 'lk' },
+    fields: ['name', 'geometry', 'place_id', 'formatted_address'],
+  });
+  _autocompleteInstances[dayId] = ac;
+
+  ac.addListener('place_changed', () => {
+    const place = ac.getPlace();
+    if (!place.geometry) return;
+    const hotels = loadHotels();
+    hotels[hotelKey] = {
+      name: place.name,
+      address: place.formatted_address || '',
+      placeId: place.place_id,
+      lat: place.geometry.location.lat(),
+      lng: place.geometry.location.lng(),
+    };
+    saveHotels(hotels);
+    // Clear cached directions since hotel changed
+    clearDirCacheForHotel(hotelKey);
+    refreshHotelDisplay(dayId, hotelKey);
+    collapseHotelForm(dayId);
+  });
+}
+
+function toggleHotelSearch(dayId, hotelKey, e) {
+  e.stopPropagation();
+  const form = document.getElementById('hotelForm-' + dayId);
+  if (!form) return;
+  const isOpen = form.classList.toggle('open');
+  if (isOpen) {
+    setTimeout(() => {
+      const input = document.getElementById('hotelInput-' + dayId);
+      if (input) { input.focus(); input.select(); }
+      initAutocompleteForDay(dayId, hotelKey);
+    }, 50);
+  }
+}
+
+function cancelHotelSearch(dayId, e) {
+  e.stopPropagation();
+  collapseHotelForm(dayId);
+}
+
+function collapseHotelForm(dayId) {
+  const form = document.getElementById('hotelForm-' + dayId);
+  if (form) form.classList.remove('open');
+}
+
+function saveHotelFromInput(dayId, hotelKey, e) {
+  e.stopPropagation();
+  // If user typed manually (no Places selection), save as text-only
+  const input = document.getElementById('hotelInput-' + dayId);
+  if (!input || !input.value.trim()) return;
+  const hotels = loadHotels();
+  if (!hotels[hotelKey] || hotels[hotelKey].name !== input.value.trim()) {
+    hotels[hotelKey] = { name: input.value.trim(), address:'', placeId:null, lat:null, lng:null };
+    saveHotels(hotels);
+    clearDirCacheForHotel(hotelKey);
+    refreshHotelDisplay(dayId, hotelKey);
+  }
+  collapseHotelForm(dayId);
+}
+
+function clearHotel(dayId, hotelKey, e) {
+  e.stopPropagation();
+  if (!confirm('Remove hotel for this stay?')) return;
+  const hotels = loadHotels();
+  delete hotels[hotelKey];
+  saveHotels(hotels);
+  clearDirCacheForHotel(hotelKey);
+  refreshHotelDisplay(dayId, hotelKey);
+  collapseHotelForm(dayId);
+}
+
+function refreshHotelDisplay(dayId, hotelKey) {
+  const hotel = getHotel(hotelKey);
+  const display = document.getElementById('hotelDisplay-' + dayId);
+  const dirBtn  = document.getElementById('hotelDirBtn-' + dayId);
+  if (display) {
+    display.textContent = hotel ? hotel.name : 'Tap ✏️ to add hotel';
+    display.className = `hotel-name-display ${hotel?'':'empty'}`;
+  }
+  if (dirBtn) dirBtn.disabled = !hotel;
+  // Update meta in header
+  const day = days.find(d => d.id === dayId);
+  if (day) updateHotelMeta(day);
+  // Re-render logistics legs (directions may now be unlocked)
+  rerenderLogistics(dayId);
+}
+
+function rerenderLogistics(dayId) {
+  const logSec = document.getElementById('logSec-' + dayId);
+  if (!logSec) return;
+  const day = days.find(d => d.id === dayId);
+  if (!day) return;
+  const lbl = logSec.querySelector('.logistics-label');
+  logSec.innerHTML = '';
+  if (lbl) logSec.appendChild(lbl);
+  else {
+    const l = document.createElement('div');
+    l.className = 'logistics-label';
+    l.textContent = 'Getting Around';
+    logSec.appendChild(l);
+  }
+  day.legs.forEach(leg => renderLeg(leg, logSec));
+
+  // Also re-render adjacent days that share this hotelKey
+  days.forEach(d => {
+    if (d.id !== dayId && d.hotelKey) {
+      const needsRefresh = d.legs && d.legs.some(l =>
+        (l.origin && l.origin === 'hotel:' + (day.hotelKey||'')) ||
+        (l.dest   && l.dest   === 'hotel:' + (day.hotelKey||''))
+      );
+      if (needsRefresh) {
+        const sec = document.getElementById('logSec-' + d.id);
+        if (sec && sec.dataset) {
+          // Force re-render on next open
+          const body = document.getElementById(d.id)?.querySelector('.day-body');
+          if (body) delete body.dataset.rendered;
+        }
+      }
+    }
+  });
+}
+
+function openHotelDirections(hotelKey, e) {
+  e.stopPropagation();
+  const h = getHotel(hotelKey);
+  if (!h) return;
+  if (h.placeId) {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name+' '+h.address)}&query_place_id=${h.placeId}`, '_blank');
+  } else {
+    window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name+' Sri Lanka')}`, '_blank');
+  }
+}
+
+function clearDirCacheForHotel(hotelKey) {
+  // Clear all cached direction results so they're recomputed with new hotel
+  saveDirs({});
+}
+
+// ═══════════════════════════════════════════════════════════
+// MENU + SECTION SWITCHING
+// ═══════════════════════════════════════════════════════════
+let currentSection = 'itinerary';
+
+function toggleMenu() {
+  const dd = document.getElementById('menuDropdown');
+  dd.classList.toggle('open');
+  if (dd.classList.contains('open')) {
+    setTimeout(() => document.addEventListener('click', closeMenuOutside, {once:true, capture:true}), 10);
+  }
+}
+function closeMenuOutside(e) {
+  if (!e.target.closest('#menuDropdown') && !e.target.closest('#menuBtn'))
+    document.getElementById('menuDropdown').classList.remove('open');
+}
+
+function selectSection(name) {
+  currentSection = name;
+  document.getElementById('menuDropdown').classList.remove('open');
+  ['itinerary','map','prep'].forEach(n => {
+    const mi = document.getElementById('mi-'+n);
+    const mc = document.getElementById('mc-'+n);
+    if (mi) mi.classList.toggle('active', n===name);
+    if (mc) mc.textContent = n===name ? '✓' : '';
+  });
+  document.getElementById('navLabel').textContent = {itinerary:'Itinerary',map:'Map',prep:'Prep'}[name]||'';
+  const dayNav = document.getElementById('dayNavWrapper');
+  if (dayNav) dayNav.style.display = (name==='itinerary'||name==='map') ? 'block' : 'none';
+
+  if (name === 'prep') {
+    document.getElementById('main-trip').classList.remove('active');
+    document.getElementById('main-prep').classList.add('active');
+  } else {
+    document.getElementById('main-prep').classList.remove('active');
+    document.getElementById('main-trip').classList.add('active');
+    const itin = document.getElementById('trip-itinerary');
+    const mapP = document.getElementById('trip-map');
+    if (name === 'itinerary') {
+      itin.style.display = 'block'; mapP.style.display = 'none';
+      updateActivePip();
+    } else {
+      itin.style.display = 'none'; mapP.style.display = 'flex';
+      initMapIfNeeded();
+      setTimeout(() => { if (window._mapObj) google.maps.event.trigger(window._mapObj,'resize'); }, 100);
+    }
+  }
+}
+
+function switchPrep(name, btn) {
+  document.querySelectorAll('.prep-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.prep-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('prep-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'docs') renderDocs();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DAY NAV
+// ═══════════════════════════════════════════════════════════
+function buildDayNav() {
+  const nav = document.getElementById('dayNav');
+  days.forEach((day, i) => {
+    const pip = document.createElement('button');
+    pip.className = 'day-pip' + (i===0?' active':'');
+    pip.innerHTML = `<span class="day-pip-num">${day.shortDate}</span><span class="day-pip-lbl">${day.month}</span>`;
+    pip.onclick = () => {
+      document.querySelectorAll('.day-pip').forEach(p => p.classList.remove('active'));
+      pip.classList.add('active');
+      pip.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+      if (currentSection === 'map') {
+        flyToStop(day.mapStop);
+      } else {
+        const card = document.getElementById(day.id);
+        if (card) {
+          card.scrollIntoView({behavior:'smooth',block:'start'});
+          if (!card.classList.contains('open')) {
+            card.classList.add('open');
+            renderDayBody(card, day);
+          }
+        }
+      }
+    };
+    nav.appendChild(pip);
+  });
+}
+
+function updateActivePip() {
+  const pips  = document.querySelectorAll('.day-pip');
+  const cards = document.querySelectorAll('.day-card');
+  let idx = 0;
+  cards.forEach((c,i) => { if (c.getBoundingClientRect().top <= 120) idx = i; });
+  pips.forEach((p,i) => p.classList.toggle('active', i===idx));
+  pips[idx]?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+}
+window.addEventListener('scroll', updateActivePip, {passive:true});
+document.getElementById('trip-itinerary').addEventListener('scroll', updateActivePip, {passive:true});
+
+// ═══════════════════════════════════════════════════════════
+// CHECKLIST
+// ═══════════════════════════════════════════════════════════
+function toggleCheck(el) {
+  el.classList.toggle('done');
+  const c = loadChecks(); c[el.dataset.id] = el.classList.contains('done');
+  saveChecks(c); updateProgress();
+}
+function updateProgress() {
+  const groups = {
+    asap:  ['eta','trains','hotels','bank'],
+    weeks: ['gp','insurance','pickme','booking-acc'],
+    days:  ['print-eta','print-hotels','print-trains','cash','maps-dl'],
+    pack:  ['p-adapter','p-deet','p-sun','p-temple','p-rain','p-bag','p-water','p-bank'],
+  };
+  Object.entries(groups).forEach(([g,ids]) => {
+    const done = ids.filter(id => document.querySelector(`[data-id="${id}"]`)?.classList.contains('done')).length;
+    const el = document.getElementById('prog-'+g);
+    if (el) el.textContent = done===ids.length ? '✓ All done' : `${done}/${ids.length}`;
+  });
+}
+function resetAll() {
+  if (!confirm('Reset all checklist items?')) return;
+  document.querySelectorAll('.check-item').forEach(el => el.classList.remove('done'));
+  saveChecks({}); updateProgress();
+}
+function initChecks() {
+  const c = loadChecks();
+  Object.entries(c).forEach(([id,done]) => {
+    if (done) { const el = document.querySelector(`[data-id="${id}"]`); if (el) el.classList.add('done'); }
+  });
+  updateProgress();
+}
+
+// ═══════════════════════════════════════════════════════════
+// DOCUMENTS
+// ═══════════════════════════════════════════════════════════
+let _editingDocId = null;
+function renderDocs() {
+  const list = document.getElementById('docsList');
+  if (!list) return;
+  const docs = loadDocs();
+  if (!docs.length) {
+    list.innerHTML = '<div class="doc-empty">No bookings yet.<br>Tap <strong>+ Add</strong> to save hotel confirmations, train tickets, and links.</div>';
+    return;
+  }
+  list.innerHTML = docs.map(doc => `
+    <div class="doc-card">
+      <div class="doc-name">${doc.name}</div>
+      ${doc.ref ? `<div class="doc-ref">Ref: ${doc.ref}</div>` : ''}
+      <div class="doc-actions">
+        ${doc.url ? `<button class="doc-btn doc-btn-open" onclick="openDoc('${doc.id}')">Open Link</button>` : ''}
+        <button class="doc-btn doc-btn-edit" onclick="openDocModal('${doc.id}')">Edit</button>
+        <button class="doc-btn doc-btn-delete" onclick="deleteDoc('${doc.id}')">Remove</button>
+      </div>
+    </div>`).join('');
+}
+function openDoc(id) {
+  const doc = loadDocs().find(d => d.id === id);
+  if (doc && doc.url) window.open(doc.url, '_blank');
+}
+function deleteDoc(id) {
+  if (!confirm('Remove this booking?')) return;
+  saveDocs(loadDocs().filter(d => d.id !== id));
+  renderDocs();
+}
+function openDocModal(id) {
+  _editingDocId = id || null;
+  const modal = document.getElementById('docModal');
+  document.getElementById('docModalTitle').textContent = id ? 'Edit Booking' : 'Add Booking';
+  if (id) {
+    const doc = loadDocs().find(d => d.id === id);
+    if (doc) {
+      document.getElementById('docModalName').value = doc.name||'';
+      document.getElementById('docModalRef').value  = doc.ref||'';
+      document.getElementById('docModalUrl').value  = doc.url||'';
+    }
+  } else {
+    document.getElementById('docModalName').value = '';
+    document.getElementById('docModalRef').value  = '';
+    document.getElementById('docModalUrl').value  = '';
+  }
+  modal.classList.add('open');
+}
+function closeDocModal() { document.getElementById('docModal').classList.remove('open'); _editingDocId=null; }
+function closeDocModalOutside(e) { if (e.target===document.getElementById('docModal')) closeDocModal(); }
+function saveDoc() {
+  const name = document.getElementById('docModalName').value.trim();
+  if (!name) { document.getElementById('docModalName').focus(); return; }
+  const ref = document.getElementById('docModalRef').value.trim();
+  const url = document.getElementById('docModalUrl').value.trim();
+  const docs = loadDocs();
+  if (_editingDocId) {
+    const idx = docs.findIndex(d => d.id === _editingDocId);
+    if (idx >= 0) docs[idx] = {...docs[idx], name, ref, url};
+  } else {
+    docs.push({id:Date.now().toString(), name, ref, url});
+  }
+  saveDocs(docs); renderDocs(); closeDocModal();
+}
+
+// ═══════════════════════════════════════════════════════════
+// GOOGLE MAP
+// ═══════════════════════════════════════════════════════════
+let mapInited = false;
+
+function initMapIfNeeded() {
+  window._mapTabOpen = true;
+  if (mapInited) return;
+  if (window._mapsApiReady) buildMap();
+}
+
+function buildMap() {
+  if (mapInited) return;
+  mapInited = true;
+
+  const mapObj = new google.maps.Map(document.getElementById('map'), {
+    center: {lat:7.0, lng:80.5}, zoom:7,
+    styles:[
+      {featureType:'water',elementType:'geometry',stylers:[{color:'#b8d9f0'}]},
+      {featureType:'landscape',elementType:'geometry',stylers:[{color:'#f5f0e8'}]},
+      {featureType:'road',elementType:'geometry',stylers:[{color:'#ffffff'},{weight:0.5}]},
+      {featureType:'poi',stylers:[{visibility:'off'}]},
+      {featureType:'transit',stylers:[{visibility:'off'}]},
+    ],
+    zoomControl:true, mapTypeControl:false, streetViewControl:false, fullscreenControl:true,
+  });
+  window._mapObj = mapObj;
+
+  const iw = new google.maps.InfoWindow();
+  const markers = {};
+
+  // Markers
+  mapStops.forEach(stop => {
+    const isBase = !['sigiriya','dambulla','matara'].includes(stop.id);
+    const marker = new google.maps.Marker({
+      position:{lat:stop.lat, lng:stop.lng}, map:mapObj, title:stop.label,
+      icon:{
+        path:google.maps.SymbolPath.CIRCLE,
+        scale: isBase ? 10 : 7,
+        fillColor:stop.color, fillOpacity:1,
+        strokeColor:'#ffffff', strokeWeight: isBase ? 2.5 : 1.5,
+      },
+      label: isBase ? {text:stop.label.substring(0,3).toUpperCase(), color:'#ffffff', fontSize:'8px', fontWeight:'700'} : null,
+      zIndex: isBase ? 10 : 5,
+    });
+    marker.addListener('click', () => {
+      iw.setContent(`<div style="font-family:sans-serif;max-width:200px;padding:4px">
+        <div style="font-size:13px;font-weight:700;color:#1B4D4A;margin-bottom:3px">${stop.label}</div>
+        <div style="font-size:11px;color:#E8A030;font-weight:600;margin-bottom:5px">${stop.dates}</div>
+        <div style="font-size:12px;color:#444;line-height:1.4">${stop.desc}</div>
+      </div>`);
+      iw.open(mapObj, marker);
+      updateLegendActive(stop.id);
+    });
+    markers[stop.id] = marker;
+  });
+
+  // Real road routes
+  const dirSvc = new google.maps.DirectionsService();
+  routeLegs.forEach(leg => {
+    dirSvc.route({
+      origin: new google.maps.LatLng(leg.from.lat, leg.from.lng),
+      destination: new google.maps.LatLng(leg.to.lat, leg.to.lng),
+      travelMode: google.maps.TravelMode.DRIVING,
+    }, (result, status) => {
+      const color = leg.type === 'train' ? '#E8A030' : '#5B3A8A';
+      const opacity = leg.type === 'train' ? 0.85 : 0.75;
+      if (status === 'OK') {
+        new google.maps.DirectionsRenderer({
+          map: mapObj,
+          directions: result,
+          suppressMarkers: true,
+          polylineOptions: { strokeColor:color, strokeOpacity:opacity, strokeWeight: leg.type==='train' ? 4 : 3 },
+          preserveViewport: true,
+        });
+        // Dashed overlay for PickMe legs
+        if (leg.type === 'pickme') {
+          new google.maps.Polyline({
+            path: result.routes[0].overview_path,
+            strokeColor: color,
+            strokeOpacity: 0,
+            icons:[{icon:{path:'M 0,-1 0,1',strokeOpacity:0.9,scale:3,strokeColor:color},offset:'0',repeat:'12px'}],
+            map: mapObj,
+          });
+        }
+      } else {
+        // Straight line fallback
+        new google.maps.Polyline({
+          path:[leg.from, leg.to], strokeColor:color,
+          strokeOpacity:opacity*0.6, strokeWeight:3,
+          icons: leg.type==='pickme' ? [{icon:{path:'M 0,-1 0,1',strokeOpacity:0.8,scale:2,strokeColor:color},offset:'0',repeat:'12px'}] : [],
+          map:mapObj,
+        });
+      }
+    });
+  });
+
+  // Route key legend
+  const keyEl = document.getElementById('mapRouteKey');
+  if (keyEl) keyEl.innerHTML = `
+    <span><svg width="20" height="4"><rect width="20" height="4" rx="2" fill="#E8A030"/></svg> Train</span>
+    <span><svg width="20" height="4"><line x1="0" y1="2" x2="20" y2="2" stroke="#5B3A8A" stroke-width="3" stroke-dasharray="6 4"/></svg> PickMe</span>`;
+
+  // Stop legend
+  const legendEl = document.getElementById('mapLegend');
+  mapStops.filter(s => !['sigiriya','dambulla','matara'].includes(s.id)).forEach(stop => {
+    const btn = document.createElement('button');
+    btn.className = 'legend-stop';
+    btn.id = 'leg-' + stop.id;
+    btn.textContent = stop.label;
+    btn.onclick = () => flyToStop(stop.id);
+    legendEl.appendChild(btn);
+  });
+}
+
+function updateLegendActive(id) {
+  document.querySelectorAll('.legend-stop').forEach(b => b.classList.remove('active'));
+  const el = document.getElementById('leg-'+id);
+  if (el) el.classList.add('active');
+}
+
+function flyToStop(stopId) {
+  const stop = mapStops.find(s => s.id === stopId);
+  if (!stop || !window._mapObj) return;
+  window._mapObj.panTo({lat:stop.lat, lng:stop.lng});
+  window._mapObj.setZoom(12);
+  updateLegendActive(stopId);
+}
+
+function showStopOnMap(stopId, e) {
+  e.stopPropagation();
+  selectSection('map');
+  const tryFly = setInterval(() => {
+    if (window._mapObj) { clearInterval(tryFly); flyToStop(stopId); }
+  }, 150);
+}
+
+// ═══════════════════════════════════════════════════════════
+// OFFLINE
+// ═══════════════════════════════════════════════════════════
+function showOfflinePill(online) {
+  const pill = document.getElementById('offlinePill');
+  const text = document.getElementById('offlineText');
+  if (!pill) return;
+  pill.className = `offline-pill ${online?'online':'offline'} show`;
+  text.textContent = online ? 'Back online' : 'Offline — map unavailable';
+  if (online) setTimeout(() => pill.classList.remove('show'), 2500);
+}
+window.addEventListener('online',  () => showOfflinePill(true));
+window.addEventListener('offline', () => showOfflinePill(false));
+if (!navigator.onLine) showOfflinePill(false);
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+initChecks();
+buildDayNav();
+buildDayCards();
+renderDocs();
+
+// Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sri-lanka-trip/sw.js')
+      .then(r => console.log('SW registered:', r.scope))
+      .catch(e => console.log('SW failed:', e));
+  });
+}
+</script>
 </body>
 </html>
