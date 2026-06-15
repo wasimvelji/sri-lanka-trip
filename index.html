@@ -995,10 +995,6 @@ function legMode(type) {
 function modeIcon(type) {
   return { walk:'🚶', taxi:'🚖', pickme:'🟣', train:'🚆', bus:'🚌', flight:'✈️', static:'ℹ️' }[type] || '📍';
 }
-function badgeLabel(type) {
-  return { walk:'Walk', taxi:'PickMe/Taxi', pickme:'PickMe', train:'Train', bus:'Bus', flight:'Flight' }[type] || '';
-}
-
 function renderLeg(leg, container) {
   const el = document.createElement('div');
   el.className = 'leg';
@@ -1225,9 +1221,13 @@ function renderDayBody(card, day) {
 
   if (!day.timeline || !day.timeline.length) return;
 
-  // ── Getting Around ──────────────────────────────────────
-  const transportItems = day.timeline.filter(i => i.type === 'transport');
-  if (transportItems.length) {
+  // ── Getting Around (only train/flight/intercity — local legs inline below) ──
+  const transportItems = day.timeline.filter(i => i.type === 'transport' && i.mode !== 'static');
+  const intercityLegs = transportItems.filter(i => ['train','flight'].includes(i.mode));
+  const localLegs = transportItems.filter(i => ['walk','taxi','pickme'].includes(i.mode));
+
+  // Show Getting Around section only for intercity/significant transport
+  if (intercityLegs.length) {
     const logSec = document.createElement('div');
     logSec.className = 'logistics-section';
     logSec.id = 'logSec-' + day.id;
@@ -1236,96 +1236,39 @@ function renderDayBody(card, day) {
     lbl.textContent = 'Getting Around';
     logSec.appendChild(lbl);
 
-    transportItems.forEach(item => {
+    intercityLegs.forEach(item => {
       const el = document.createElement('div');
       el.className = 'leg';
-
       const iconEl = document.createElement('div');
       iconEl.className = 'leg-icon';
       iconEl.textContent = item.icon;
       el.appendChild(iconEl);
-
       const bodyEl = document.createElement('div');
       bodyEl.className = 'leg-body';
-
       const title = document.createElement('div');
       title.className = 'leg-title';
       title.textContent = item.title;
       bodyEl.appendChild(title);
-
       if (item.detail) {
         const det = document.createElement('div');
         det.className = 'leg-detail';
         det.innerHTML = item.detail;
         bodyEl.appendChild(det);
       }
-
       const meta = document.createElement('div');
       meta.className = 'leg-meta';
-
       if (item.time) {
         const tb = document.createElement('span');
         tb.className = 'leg-badge train';
         tb.textContent = item.time;
         meta.appendChild(tb);
       }
-
       if (item.badge) {
         const bb = document.createElement('span');
         bb.className = `leg-badge ${item.badge}`;
         bb.textContent = badgeLabel(item.badge);
         meta.appendChild(bb);
       }
-
-      // Dynamic distance for walk/taxi/pickme legs
-      if (['walk','taxi','pickme'].includes(item.mode) && item.place && item.dest) {
-        const origin = resolvePlace(item.place);
-        const dest   = resolvePlace(item.dest);
-
-        if (!origin || !dest) {
-          const unlock = document.createElement('div');
-          unlock.className = 'leg-unlock';
-          unlock.textContent = 'Add hotel to see distance';
-          bodyEl.appendChild(unlock);
-        } else {
-          const distEl = document.createElement('span');
-          distEl.className = 'leg-computing';
-          distEl.textContent = 'Computing…';
-          meta.appendChild(distEl);
-
-          const mapsBtn = document.createElement('button');
-          mapsBtn.className = 'leg-maps-btn';
-          mapsBtn.textContent = 'Maps →';
-          meta.appendChild(mapsBtn);
-
-          if (window._mapsApiReady) {
-            computeLegDistance(origin, dest, (mode, data) => {
-              if (data) {
-                // Update badge to reflect actual mode
-                const existingBadge = meta.querySelector('.leg-badge:not(:first-child)') || meta.querySelector('.leg-badge');
-                if (existingBadge && ['walk','taxi','pickme'].includes(item.badge)) {
-                  existingBadge.className = `leg-badge ${mode}`;
-                  existingBadge.textContent = mode === 'walk' ? 'Walk' : 'PickMe/Taxi';
-                }
-                distEl.className = 'leg-dist';
-                distEl.innerHTML = `<strong>${data.distance}</strong> · ~${data.duration}`;
-              } else {
-                distEl.textContent = '';
-              }
-              const mapsMode = mode === 'walk' ? 'walking' : 'driving';
-              mapsBtn.onclick = () => window.open(
-                `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}&travelmode=${mapsMode}`, '_blank'
-              );
-            });
-          } else {
-            distEl.textContent = '';
-            mapsBtn.onclick = () => window.open(
-              `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}`, '_blank'
-            );
-          }
-        }
-      }
-
       bodyEl.appendChild(meta);
       el.appendChild(bodyEl);
       logSec.appendChild(el);
@@ -1334,30 +1277,111 @@ function renderDayBody(card, day) {
     body.appendChild(logSec);
   }
 
-  // ── Activities ──────────────────────────────────────────
-  const actItems = day.timeline.filter(i => i.type === 'activity');
-  if (actItems.length) {
+  // ── Combined local transport + activities (single flow) ──
+  // Build merged list: local legs + activities + static items, sorted by appearance in timeline
+  const inlineItems = day.timeline.filter(i =>
+    i.type === 'activity' ||
+    (i.type === 'transport' && i.mode === 'static') ||
+    (i.type === 'transport' && ['walk','taxi','pickme'].includes(i.mode))
+  );
+
+  if (inlineItems.length) {
     const actSec = document.createElement('div');
     actSec.className = 'activities-section';
 
-    actItems.forEach(item => {
+    inlineItems.forEach(item => {
       const div = document.createElement('div');
       div.className = 'activity';
-      div.innerHTML = `
-        <div class="act-left"><div class="act-icon ${item.atype||'culture'}">${item.icon}</div></div>
-        <div class="act-right">
-          ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
-          <div class="act-name">${item.name}</div>
-          <div class="act-desc">${item.desc}</div>
-          ${item.tip  ? `<div class="act-tip">${item.tip}</div>`  : ''}
-          ${item.cost ? `<span class="act-cost">${item.cost}</span>` : ''}
-        </div>`;
+
+      if (item.type === 'transport' && item.mode === 'static') {
+        // Info note
+        div.innerHTML = `
+          <div class="act-left"><div class="act-icon info">${item.icon}</div></div>
+          <div class="act-right">
+            ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
+            <div class="act-name">${item.title}</div>
+            <div class="act-desc">${item.detail||''}</div>
+          </div>`;
+
+      } else if (item.type === 'transport' && ['walk','taxi','pickme'].includes(item.mode)) {
+        // Local transport leg — show as compact leg row with distance
+        div.className = 'activity leg-inline';
+        const origin = item.place ? resolvePlace(item.place) : null;
+        const dest   = item.dest  ? resolvePlace(item.dest)  : null;
+
+        const distId = `dist-${day.id}-${Math.random().toString(36).slice(2,6)}`;
+        div.innerHTML = `
+          <div class="act-left"><div class="act-icon travel">${item.icon}</div></div>
+          <div class="act-right">
+            ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
+            <div class="act-name">${item.title}</div>
+            <div class="act-desc">${item.detail||''}</div>
+            <div class="leg-meta" id="${distId}">
+              ${item.badge ? `<span class="leg-badge ${item.badge}">${badgeLabel(item.badge)}</span>` : ''}
+              <span class="leg-computing">Computing…</span>
+              <button class="leg-maps-btn">Maps →</button>
+            </div>
+          </div>`;
+
+        if (origin && dest && window._mapsApiReady) {
+          computeLegDistance(origin, dest, (mode, data) => {
+            const metaEl = document.getElementById(distId);
+            if (!metaEl) return;
+            const badge = metaEl.querySelector('.leg-badge');
+            const distEl = metaEl.querySelector('.leg-computing');
+            const mapsBtn = metaEl.querySelector('.leg-maps-btn');
+            if (badge && ['walk','taxi','pickme'].includes(item.badge||'')) {
+              badge.className = `leg-badge ${mode||item.badge}`;
+              badge.textContent = mode === 'walk' ? 'Walk' : 'PickMe/Taxi';
+            }
+            if (distEl && data) {
+              distEl.className = 'leg-dist';
+              distEl.innerHTML = `<strong>${data.distance}</strong> · ~${data.duration}`;
+            } else if (distEl) {
+              distEl.textContent = '';
+            }
+            const mapsMode = mode === 'walk' ? 'walking' : 'driving';
+            if (mapsBtn) mapsBtn.onclick = () => window.open(
+              `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}&travelmode=${mapsMode}`, '_blank'
+            );
+          });
+        } else if (origin && dest) {
+          const metaEl = document.getElementById(distId);
+          if (metaEl) {
+            const distEl = metaEl.querySelector('.leg-computing');
+            const mapsBtn = metaEl.querySelector('.leg-maps-btn');
+            if (distEl) distEl.textContent = '';
+            if (mapsBtn) mapsBtn.onclick = () => window.open(
+              `https://www.google.com/maps/dir/?api=1&origin=${origin.lat},${origin.lng}&destination=${dest.lat},${dest.lng}`, '_blank'
+            );
+          }
+        } else {
+          const metaEl = document.getElementById(distId);
+          if (metaEl) {
+            const distEl = metaEl.querySelector('.leg-computing');
+            if (distEl) distEl.textContent = origin ? '' : '';
+          }
+        }
+
+      } else {
+        // Regular activity
+        div.innerHTML = `
+          <div class="act-left"><div class="act-icon ${item.atype||'culture'}">${item.icon}</div></div>
+          <div class="act-right">
+            ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
+            <div class="act-name">${item.name}</div>
+            <div class="act-desc">${item.desc}</div>
+            ${item.tip  ? `<div class="act-tip">${item.tip}</div>`  : ''}
+            ${item.cost ? `<span class="act-cost">${item.cost}</span>` : ''}
+          </div>`;
+      }
+
       actSec.appendChild(div);
     });
 
     body.appendChild(actSec);
   }
-}
+
 
 function badgeLabel(type) {
   return { walk:'Walk', taxi:'PickMe/Taxi', pickme:'PickMe', train:'Train', bus:'Bus', flight:'Flight' }[type] || '';
