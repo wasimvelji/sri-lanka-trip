@@ -273,6 +273,27 @@ gmp-place-autocomplete { width:100%; display:block; }
 .offline-pill.offline { background:var(--terra); color:white; }
 .offline-pill.online  { background:var(--green); color:white; }
 .offline-dot { width:6px; height:6px; border-radius:50%; background:white; flex-shrink:0; }
+
+  /* ── UNIFIED TIMELINE ── */
+  .timeline-section { padding:0 14px 14px; }
+
+  /* Transport card */
+  .transport-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+  .transport-item:last-child { border-bottom:none; }
+  .ti-icon  { font-size:18px; flex-shrink:0; margin-top:1px; width:26px; text-align:center; }
+  .ti-body  { flex:1; }
+  .ti-time  { font-size:10px; font-weight:700; letter-spacing:.06em; color:var(--saffron); margin-bottom:2px; }
+  .ti-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:3px; line-height:1.3; }
+  .ti-detail { font-size:12px; color:var(--muted); line-height:1.45; margin-bottom:4px; }
+
+  /* Connector between stops */
+  .connector { display:flex; align-items:center; gap:8px; padding:5px 0 5px 12px; margin:0 0 0 -14px; position:relative; }
+  .connector-line { width:2px; height:28px; background:var(--border); border-radius:1px; flex-shrink:0; margin-left:11px; }
+  .connector-info { font-size:11px; color:var(--muted); line-height:1.4; flex:1; }
+  .connector-info.loading { font-style:italic; }
+  .connector-info strong { color:var(--text); font-weight:600; }
+  .connector-maps { color:var(--teal); font-weight:600; text-decoration:none; margin-left:4px; }
+
 </style>
 </head>
 <body>
@@ -476,72 +497,75 @@ gmp-place-autocomplete { width:100%; display:block; }
 // KNOWN LOCATIONS (fixed waypoints)
 // ═══════════════════════════════════════════════════════════
 const KNOWN = {
-  airport:          { lat:7.1801, lng:79.8843, name:'Bandaranaike International Airport' },
-  colombo_fort_stn: { lat:6.9347, lng:79.8503, name:'Colombo Fort Railway Station' },
-  colombo_maradana: { lat:6.9293, lng:79.8553, name:'Colombo Maradana Station' },
-  anuradhapura_stn: { lat:8.3350, lng:80.4089, name:'Anuradhapura Railway Station' },
-  polgahawela_stn:  { lat:7.3307, lng:80.3310, name:'Polgahawela Junction Station' },
-  kandy_stn:        { lat:7.2953, lng:80.6361, name:'Kandy Railway Station' },
-  peradeniya_jn:    { lat:7.2688, lng:80.5973, name:'Peradeniya Junction Station' },
-  galle_stn:        { lat:6.0480, lng:80.2193, name:'Galle Railway Station' },
-  matara_stn:       { lat:5.9490, lng:80.5370, name:'Matara Railway Station' },
-  sigiriya:         { lat:7.9570, lng:80.7603, name:'Sigiriya Rock Fortress' },
-  dambulla:         { lat:7.8549, lng:80.6506, name:'Dambulla Cave Temple' },
-  peradeniya_gardens:{ lat:7.2682, lng:80.5966, name:'Royal Botanic Gardens, Peradeniya' },
-  temple_tooth:     { lat:7.2937, lng:80.6414, name:'Temple of the Tooth, Kandy' },
-  rekawa:           { lat:6.0256, lng:80.8372, name:'Rekawa Turtle Beach' },
-  gangaramaya:      { lat:6.9167, lng:79.8566, name:'Gangaramaya Temple, Colombo' },
-  national_museum:  { lat:6.9100, lng:79.8609, name:'National Museum of Colombo' },
-  maritime_museum:  { lat:6.0280, lng:80.2178, name:'Maritime Archaeology Museum, Galle' },
-  galle_face_green: { lat:6.9194, lng:79.8451, name:'Galle Face Green, Colombo' },
+  airport:            { lat:7.1801,  lng:79.8843, name:'Bandaranaike International Airport' },
+  colombo_fort_stn:   { lat:6.9347,  lng:79.8503, name:'Colombo Fort Railway Station' },
+  colombo_maradana:   { lat:6.9293,  lng:79.8553, name:'Colombo Maradana Station' },
+  anuradhapura_stn:   { lat:8.3350,  lng:80.4089, name:'Anuradhapura Railway Station' },
+  polgahawela_stn:    { lat:7.3307,  lng:80.3310, name:'Polgahawela Junction Station' },
+  kandy_stn:          { lat:7.2953,  lng:80.6361, name:'Kandy Railway Station' },
+  galle_stn:          { lat:6.0480,  lng:80.2193, name:'Galle Railway Station' },
+  matara_stn:         { lat:5.9490,  lng:80.5370, name:'Matara Railway Station' },
+  sigiriya:           { lat:7.9570,  lng:80.7603, name:'Sigiriya Rock Fortress' },
+  dambulla:           { lat:7.8549,  lng:80.6506, name:'Dambulla Cave Temple' },
+  peradeniya_gardens: { lat:7.2682,  lng:80.5966, name:'Royal Botanic Gardens, Peradeniya' },
+  temple_tooth:       { lat:7.2937,  lng:80.6414, name:'Temple of the Tooth, Kandy' },
+  kandy_lake:         { lat:7.2907,  lng:80.6337, name:'Kandy Lake' },
+  kandy_museum:       { lat:7.2943,  lng:80.6396, name:'Kandy National Museum' },
+  rekawa:             { lat:6.0256,  lng:80.8372, name:'Rekawa Turtle Beach' },
+  gangaramaya:        { lat:6.9167,  lng:79.8566, name:'Gangaramaya Temple, Colombo' },
+  national_museum:    { lat:6.9100,  lng:79.8609, name:'National Museum of Colombo' },
+  pettah:             { lat:6.9372,  lng:79.8541, name:'Pettah Bazaar, Colombo' },
+  galle_face_green:   { lat:6.9194,  lng:79.8451, name:'Galle Face Green, Colombo' },
+  dutch_church:       { lat:6.0280,  lng:80.2170, name:'Dutch Reformed Church, Galle' },
+  maritime_museum:    { lat:6.0280,  lng:80.2178, name:'Maritime Archaeology Museum, Galle' },
+  book_studio:        { lat:6.0346,  lng:80.2146, name:'Book Studio, Galle' },
+  samudra_books:      { lat:6.0354,  lng:80.2169, name:'Samudra Book Shop, Galle' },
+  galle_ramparts:     { lat:6.0262,  lng:80.2157, name:'Galle Fort Ramparts' },
+  galle_lighthouse:   { lat:6.0236,  lng:80.2142, name:'Galle Lighthouse' },
+  anuradhapura_ruins: { lat:8.3120,  lng:80.4026, name:'Anuradhapura Sacred City' },
+  tangalle_beach:     { lat:6.0240,  lng:80.7920, name:'Tangalle Beach' },
 };
 
 // ═══════════════════════════════════════════════════════════
-// DAY DATA
-// Each day has: id, date, title, location, mapStop, badge,
-//   nights (if overnight stay), hotelKey (localStorage key),
-//   legs (logistics chain), activities
+// DAY DATA — unified timeline
 //
-// Leg types:
-//   'flight'  — fixed, no dynamic routing
-//   'train'   — fixed schedule, no dynamic routing
-//   'pickme'  — dynamic: origin → dest via Directions API
-//   'walk'    — dynamic: origin → dest
-//   'taxi'    — dynamic: origin → dest
-//   'static'  — text-only, no routing
+// Each item in timeline[]:
+//   type: 'transport' | 'activity'
 //
-// For dynamic legs, origin/dest can be:
-//   A KNOWN key string (e.g. 'airport')
-//   'hotel:dayId' — uses stored hotel Place for that day
+// transport items:
+//   mode: 'flight'|'train'|'pickme'|'walk'|'taxi'|'static'
+//   icon, title, detail, badge, time, place (optional)
+//
+// activity items:
+//   icon, type (css class), name, desc, tip, cost, time
+//   place: KNOWN key — used to compute connectors to next item
+//
+// Connectors between consecutive items that both have 'place'
+// are computed dynamically and injected between them.
 // ═══════════════════════════════════════════════════════════
 const days = [
   {
     id:'d1', date:'Sat 20 Sep', shortDate:'20', month:'Sep',
     title:'Arrival · Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Arrival', badgeType:'transit', nights:1, hotelKey:'colombo',
-    legs:[
-      { type:'flight', icon:'✈️',
+    timeline:[
+      { type:'transport', mode:'flight', icon:'✈️',
         title:'Flight arrives at Bandaranaike Airport',
         detail:'Land 16:20. Clear immigration — follow signs to Arrivals. Allow 45–60 mins for immigration and baggage.',
-        badge:'flight', time:'16:20' },
-      { type:'static', icon:'📱',
+        badge:'flight', time:'16:20', place:'airport' },
+      { type:'transport', mode:'static', icon:'📱',
         title:'Get a Dialog SIM card',
-        detail:'SIM stalls are in the Arrivals hall before you exit. Get a tourist SIM — ~$8 including data. Dialog has the best coverage island-wide.',
-        badge:null },
-      { type:'static', icon:'🏧',
+        detail:'SIM stalls are in the Arrivals hall before you exit. Get a tourist SIM — ~$8 including data. Dialog has the best coverage island-wide.' },
+      { type:'transport', mode:'static', icon:'🏧',
         title:'Withdraw rupees at airport ATM',
-        detail:'ATMs are in Arrivals. Withdraw ~15,000–20,000 LKR (~$50–65) to cover the first couple of days. More ATMs in Colombo Fort area.',
-        badge:null },
-      { type:'taxi', icon:'🚖',
+        detail:'ATMs are in Arrivals. Withdraw ~15,000–20,000 LKR (~$50–65) to cover the first couple of days.' },
+      { type:'transport', mode:'taxi', icon:'🚖',
         title:'Taxi to hotel',
-        origin:'airport', dest:'hotel:colombo',
         detail:'Use PickMe app for a metered fare. Agree price before getting in any non-metered taxi.',
-        badge:'taxi' },
-    ],
-    activities:[
-      {time:'19:30',icon:'🍛',type:'food',name:'First rice and curry',
-       desc:'Find a local place near the hotel. A plate piled with several curries costs $2–4.',
-       tip:'<strong>Note:</strong> Go easy on the chilli the first evening — let your stomach adjust.'},
+        badge:'taxi', place:'airport', dest:'hotel:colombo' },
+      { type:'activity', icon:'🍛', atype:'food', name:'First rice and curry', time:'19:30',
+        desc:'Find a local place near the hotel. A plate piled with several curries costs $2–4.',
+        tip:'<strong>Note:</strong> Go easy on the chilli — let your stomach adjust.' },
     ]
   },
 
@@ -549,65 +573,58 @@ const days = [
     id:'d2', date:'Sun 21 Sep', shortDate:'21', month:'Sep',
     title:'Colombo → Anuradhapura', location:'Anuradhapura', mapStop:'anuradhapura',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'anuradhapura',
-    legs:[
-      { type:'walk', icon:'🚶',
-        title:'Walk to Colombo Fort station',
-        origin:'hotel:colombo', dest:'colombo_fort_stn',
-        detail:'Head to Colombo Fort station for the afternoon train north.',
-        badge:'walk' },
-      { type:'train', icon:'🚆',
+    timeline:[
+      { type:'activity', icon:'🚶', atype:'culture', name:'Free morning in Colombo', time:'Morning',
+        desc:'Slow breakfast, short walk around the Fort area or along Galle Face Green.',
+        tip:'<strong>Tip:</strong> Check out but ask hotel to store luggage — your main bag stays here.',
+        place:'hotel:colombo' },
+      { type:'transport', mode:'walk', icon:'🚶',
+        title:'Head to Colombo Fort station',
+        detail:'Walk to Colombo Fort station for the afternoon train.',
+        badge:'walk', place:'hotel:colombo', dest:'colombo_fort_stn' },
+      { type:'transport', mode:'train', icon:'🚆',
         title:'Train: Colombo Fort → Anuradhapura',
-        detail:'Depart <strong>13:45</strong> · Arrive <strong>18:36</strong> · ~4 hours. Unreserved 2nd class — buy at <strong>Counter 1</strong> at Colombo Fort station on the day. ~$3.',
-        badge:'train', time:'13:45' },
-      { type:'taxi', icon:'🚖',
+        detail:'Depart <strong>13:45</strong> · Arrive <strong>18:36</strong> · ~4 hours · Unreserved 2nd class — buy at <strong>Counter 1</strong> at Colombo Fort on the day. ~$3.',
+        badge:'train', time:'13:45', place:'colombo_fort_stn', dest:'anuradhapura_stn' },
+      { type:'transport', mode:'taxi', icon:'🚖',
         title:'PickMe to hotel',
-        origin:'anuradhapura_stn', dest:'hotel:anuradhapura',
         detail:'PickMe or tuk-tuk from Anuradhapura station to your hotel.',
-        badge:'taxi' },
-    ],
-    activities:[
-      {time:'Morning',icon:'🚶',type:'culture',name:'Free morning in Colombo',
-       desc:'Slow breakfast, short walk around the Fort area or along Galle Face Green before the afternoon train.',
-       tip:'<strong>Tip:</strong> Check out and ask hotel to store main luggage — this is one of the Colombo stays so your bag can wait here.'},
-      {time:'18:36',icon:'🏨',type:'travel',name:'Arrive Anuradhapura · Check in',
-       desc:'Check in and get an early night — big day tomorrow.',
-       tip:'<strong>Tip:</strong> Ask hotel about bicycle rental and the first PickMe to Dambulla tomorrow morning.'},
+        badge:'taxi', place:'anuradhapura_stn', dest:'hotel:anuradhapura' },
+      { type:'activity', icon:'🏨', atype:'travel', name:'Check in · Anuradhapura', time:'18:36',
+        desc:'Check in and get an early night — big day tomorrow.',
+        tip:'<strong>Tip:</strong> Ask hotel about bicycle rental for tomorrow.' },
     ]
   },
 
   {
     id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
-    title:'Sigiriya + Dambulla Day Trips', location:'Anuradhapura', mapStop:'sigiriya',
+    title:'Sigiriya + Dambulla', location:'Anuradhapura', mapStop:'sigiriya',
     badge:'Day trips',
-    legs:[
-      { type:'taxi', icon:'🚖',
+    timeline:[
+      { type:'transport', mode:'pickme', icon:'🚖',
         title:'PickMe to Dambulla Cave Temple',
-        origin:'hotel:anuradhapura', dest:'dambulla',
-        detail:'Book a PickMe intercity ride to Dambulla the night before. ~1 hour, ~$12–15.',
-        badge:'pickme' },
-      { type:'static', icon:'🕌',
-        title:'Dambulla Cave Temple',
-        detail:'Five caves of 2,000-year-old Buddhist frescoes. Allow 1.5–2 hours. Entry ~$15. Opens 7am.',
-        badge:null, time:'08:00' },
-      { type:'taxi', icon:'🚖',
-        title:'PickMe Dambulla → Sigiriya',
-        origin:'dambulla', dest:'sigiriya',
+        detail:'Book a PickMe intercity ride the night before. ~1 hour, ~$12–15.',
+        badge:'pickme', place:'hotel:anuradhapura', dest:'dambulla' },
+      { type:'activity', icon:'🕌', atype:'temple', name:'Dambulla Cave Temple', time:'08:00',
+        desc:'Five caves of 2,000-year-old Buddhist frescoes and 150+ statues. Allow 1.5–2 hours.',
+        tip:'<strong>Entry:</strong> ~$15. Opens 7am. Remove shoes outside.', cost:'~$15',
+        place:'dambulla' },
+      { type:'transport', mode:'pickme', icon:'🚖',
+        title:'PickMe to Sigiriya',
         detail:'~30 mins east of Dambulla. ~$5.',
-        badge:'pickme' },
-      { type:'static', icon:'🪨',
-        title:'Sigiriya Rock Fortress',
-        detail:'5th-century palace atop a 200m granite rock. Climb ~45 mins up. Entry $30. Go early for cooler temperatures.',
-        badge:null, time:'11:00' },
-      { type:'taxi', icon:'🚖',
-        title:'PickMe back to hotel',
-        origin:'sigiriya', dest:'hotel:anuradhapura',
-        detail:'Return PickMe to Anuradhapura. Stop for a late lunch on the way.',
-        badge:'pickme' },
-    ],
-    activities:[
-      {time:'15:00',icon:'🚲',type:'culture',name:'Sacred City by Bicycle',
-       desc:'Hire a bicycle (~$3–5) and explore the ancient sacred city at your own pace. Jetavanaramaya, Abhayagiri, moonstone carvings.',
-       tip:'<strong>Entry:</strong> ~$25 day pass covers all sites. Very peaceful in the late afternoon.',cost:'~$25'},
+        badge:'pickme', place:'dambulla', dest:'sigiriya' },
+      { type:'activity', icon:'🪨', atype:'culture', name:'Sigiriya Rock Fortress', time:'11:00',
+        desc:'5th-century palace atop a 200m granite rock. Climb ~45 mins up. Ancient frescoes halfway up are extraordinary.',
+        tip:'<strong>Entry:</strong> $30. Go early — midday heat on the rock face is intense. Bring water.', cost:'$30',
+        place:'sigiriya' },
+      { type:'transport', mode:'pickme', icon:'🚖',
+        title:'PickMe back to Anuradhapura',
+        detail:'Return via Dambulla. Stop for a late lunch on the way.',
+        badge:'pickme', place:'sigiriya', dest:'hotel:anuradhapura' },
+      { type:'activity', icon:'🚲', atype:'culture', name:'Sacred City by Bicycle', time:'16:00',
+        desc:'Hire a bicycle (~$3–5) and explore the ancient sacred city at your own pace. Jetavanaramaya, Abhayagiri, moonstone carvings.',
+        tip:'<strong>Entry:</strong> ~$25 day pass. Very peaceful in the late afternoon.', cost:'~$25',
+        place:'anuradhapura_ruins' },
     ]
   },
 
@@ -615,68 +632,64 @@ const days = [
     id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
     title:'Anuradhapura → Kandy', location:'Kandy', mapStop:'kandy',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'kandy',
-    legs:[
-      { type:'walk', icon:'🚶',
+    timeline:[
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk or PickMe to Anuradhapura station',
-        origin:'hotel:anuradhapura', dest:'anuradhapura_stn',
         detail:'Head to Anuradhapura station for the 09:15 train.',
-        badge:'walk', time:'09:00' },
-      { type:'train', icon:'🚆',
+        badge:'walk', time:'09:00', place:'hotel:anuradhapura', dest:'anuradhapura_stn' },
+      { type:'transport', mode:'train', icon:'🚆',
         title:'Train: Anuradhapura → Polgahawela Junction',
-        detail:'Depart <strong>09:15</strong> · Arrive Polgahawela <strong>11:48</strong> · 2h 33min · 4 stops. Buy unreserved ticket at Anuradhapura station.',
-        badge:'train', time:'09:15' },
-      { type:'static', icon:'🔄',
+        detail:'Depart <strong>09:15</strong> · Arrive Polgahawela <strong>11:48</strong> · 2h 33min · 4 stops.',
+        badge:'train', time:'09:15', place:'anuradhapura_stn', dest:'polgahawela_stn' },
+      { type:'transport', mode:'static', icon:'🔄',
         title:'Transfer at Polgahawela Junction',
-        detail:'<strong>12 minute transfer</strong> — follow signs for Kandy / Badulla. Platform change. Train 1019 departs at 12:00.',
-        badge:null, time:'11:48' },
-      { type:'train', icon:'🚆',
+        detail:'<strong>12 minute transfer</strong> — follow signs for Kandy. Train 1019 departs 12:00.',
+        time:'11:48' },
+      { type:'transport', mode:'train', icon:'🚆',
         title:'Train: Polgahawela → Kandy',
-        detail:'Train <strong>1019</strong> · Depart <strong>12:00</strong> · Arrive Kandy <strong>14:00</strong> · 2 hours · 10 stops. Through beautiful central hill country.',
-        badge:'train', time:'12:00' },
-      { type:'walk', icon:'🚶',
+        detail:'Train <strong>1019</strong> · Depart <strong>12:00</strong> · Arrive Kandy <strong>14:00</strong> · 2 hours through beautiful hill country.',
+        badge:'train', time:'12:00', place:'polgahawela_stn', dest:'kandy_stn' },
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to hotel from Kandy station',
-        origin:'kandy_stn', dest:'hotel:kandy',
         detail:'Kandy town centre is compact and walkable from the station.',
-        badge:'walk' },
-    ],
-    activities:[
-      {time:'14:30',icon:'🚶',type:'nature',name:'Kandy Lake Walk',
-       desc:'Walk around Kandy Lake to get your bearings before the evening ceremony.',
-       tip:'<strong>Free.</strong>'},
-      {time:'18:30',icon:'🛕',type:'temple',name:'Temple of the Tooth · Evening Pooja',
-       desc:'Drums, chanting, incense — one of Buddhism\'s most sacred sites. Simply stand and observe. ~45 minutes.',
-       tip:'<strong>Entry:</strong> ~$10. Cover shoulders and knees. Shoes off.',cost:'~$10'},
+        badge:'walk', place:'kandy_stn', dest:'hotel:kandy' },
+      { type:'activity', icon:'🚶', atype:'nature', name:'Kandy Lake Walk', time:'14:30',
+        desc:'Walk around Kandy Lake to get your bearings before the evening ceremony.',
+        tip:'<strong>Free.</strong>', place:'kandy_lake' },
+      { type:'activity', icon:'🛕', atype:'temple', name:'Temple of the Tooth · Evening Pooja', time:'18:30',
+        desc:'Drums, chanting, incense. Simply stand and observe. ~45 minutes.',
+        tip:'<strong>Entry:</strong> ~$10. Cover shoulders and knees. Shoes off.', cost:'~$10',
+        place:'temple_tooth' },
     ]
   },
 
   {
     id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
     title:'Kandy', location:'Kandy', mapStop:'kandy',
-    legs:[
-      { type:'taxi', icon:'🚖',
+    timeline:[
+      { type:'transport', mode:'taxi', icon:'🚖',
         title:'Tuk-tuk to Peradeniya Gardens',
-        origin:'hotel:kandy', dest:'peradeniya_gardens',
         detail:'~20 mins from Kandy centre. ~$2–3 each way.',
-        badge:'taxi' },
-      { type:'taxi', icon:'🚖',
+        badge:'taxi', place:'hotel:kandy', dest:'peradeniya_gardens' },
+      { type:'activity', icon:'🌿', atype:'nature', name:'Royal Botanic Gardens · Peradeniya', time:'08:30',
+        desc:'147 acres — giant fruit bat colony, orchid house, royal palm avenue. Allow 3–4 hours.',
+        tip:'<strong>Entry:</strong> ~$15. Opens 7:30am. Go early.', cost:'~$15',
+        place:'peradeniya_gardens' },
+      { type:'transport', mode:'taxi', icon:'🚖',
         title:'Tuk-tuk back to Kandy',
-        origin:'peradeniya_gardens', dest:'hotel:kandy',
-        detail:'Return after the gardens.',
-        badge:'taxi' },
-    ],
-    activities:[
-      {time:'08:30',icon:'🌿',type:'nature',name:'Royal Botanic Gardens · Peradeniya',
-       desc:'147 acres — giant fruit bat colony, orchid house, royal palm avenue. Allow 3–4 hours.',
-       tip:'<strong>Entry:</strong> ~$15. Opens 7:30am. Go early.',cost:'~$15'},
-      {time:'13:00',icon:'🍛',type:'food',name:'Lunch in Kandy',
-       desc:'Local rice and curry near the lake.',
-       tip:'<strong>Try:</strong> Kottu roti — ~$2.'},
-      {time:'15:00',icon:'🏛️',type:'museum',name:'Kandy National Museum (optional)',
-       desc:'Kandyan-era royal artifacts. 45–60 mins.',
-       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
-      {time:'18:00',icon:'🌆',type:'culture',name:'Evening on the Lake',
-       desc:'Temple of the Tooth lit up from 18:30.',
-       tip:'<strong>Free.</strong>'},
+        detail:'Return after the gardens. ~$2–3.',
+        badge:'taxi', place:'peradeniya_gardens', dest:'hotel:kandy' },
+      { type:'activity', icon:'🍛', atype:'food', name:'Lunch in Kandy', time:'13:00',
+        desc:'Local rice and curry near the lake.',
+        tip:'<strong>Try:</strong> Kottu roti — ~$2.',
+        place:'kandy_lake' },
+      { type:'activity', icon:'🏛️', atype:'museum', name:'Kandy National Museum', time:'15:00',
+        desc:'Kandyan-era royal artifacts. 45–60 mins.',
+        tip:'<strong>Entry:</strong> ~$3.', cost:'~$3',
+        place:'kandy_museum' },
+      { type:'activity', icon:'🌆', atype:'culture', name:'Evening on the Lake', time:'18:00',
+        desc:'Temple of the Tooth lit up from 18:30.',
+        tip:'<strong>Free.</strong>', place:'kandy_lake' },
     ]
   },
 
@@ -684,91 +697,77 @@ const days = [
     id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
     title:'Kandy → Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'colombo',
-    legs:[
-      { type:'walk', icon:'🚶',
+    timeline:[
+      { type:'activity', icon:'🚶', atype:'culture', name:'Slow morning in Kandy', time:'Morning',
+        desc:'Walk the lake, have a good breakfast.',
+        tip:'<strong>Train departs 13:10.</strong> Check out — main luggage is in Colombo.',
+        place:'kandy_lake' },
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Kandy station',
-        origin:'hotel:kandy', dest:'kandy_stn',
-        detail:'Head to Kandy station for the afternoon train back to Colombo.',
-        badge:'walk', time:'13:00' },
-      { type:'train', icon:'🚆',
+        detail:'Head to Kandy station for the afternoon train.',
+        badge:'walk', place:'kandy_lake', dest:'kandy_stn' },
+      { type:'transport', mode:'train', icon:'🚆',
         title:'Train: Kandy → Colombo Fort',
         detail:'Depart <strong>13:10</strong> · Arrive <strong>15:41</strong> · ~2.5 hours direct.',
-        badge:'train', time:'13:10' },
-      { type:'walk', icon:'🚶',
+        badge:'train', time:'13:10', place:'kandy_stn', dest:'colombo_fort_stn' },
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Colombo hotel',
-        origin:'colombo_fort_stn', dest:'hotel:colombo',
-        detail:'Back to the same hotel as Day 1. Pick up your stored luggage.',
-        badge:'walk' },
-    ],
-    activities:[
-      {time:'Morning',icon:'🚶',type:'culture',name:'Slow morning in Kandy',
-       desc:'Walk the lake, have a good breakfast. Check out — your main luggage is in Colombo.',
-       tip:'<strong>Train departs 13:10.</strong>'},
-      {time:'16:00',icon:'🛕',type:'temple',name:'Gangaramaya Temple',
-       desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia.',
-       tip:'<strong>Entry:</strong> ~$3. Open until 10pm.',cost:'~$3'},
-      {time:'18:30',icon:'🏛️',type:'culture',name:'Pettah Bazaar evening wander',
-       desc:'The old bazaar district — each street specialises in something different.',
-       tip:'<strong>Free.</strong>'},
+        detail:'Back to your Colombo hotel. Pick up stored main luggage.',
+        badge:'walk', place:'colombo_fort_stn', dest:'hotel:colombo' },
+      { type:'activity', icon:'🛕', atype:'temple', name:'Gangaramaya Temple', time:'16:30',
+        desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia.',
+        tip:'<strong>Entry:</strong> ~$3. Open until 10pm.', cost:'~$3',
+        place:'gangaramaya' },
+      { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar evening wander', time:'18:30',
+        desc:'The old bazaar district — each street specialises in something different.',
+        tip:'<strong>Free.</strong>', place:'pettah' },
     ]
   },
 
   {
     id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
-    title:'Colombo → Coastal Train → Galle', location:'Galle', mapStop:'galle',
+    title:'Coastal Train → Galle', location:'Galle', mapStop:'galle',
     badge:'⭐ Highlight', nights:2, hotelKey:'galle',
-    legs:[
-      { type:'walk', icon:'🚶',
+    timeline:[
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Colombo Maradana station',
-        origin:'hotel:colombo', dest:'colombo_maradana',
-        detail:'Board at Maradana rather than Colombo Fort — you get a window seat before the train fills up.',
-        badge:'walk', time:'08:15' },
-      { type:'train', icon:'🚆',
-        title:'Coastal Train: Maradana → Galle',
+        detail:'Board at Maradana rather than Colombo Fort to get a window seat before the train fills up.',
+        badge:'walk', time:'08:15', place:'hotel:colombo', dest:'colombo_maradana' },
+      { type:'transport', mode:'train', icon:'🚆',
+        title:'The Coastal Train: Maradana → Galle',
         detail:'Depart <strong>08:35</strong> · Arrive <strong>10:49</strong> · ~2 hours. <strong>Sit on the RIGHT side</strong> — ocean the whole way. Unreserved, buy at station. ~$1.70.',
-        badge:'train', time:'08:35' },
-      { type:'walk', icon:'🚶',
+        badge:'train', time:'08:35', place:'colombo_maradana', dest:'galle_stn' },
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk from Galle station to hotel',
-        origin:'galle_stn', dest:'hotel:galle',
         detail:'Galle station is just outside the Fort walls.',
-        badge:'walk' },
-    ],
-    activities:[
-      {time:'07:30',icon:'🏛️',type:'museum',name:'National Museum of Colombo',
-       desc:'Opens 9am — visit before the train if time allows. 3,000 years of history across 15 rooms.',
-       tip:'<strong>Closed Tuesdays.</strong> Sep 26 is a Friday — you\'re fine. Entry ~$5. Leave for Maradana by 08:00.',cost:'~$5'},
-      {time:'11:00',icon:'🕌',type:'culture',name:'Dutch Reformed Church (1755)',
-       desc:'One of the oldest colonial buildings in Sri Lanka. Floor lined with Dutch tombstones.',
-       tip:'<strong>Free entry.</strong>'},
-      {time:'17:45',icon:'🌅',type:'nature',name:'Rampart Sunset',
-       desc:'Walk the fort ramparts at golden hour. Ocean on three sides.',
-       tip:'<strong>Free.</strong> Sunset ~18:00.'},
+        badge:'walk', place:'galle_stn', dest:'hotel:galle' },
+      { type:'activity', icon:'🕌', atype:'culture', name:'Dutch Reformed Church (1755)', time:'11:30',
+        desc:'One of the oldest colonial buildings in Sri Lanka. Floor lined with Dutch colonial tombstones.',
+        tip:'<strong>Free entry.</strong>', place:'dutch_church' },
+      { type:'activity', icon:'🌅', atype:'nature', name:'Rampart Sunset', time:'17:45',
+        desc:'Walk the fort ramparts at golden hour. Ocean on three sides.',
+        tip:'<strong>Free.</strong> Sunset ~18:00.', place:'galle_ramparts' },
     ]
   },
 
   {
     id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
     title:'Galle', location:'Galle', mapStop:'galle',
-    legs:[
-      { type:'walk', icon:'🚶',
-        title:'Everything within the Fort is walkable',
-        origin:'hotel:galle', dest:'maritime_museum',
-        detail:'The Fort is compact — all activities today are on foot.',
-        badge:'walk' },
-    ],
-    activities:[
-      {time:'09:30',icon:'🚢',type:'museum',name:'Maritime Archaeology Museum',
-       desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, trade route maps. ~1.5 hours.',
-       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
-      {time:'11:30',icon:'☕',type:'shop',name:'Book Studio · Coffee + Browse',
-       desc:'Bookshop-café inside the Fort. Cosy, calm, great coffee. Rated 5.0.',
-       tip:'<strong>Hours:</strong> Mon–Fri 06:30–20:00 · Sat–Sun 08:00–20:00'},
-      {time:'14:00',icon:'📗',type:'shop',name:'Samudra Book Shop',
-       desc:'10 min walk outside the Fort gate on Wakwella Rd. Rated 5.0.',
-       tip:'<strong>Hours:</strong> Mon–Sat 08:00–20:00 · Sun 08:00–17:00'},
-      {time:'17:45',icon:'🌅',type:'nature',name:'Rampart Sunset (lighthouse end)',
-       desc:'Different angle tonight — try the lighthouse end.',
-       tip:'<strong>Free.</strong>'},
+    timeline:[
+      { type:'activity', icon:'🚢', atype:'museum', name:'Maritime Archaeology Museum', time:'09:30',
+        desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, ancient trade route maps. ~1.5 hours.',
+        tip:'<strong>Entry:</strong> ~$3.', cost:'~$3', place:'maritime_museum' },
+      { type:'activity', icon:'☕', atype:'shop', name:'Book Studio · Coffee + Browse', time:'11:30',
+        desc:'Bookshop-café inside the Fort. Cosy, calm, great coffee. Rated 5.0.',
+        tip:'<strong>Hours:</strong> Mon–Fri 06:30–20:00 · Sat–Sun 08:00–20:00',
+        place:'book_studio' },
+      { type:'activity', icon:'📗', atype:'shop', name:'Samudra Book Shop', time:'14:00',
+        desc:'Outside the Fort gate on Wakwella Rd. Small, personal, owner has genuine book knowledge. Rated 5.0.',
+        tip:'<strong>Hours:</strong> Mon–Sat 08:00–20:00 · Sun 08:00–17:00',
+        place:'samudra_books' },
+      { type:'activity', icon:'🌅', atype:'nature', name:'Rampart Sunset — Lighthouse End', time:'17:45',
+        desc:'Try the lighthouse end tonight for a different angle.',
+        tip:'<strong>Free.</strong>', place:'galle_lighthouse' },
     ]
   },
 
@@ -776,43 +775,45 @@ const days = [
     id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
     title:'Galle → Tangalle', location:'Tangalle', mapStop:'tangalle',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'tangalle',
-    legs:[
-      { type:'pickme', icon:'🚖',
+    timeline:[
+      { type:'transport', mode:'static', icon:'💳',
+        title:'Withdraw cash before leaving Galle',
+        detail:'Fewer ATMs in Tangalle. Withdraw enough for 2 nights — turtle trips, tuk-tuks, meals.' },
+      { type:'transport', mode:'pickme', icon:'🚖',
         title:'PickMe: Galle → Tangalle',
-        origin:'hotel:galle', dest:'hotel:tangalle',
         detail:'~1.5 hours east along the coast. Book a PickMe intercity ride.',
-        badge:'pickme' },
-    ],
-    activities:[
-      {time:'10:00',icon:'💳',type:'info',name:'Withdraw cash before leaving Galle',
-       desc:'Fewer ATMs in Tangalle. Withdraw enough for 2 nights.',
-       tip:'<strong>Tip:</strong> Withdraw in Galle Fort area before leaving.'},
-      {time:'13:00',icon:'🏖️',type:'beach',name:'Tangalle Beach',
-       desc:'Long quiet golden beach. October is shoulder season — very few tourists.',
-       tip:'<strong>Ask hotel</strong> which beach section is safest for swimming.'},
-      {time:'20:00',icon:'🐢',type:'nature',name:'Rekawa Turtle Beach',
-       desc:'Tuk-tuk ~20 mins. Sea turtles nest at night — October is peak season.',
-       tip:'<strong>Just show up ~20:00.</strong> Conservation fee ~$5. No flash photography.',cost:'~$5–8'},
+        badge:'pickme', place:'hotel:galle', dest:'hotel:tangalle' },
+      { type:'activity', icon:'🏖️', atype:'beach', name:'Tangalle Beach', time:'13:00',
+        desc:'Long quiet golden beach. October is shoulder season — very few tourists.',
+        tip:'<strong>Ask hotel</strong> which beach section is safest for swimming.',
+        place:'tangalle_beach' },
+      { type:'transport', mode:'taxi', icon:'🚖',
+        title:'Tuk-tuk to Rekawa Turtle Beach',
+        detail:'~20 mins east of Tangalle. Agree price before getting in — ~$3 each way.',
+        badge:'taxi', time:'20:00', place:'hotel:tangalle', dest:'rekawa' },
+      { type:'activity', icon:'🐢', atype:'nature', name:'Rekawa Turtle Beach', time:'20:00',
+        desc:'Sea turtles nest at night — October is peak season. Completely silent and extraordinary.',
+        tip:'<strong>Just show up ~20:00.</strong> Conservation fee ~$5. Local team guides you quietly. No flash photography.', cost:'~$5–8',
+        place:'rekawa' },
     ]
   },
 
   {
     id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
     title:'Tangalle', location:'Tangalle', mapStop:'tangalle',
-    legs:[
-      { type:'taxi', icon:'🚖',
-        title:'Tuk-tuk to Rekawa Turtle Beach (evening)',
-        origin:'hotel:tangalle', dest:'rekawa',
-        detail:'~20 mins east of Tangalle. Agree price before getting in — ~$3 each way.',
-        badge:'taxi' },
-    ],
-    activities:[
-      {time:'All day',icon:'🏖️',type:'beach',name:'Beach day',
-       desc:'Swim, read, decompress. One of the quietest beaches on the south coast.',
-       tip:'<strong>Tip:</strong> Walk east toward Rekawa for a more secluded stretch.'},
-      {time:'20:00',icon:'🐢',type:'nature',name:'Rekawa Turtle Beach (second visit)',
-       desc:'Different species nest on different nights.',
-       tip:'<strong>Optional.</strong> Same drill — tuk-tuk, ~20:00, conservation fee.'},
+    timeline:[
+      { type:'activity', icon:'🏖️', atype:'beach', name:'Beach day', time:'All day',
+        desc:'Swim, read, decompress. One of the quietest beaches on the south coast.',
+        tip:'<strong>Tip:</strong> Walk east toward Rekawa for a more secluded stretch.',
+        place:'tangalle_beach' },
+      { type:'transport', mode:'taxi', icon:'🚖',
+        title:'Tuk-tuk to Rekawa Turtle Beach',
+        detail:'~20 mins east of Tangalle. ~$3 each way.',
+        badge:'taxi', time:'20:00', place:'hotel:tangalle', dest:'rekawa' },
+      { type:'activity', icon:'🐢', atype:'nature', name:'Rekawa Turtle Beach (second visit)', time:'20:00',
+        desc:'Different species nest on different nights — worth a second visit.',
+        tip:'<strong>Optional.</strong> Same drill — tuk-tuk, ~20:00, conservation fee.',
+        place:'rekawa' },
     ]
   },
 
@@ -820,62 +821,47 @@ const days = [
     id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
     title:'Tangalle → Matara → Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'colombo',
-    legs:[
-      { type:'pickme', icon:'🚖',
+    timeline:[
+      { type:'transport', mode:'pickme', icon:'🚖',
         title:'PickMe: Tangalle → Matara station',
-        origin:'hotel:tangalle', dest:'matara_stn',
         detail:'~45 mins west to Matara — the eastern end of the coastal railway.',
-        badge:'pickme' },
-      { type:'train', icon:'🚆',
+        badge:'pickme', place:'hotel:tangalle', dest:'matara_stn' },
+      { type:'transport', mode:'train', icon:'🚆',
         title:'Coastal Train: Matara → Colombo Fort',
-        detail:'Depart Matara ~<strong>09:19</strong> · Arrive Colombo ~<strong>12:00</strong> · ~2.5 hours. <strong>Sit on the LEFT side</strong> heading north — ocean the whole way. Unreserved, buy at Matara station.',
-        badge:'train', time:'09:19' },
-      { type:'walk', icon:'🚶',
+        detail:'Depart Matara ~<strong>09:19</strong> · Arrive Colombo ~<strong>12:00</strong> · ~2.5 hours. <strong>Sit on the LEFT side</strong> heading north — ocean the whole way.',
+        badge:'train', time:'09:19', place:'matara_stn', dest:'colombo_fort_stn' },
+      { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Colombo hotel',
-        origin:'colombo_fort_stn', dest:'hotel:colombo',
         detail:'Back to your Colombo hotel. Pick up main luggage stored there.',
-        badge:'walk' },
-    ],
-    activities:[
-      {time:'13:00',icon:'🏰',type:'culture',name:'Fort District Architecture',
-       desc:'Walk the colonial Fort area — Cargills building, Dutch Hospital, old lighthouse.',
-       tip:'<strong>Free.</strong> Rohan\'s Bookstore (Liberty Plaza) nearby.'},
-      {time:'16:30',icon:'🏛️',type:'culture',name:'Pettah Bazaar',
-       desc:'The old bazaar district — chaotic and fascinating.',
-       tip:'<strong>Free.</strong>'},
+        badge:'walk', place:'colombo_fort_stn', dest:'hotel:colombo' },
+      { type:'activity', icon:'🏰', atype:'culture', name:'Fort District Architecture', time:'13:00',
+        desc:'Walk the colonial Fort area — Cargills building, Dutch Hospital, old lighthouse.',
+        tip:'<strong>Free.</strong> Rohan's Bookstore (Liberty Plaza) nearby.',
+        place:'colombo_fort_stn' },
+      { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar', time:'16:30',
+        desc:'The old bazaar district — chaotic and fascinating.',
+        tip:'<strong>Free.</strong>', place:'pettah' },
     ]
   },
 
   {
     id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
     title:'Colombo · Sightseeing', location:'Colombo', mapStop:'colombo',
-    legs:[
-      { type:'walk', icon:'🚶',
-        title:'Walk to Gangaramaya Temple',
-        origin:'hotel:colombo', dest:'gangaramaya',
-        detail:'Morning walk to the temple.',
-        badge:'walk', time:'09:00' },
-      { type:'walk', icon:'🚶',
-        title:'Walk to National Museum',
-        origin:'gangaramaya', dest:'national_museum',
-        detail:'Short walk between the two.',
-        badge:'walk', time:'11:30' },
-      { type:'walk', icon:'🚶',
-        title:'Evening walk to Galle Face Green',
-        origin:'hotel:colombo', dest:'galle_face_green',
-        detail:'10-minute walk from the Fort area hotels.',
-        badge:'walk', time:'17:00' },
-    ],
-    activities:[
-      {time:'09:00',icon:'🛕',type:'temple',name:'Gangaramaya Temple',
-       desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia. ~2 hours.',
-       tip:'<strong>Entry:</strong> ~$3.',cost:'~$3'},
-      {time:'11:30',icon:'🏛️',type:'museum',name:'National Museum of Colombo',
-       desc:'3,000 years of Sri Lankan history across 15 rooms. Allow 2 hours.',
-       tip:'<strong>Closed Tuesdays.</strong> Oct 1 is a Wednesday — fine. Entry ~$5.',cost:'~$5'},
-      {time:'17:00',icon:'🌊',type:'nature',name:'Galle Face Green',
-       desc:'Wide oceanfront promenade. Local families, kite flying, street food. Beautiful at sunset.',
-       tip:'<strong>Free.</strong> Sunset ~18:00.'},
+    timeline:[
+      { type:'activity', icon:'🛕', atype:'temple', name:'Gangaramaya Temple', time:'09:00',
+        desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia. ~2 hours.',
+        tip:'<strong>Entry:</strong> ~$3. Cover shoulders and knees.', cost:'~$3',
+        place:'gangaramaya' },
+      { type:'activity', icon:'🏛️', atype:'museum', name:'National Museum of Colombo', time:'11:30',
+        desc:'3,000 years of Sri Lankan history across 15 rooms. Allow 2 hours.',
+        tip:'<strong>Closed Tuesdays.</strong> Oct 1 is a Wednesday — fine. Entry ~$5.', cost:'~$5',
+        place:'national_museum' },
+      { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar', time:'14:00',
+        desc:'The old bazaar if you have energy.',
+        tip:'<strong>Free.</strong>', place:'pettah' },
+      { type:'activity', icon:'🌊', atype:'nature', name:'Galle Face Green', time:'17:00',
+        desc:'Wide oceanfront promenade. Local families, kite flying, street food. Beautiful at sunset.',
+        tip:'<strong>Free.</strong> Sunset ~18:00.', place:'galle_face_green' },
     ]
   },
 
@@ -883,21 +869,19 @@ const days = [
     id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
     title:'Fly Home', location:'Colombo', mapStop:'colombo',
     badge:'Departure', badgeType:'transit',
-    legs:[
-      { type:'taxi', icon:'🚖',
-        title:'Taxi to Bandaranaike Airport',
-        origin:'hotel:colombo', dest:'airport',
-        detail:'Use PickMe or ask hotel to book. Allow plenty of time.',
-        badge:'taxi', time:'17:00' },
-      { type:'flight', icon:'✈️',
+    timeline:[
+      { type:'activity', icon:'🌅', atype:'nature', name:'Free morning', time:'Morning',
+        desc:'Slow breakfast, last walk along Galle Face Green.',
+        tip:'<strong>Leave for airport by 17:00 at the latest.</strong>',
+        place:'galle_face_green' },
+      { type:'transport', mode:'taxi', icon:'🚖',
+        title:'Taxi to Airport',
+        detail:'Use PickMe or ask hotel to book. Leave by 17:00 for a 20:20 flight. ~$10–15.',
+        badge:'taxi', time:'17:00', place:'hotel:colombo', dest:'airport' },
+      { type:'transport', mode:'flight', icon:'✈️',
         title:'Flight departs 20:20',
-        detail:'Be at the airport by <strong>18:00</strong>. Check-in closes ~2 hours before departure. Have your passport, ETA reference, and boarding pass ready.',
-        badge:'flight', time:'20:20' },
-    ],
-    activities:[
-      {time:'Morning',icon:'🌅',type:'nature',name:'Free morning',
-       desc:'Slow breakfast, last walk along Galle Face Green.',
-       tip:'<strong>Leave for airport by 17:00 at the latest.</strong>'},
+        detail:'Be at the airport by <strong>18:00</strong>. Check-in closes ~2 hours before departure.',
+        badge:'flight', time:'20:20', place:'airport' },
     ]
   },
 ];
@@ -1165,12 +1149,99 @@ function updateHotelMeta(day) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════
+// DYNAMIC CONNECTOR BETWEEN TWO PLACES
+// ═══════════════════════════════════════════════════════════
+const WALK_MAX_M = 1400; // switch to taxi above this
+
+function resolvePlace(ref) {
+  if (!ref) return null;
+  if (ref.startsWith('hotel:')) {
+    const h = getHotel(ref.slice(6));
+    return h && h.lat ? { lat:h.lat, lng:h.lng, name:h.name } : null;
+  }
+  return KNOWN[ref] || null;
+}
+
+function insertConnector(container, fromPlace, toPlace) {
+  if (!fromPlace || !toPlace) return;
+  const cacheKey = `${fromPlace.lat.toFixed(4)},${fromPlace.lng.toFixed(4)}|${toPlace.lat.toFixed(4)},${toPlace.lng.toFixed(4)}`;
+
+  const el = document.createElement('div');
+  el.className = 'connector';
+  el.innerHTML = `<span class="connector-line"></span><span class="connector-info loading">Computing…</span>`;
+  container.appendChild(el);
+
+  const infoEl = el.querySelector('.connector-info');
+
+  // Check cache
+  const dirs = loadDirs();
+  const wKey = 'WALKING:' + cacheKey;
+  const dKey = 'DRIVING:' + cacheKey;
+
+  function renderConnector(mode, data) {
+    const isWalk = mode === 'WALKING';
+    const icon   = isWalk ? '🚶' : '🚖';
+    const label  = isWalk ? 'Walk' : 'Taxi/PickMe';
+    const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${fromPlace.lat},${fromPlace.lng}&destination=${toPlace.lat},${toPlace.lng}&travelmode=${isWalk?'walking':'driving'}`;
+    infoEl.className = 'connector-info';
+    infoEl.innerHTML = `${icon} ${label} · <strong>${data.distance}</strong> · ~${data.duration} <a class="connector-maps" href="${mapsUrl}" target="_blank">Maps ↗</a>`;
+  }
+
+  // Try walking first
+  if (dirs[wKey]) {
+    const d = dirs[wKey];
+    const mode = d.distanceM <= WALK_MAX_M ? 'WALKING' : 'DRIVING';
+    if (mode === 'DRIVING' && dirs[dKey]) { renderConnector('DRIVING', dirs[dKey]); return; }
+    if (mode === 'WALKING') { renderConnector('WALKING', d); return; }
+  }
+
+  // Fetch walking
+  const svc = getDirService();
+  if (!svc) { infoEl.className = 'connector-info'; infoEl.textContent = '📍 Add hotel for directions'; return; }
+
+  svc.route({
+    origin: new google.maps.LatLng(fromPlace.lat, fromPlace.lng),
+    destination: new google.maps.LatLng(toPlace.lat, toPlace.lng),
+    travelMode: google.maps.TravelMode.WALKING,
+  }, (res, status) => {
+    if (status === 'OK') {
+      const leg = res.routes[0].legs[0];
+      const data = { distance: leg.distance.text, duration: leg.duration.text, distanceM: leg.distance.value };
+      dirs[wKey] = data; saveDirs(dirs);
+      if (data.distanceM <= WALK_MAX_M) { renderConnector('WALKING', data); return; }
+      // Too far to walk — get driving
+      svc.route({
+        origin: new google.maps.LatLng(fromPlace.lat, fromPlace.lng),
+        destination: new google.maps.LatLng(toPlace.lat, toPlace.lng),
+        travelMode: google.maps.TravelMode.DRIVING,
+      }, (res2, status2) => {
+        if (status2 === 'OK') {
+          const leg2 = res2.routes[0].legs[0];
+          const data2 = { distance: leg2.distance.text, duration: leg2.duration.text, distanceM: leg2.distance.value };
+          dirs[dKey] = data2; saveDirs(dirs);
+          renderConnector('DRIVING', data2);
+        } else {
+          infoEl.className = 'connector-info'; infoEl.textContent = '🚖 Too far to walk — use PickMe/taxi';
+        }
+      });
+    } else {
+      infoEl.className = 'connector-info'; infoEl.textContent = '📍 Tap Maps for directions';
+      const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${fromPlace.lat},${fromPlace.lng}&destination=${toPlace.lat},${toPlace.lng}`;
+      infoEl.innerHTML += ` <a class="connector-maps" href="${mapsUrl}" target="_blank">↗</a>`;
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// UNIFIED TIMELINE RENDERER
+// ═══════════════════════════════════════════════════════════
 function renderDayBody(card, day) {
   const body = card.querySelector('.day-body');
   if (body.dataset.rendered) return;
   body.dataset.rendered = '1';
 
-  // ── Hotel section ──
+  // Hotel section
   if (day.hotelKey) {
     const hotelSec = document.createElement('div');
     hotelSec.className = 'hotel-section';
@@ -1179,40 +1250,79 @@ function renderDayBody(card, day) {
     body.appendChild(hotelSec);
   }
 
-  // ── Logistics section ──
-  if (day.legs && day.legs.length) {
-    const logSec = document.createElement('div');
-    logSec.className = 'logistics-section';
-    logSec.id = 'logSec-' + day.id;
-    const lbl = document.createElement('div');
-    lbl.className = 'logistics-label';
-    lbl.textContent = 'Getting Around';
-    logSec.appendChild(lbl);
-    day.legs.forEach(leg => renderLeg(leg, logSec));
-    body.appendChild(logSec);
-  }
+  if (!day.timeline || !day.timeline.length) return;
 
-  // ── Activities section ──
-  if (day.activities && day.activities.length) {
-    const actSec = document.createElement('div');
-    actSec.className = 'activities-section';
-    day.activities.forEach(a => {
-      const div = document.createElement('div');
-      div.className = 'activity';
-      div.innerHTML = `
-        <div class="act-left"><div class="act-icon ${a.type}">${a.icon}</div></div>
-        <div class="act-right">
-          ${a.time?`<div class="act-time">${a.time}</div>`:''}
-          <div class="act-name">${a.name}</div>
-          <div class="act-desc">${a.desc}</div>
-          ${a.tip?`<div class="act-tip">${a.tip}</div>`:''}
-          ${a.cost?`<span class="act-cost">${a.cost}</span>`:''}
-        </div>`;
-      actSec.appendChild(div);
-    });
-    body.appendChild(actSec);
-  }
+  const tl = document.createElement('div');
+  tl.className = 'timeline-section';
+  body.appendChild(tl);
+
+  let lastPlace = null; // last item's resolved place for connector
+
+  day.timeline.forEach((item, idx) => {
+    // Insert connector between items that have places
+    const itemPlace = item.place ? resolvePlace(item.place) : null;
+
+    if (lastPlace && itemPlace && window._mapsApiReady) {
+      insertConnector(tl, lastPlace, itemPlace);
+    }
+
+    // Render the item
+    if (item.type === 'transport') {
+      renderTransportItem(tl, item);
+      // Update lastPlace for explicit dest
+      if (item.dest) {
+        const dest = resolvePlace(item.dest);
+        if (dest) lastPlace = dest;
+        else if (item.dest.startsWith('hotel:')) lastPlace = null; // hotel not set yet
+      } else if (itemPlace) {
+        lastPlace = itemPlace;
+      }
+    } else {
+      renderActivityItem(tl, item);
+      if (itemPlace) lastPlace = itemPlace;
+    }
+  });
 }
+
+function renderTransportItem(container, item) {
+  // Skip walk/taxi/pickme legs that are just connectors — they'll be shown as connectors
+  // But show train, flight, static, and explicitly timed pickme/taxi
+  const showAsCard = ['train','flight','static'].includes(item.mode)
+    || (item.time && ['taxi','pickme','walk'].includes(item.mode));
+  if (!showAsCard) return;
+
+  const el = document.createElement('div');
+  el.className = `transport-item transport-${item.mode}`;
+  el.innerHTML = `
+    <div class="ti-icon">${item.icon}</div>
+    <div class="ti-body">
+      ${item.time ? `<div class="ti-time">${item.time}</div>` : ''}
+      <div class="ti-title">${item.title}</div>
+      <div class="ti-detail">${item.detail || ''}</div>
+      ${item.badge ? `<span class="leg-badge ${item.badge}">${badgeLabel(item.badge)}</span>` : ''}
+    </div>`;
+  container.appendChild(el);
+}
+
+function renderActivityItem(container, item) {
+  const el = document.createElement('div');
+  el.className = 'activity';
+  el.innerHTML = `
+    <div class="act-left"><div class="act-icon ${item.atype||'culture'}">${item.icon}</div></div>
+    <div class="act-right">
+      ${item.time ? `<div class="act-time">${item.time}</div>` : ''}
+      <div class="act-name">${item.name}</div>
+      <div class="act-desc">${item.desc}</div>
+      ${item.tip  ? `<div class="act-tip">${item.tip}</div>`  : ''}
+      ${item.cost ? `<span class="act-cost">${item.cost}</span>` : ''}
+    </div>`;
+  container.appendChild(el);
+}
+
+function badgeLabel(type) {
+  return { walk:'Walk', taxi:'PickMe/Taxi', pickme:'PickMe', train:'Train', bus:'Bus', flight:'Flight' }[type] || '';
+}
+
 
 // ═══════════════════════════════════════════════════════════
 // HOTEL SECTION WITH PLACES AUTOCOMPLETE
@@ -1408,38 +1518,49 @@ function refreshHotelDisplay(dayId, hotelKey) {
 }
 
 function rerenderLogistics(dayId) {
-  const logSec = document.getElementById('logSec-' + dayId);
-  if (!logSec) return;
+  // Re-render the whole day body so connectors recompute with new hotel
   const day = days.find(d => d.id === dayId);
   if (!day) return;
-  const lbl = logSec.querySelector('.logistics-label');
-  logSec.innerHTML = '';
-  if (lbl) logSec.appendChild(lbl);
-  else {
-    const l = document.createElement('div');
-    l.className = 'logistics-label';
-    l.textContent = 'Getting Around';
-    logSec.appendChild(l);
+  const card = document.getElementById(dayId);
+  if (!card) return;
+  const body = card.querySelector('.day-body');
+  if (body) {
+    // Clear everything except the hotel section (which re-renders itself)
+    delete body.dataset.rendered;
+    const tl = body.querySelector('.timeline-section');
+    if (tl) tl.remove();
+    // Re-render
+    renderDayBody(card, day);
   }
-  day.legs.forEach(leg => renderLeg(leg, logSec));
 
-  // Also re-render adjacent days that share this hotelKey
-  days.forEach(d => {
-    if (d.id !== dayId && d.hotelKey) {
-      const needsRefresh = d.legs && d.legs.some(l =>
-        (l.origin && l.origin === 'hotel:' + (day.hotelKey||'')) ||
-        (l.dest   && l.dest   === 'hotel:' + (day.hotelKey||''))
-      );
-      if (needsRefresh) {
-        const sec = document.getElementById('logSec-' + d.id);
-        if (sec && sec.dataset) {
-          // Force re-render on next open
-          const body = document.getElementById(d.id)?.querySelector('.day-body');
-          if (body) delete body.dataset.rendered;
+  // Also invalidate adjacent days that use same hotelKey
+  if (day.hotelKey) {
+    days.forEach(d => {
+      if (d.id !== dayId && d.hotelKey === day.hotelKey) {
+        const b = document.getElementById(d.id)?.querySelector('.day-body');
+        if (b) {
+          delete b.dataset.rendered;
+          const t = b.querySelector('.timeline-section');
+          if (t) t.remove();
         }
       }
-    }
-  });
+      // Also invalidate days whose timeline references this hotel
+      if (d.id !== dayId && d.timeline) {
+        const refs = d.timeline.some(item =>
+          item.place === 'hotel:' + day.hotelKey ||
+          item.dest  === 'hotel:' + day.hotelKey
+        );
+        if (refs) {
+          const b = document.getElementById(d.id)?.querySelector('.day-body');
+          if (b) {
+            delete b.dataset.rendered;
+            const t = b.querySelector('.timeline-section');
+            if (t) t.remove();
+          }
+        }
+      }
+    });
+  }
 }
 
 function openHotelDirections(hotelKey, e) {
