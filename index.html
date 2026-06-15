@@ -910,7 +910,8 @@ const mapStops = [
 ];
 const routeLegs = [
   { from:{lat:6.9271,lng:79.8612}, to:{lat:8.3114,lng:80.4037}, type:'train'  },
-  { from:{lat:8.3114,lng:80.4037}, to:{lat:7.2906,lng:80.6337}, type:'train'  },
+  { from:{lat:8.3114,lng:80.4037}, to:{lat:7.2906,lng:80.6337}, type:'train',
+    waypoints:[{lat:7.3307,lng:80.3310}] },  // via Polgahawela Junction
   { from:{lat:7.2906,lng:80.6337}, to:{lat:6.9271,lng:79.8612}, type:'train'  },
   { from:{lat:6.9271,lng:79.8612}, to:{lat:6.0535,lng:80.2210}, type:'train'  },
   { from:{lat:6.0535,lng:80.2210}, to:{lat:6.0227,lng:80.8008}, type:'pickme' },
@@ -1647,11 +1648,18 @@ function buildMap() {
   // Real road routes
   const dirSvc = new google.maps.DirectionsService();
   routeLegs.forEach(leg => {
-    dirSvc.route({
+    const routeReq = {
       origin: new google.maps.LatLng(leg.from.lat, leg.from.lng),
       destination: new google.maps.LatLng(leg.to.lat, leg.to.lng),
       travelMode: google.maps.TravelMode.DRIVING,
-    }, (result, status) => {
+    };
+    if (leg.waypoints && leg.waypoints.length) {
+      routeReq.waypoints = leg.waypoints.map(wp => ({
+        location: new google.maps.LatLng(wp.lat, wp.lng),
+        stopover: false,
+      }));
+    }
+    dirSvc.route(routeReq, (result, status) => {
       const color = leg.type === 'train' ? '#E8A030' : '#5B3A8A';
       const opacity = leg.type === 'train' ? 0.85 : 0.75;
       if (status === 'OK') {
