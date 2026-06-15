@@ -136,6 +136,13 @@ body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text)
 gmp-place-autocomplete { width:100%; display:block; }
 .hotel-search-input { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); outline:none; background:white; }
 .hotel-search-input:focus { border-color:var(--teal); }
+.hotel-suggestions { background:white; border:1.5px solid var(--border); border-radius:10px; margin-top:4px; overflow:hidden; display:none; }
+.hotel-suggestions.open { display:block; }
+.hotel-suggestion { padding:10px 12px; font-size:13px; color:var(--text); cursor:pointer; border-bottom:1px solid var(--border); line-height:1.3; }
+.hotel-suggestion:last-child { border-bottom:none; }
+.hotel-suggestion:active { background:var(--sand); }
+.hotel-suggestion-name { font-weight:600; }
+.hotel-suggestion-addr { font-size:11px; color:var(--muted); margin-top:2px; }
 .hotel-search-btns { display:flex; gap:8px; margin-top:7px; }
 .hotel-search-save { flex:1; padding:9px; background:var(--teal); color:white; border:none; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
 .hotel-search-cancel { padding:9px 14px; background:var(--sand-dark); color:var(--muted); border:none; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
@@ -1225,86 +1232,121 @@ function renderHotelSection(container, day) {
         onclick="openHotelDirections('${day.hotelKey}',event)">Directions</button>
     </div>
     <div class="hotel-search-form" id="hotelForm-${day.id}">
-      <div id="hotelAutocompleteWrapper-${day.id}" style="width:100%; min-height:44px;"></div>
+      <input class="hotel-search-input" id="hotelInput-${day.id}" type="text"
+        autocomplete="off" placeholder="Search hotel name..."
+        oninput="onHotelInput('${day.id}','${day.hotelKey}')"
+        value="${hotel ? hotel.name : ''}">
+      <div class="hotel-suggestions" id="hotelSuggestions-${day.id}"></div>
       <div class="hotel-search-btns" style="margin-top:8px;">
         <button class="hotel-search-cancel" onclick="cancelHotelSearch('${day.id}',event)">Cancel</button>
-        <button class="hotel-search-save" onclick="saveHotelFromInput('${day.id}','${day.hotelKey}',event)">Save</button>
+        <button class="hotel-search-save" onclick="saveHotelTyped('${day.id}','${day.hotelKey}',event)">Save typed name</button>
       </div>
       ${hotel?`<button class="hotel-clear-btn" onclick="clearHotel('${day.id}','${day.hotelKey}',event)">Clear hotel</button>`:''}
     </div>`;
-
-  // Init PlaceAutocompleteElement once Maps is ready
-  initAutocompleteForDay(day.id, day.hotelKey);
 }
 
-function initAutocompleteForDay(dayId, hotelKey) {
-  if (_autocompleteInstances[dayId]) return;
-  if (!window.google || !google.maps || !google.maps.places) {
-    setTimeout(() => initAutocompleteForDay(dayId, hotelKey), 500);
-    return;
-  }
+// ── Hotel search using AutocompleteService (works reliably) ──
+let _acService = null;
+let _acDebounce = {};
 
-  const wrapper = document.getElementById('hotelAutocompleteWrapper-' + dayId);
-  if (!wrapper) return;
-  if (_autocompleteInstances[dayId]) return;
+function getAcService() {
+  if (!_acService && window.google && google.maps && google.maps.places)
+    _acService = new google.maps.places.AutocompleteService();
+  return _acService;
+}
 
-  // Mark as initialised immediately to prevent double-init
-  _autocompleteInstances[dayId] = true;
+function onHotelInput(dayId, hotelKey) {
+  const input = document.getElementById('hotelInput-' + dayId);
+  const sugBox = document.getElementById('hotelSuggestions-' + dayId);
+  if (!input || !sugBox) return;
+  const val = input.value.trim();
+  if (!val || val.length < 2) { sugBox.classList.remove('open'); sugBox.innerHTML = ''; return; }
 
-  // Try PlaceAutocompleteElement (new API) first, fall back to plain input
-  if (google.maps.places.PlaceAutocompleteElement) {
-    try {
-      const acEl = new google.maps.places.PlaceAutocompleteElement({
-        types: ['lodging'],
-        componentRestrictions: { country: 'lk' },
+  clearTimeout(_acDebounce[dayId]);
+  _acDebounce[dayId] = setTimeout(() => {
+    const svc = getAcService();
+    if (!svc) return;
+    svc.getPlacePredictions({
+      input: val,
+      types: ['lodging'],
+      componentRestrictions: { country: 'lk' },
+    }, (predictions, status) => {
+      sugBox.innerHTML = '';
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+        sugBox.classList.remove('open');
+        return;
+      }
+      predictions.slice(0, 5).forEach(pred => {
+        const item = document.createElement('div');
+        item.className = 'hotel-suggestion';
+        item.innerHTML = `
+          <div class="hotel-suggestion-name">${pred.structured_formatting.main_text}</div>
+          <div class="hotel-suggestion-addr">${pred.structured_formatting.secondary_text || ''}</div>`;
+        item.addEventListener('touchend', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          selectHotelPrediction(dayId, hotelKey, pred);
+        });
+        item.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          selectHotelPrediction(dayId, hotelKey, pred);
+        });
+        sugBox.appendChild(item);
       });
-      acEl.style.cssText = 'width:100%; display:block;';
-      wrapper.appendChild(acEl);
-      _autocompleteInstances[dayId] = acEl;
+      sugBox.classList.add('open');
+    });
+  }, 300);
+}
 
-      acEl.addEventListener('gmp-placeselect', async (e) => {
-        try {
-          const place = e.place;
-          // fetchFields is required to get geometry/location
-          await place.fetchFields({
-            fields: ['displayName', 'formattedAddress', 'location', 'id'],
-          });
-          const name = typeof place.displayName === 'string'
-            ? place.displayName
-            : (place.displayName?.text || place.name || '');
-          const lat = place.location ? place.location.lat() : null;
-          const lng = place.location ? place.location.lng() : null;
-          const hotels = loadHotels();
-          hotels[hotelKey] = {
-            name,
-            address: place.formattedAddress || '',
-            placeId: place.id || '',
-            lat,
-            lng,
-          };
-          saveHotels(hotels);
-          clearDirCacheForHotel(hotelKey);
-          refreshHotelDisplay(dayId, hotelKey);
-          collapseHotelForm(dayId);
-        } catch(err) {
-          console.error('Place select error:', err);
-        }
-      });
-      return;
-    } catch(err) {
-      console.warn('PlaceAutocompleteElement failed, falling back:', err);
+function selectHotelPrediction(dayId, hotelKey, prediction) {
+  const input = document.getElementById('hotelInput-' + dayId);
+  const sugBox = document.getElementById('hotelSuggestions-' + dayId);
+  if (input) input.value = prediction.structured_formatting.main_text;
+  if (sugBox) { sugBox.classList.remove('open'); sugBox.innerHTML = ''; }
+
+  // Get place details for coordinates
+  if (!window.google || !google.maps) return;
+  const dummyMap = window._mapObj || new google.maps.Map(document.createElement('div'));
+  const svc = new google.maps.places.PlacesService(dummyMap);
+  svc.getDetails({
+    placeId: prediction.place_id,
+    fields: ['name', 'formatted_address', 'geometry', 'place_id'],
+  }, (place, status) => {
+    const hotels = loadHotels();
+    if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+      hotels[hotelKey] = {
+        name: place.name,
+        address: place.formatted_address || '',
+        placeId: place.place_id,
+        lat: place.geometry.location.lat(),
+        lng: place.geometry.location.lng(),
+      };
+    } else {
+      // Save name only if details fail
+      hotels[hotelKey] = {
+        name: prediction.structured_formatting.main_text,
+        address: prediction.structured_formatting.secondary_text || '',
+        placeId: prediction.place_id,
+        lat: null, lng: null,
+      };
     }
-  }
+    saveHotels(hotels);
+    clearDirCacheForHotel(hotelKey);
+    refreshHotelDisplay(dayId, hotelKey);
+    collapseHotelForm(dayId);
+  });
+}
 
-  // Fallback: plain input with manual save (no autocomplete)
-  const input = document.createElement('input');
-  input.type = 'text';
-  input.className = 'hotel-search-input';
-  input.placeholder = 'Type hotel name and tap Save';
-  const hotel = getHotel(hotelKey);
-  if (hotel) input.value = hotel.name;
-  wrapper.appendChild(input);
-  _autocompleteInstances[dayId] = input;
+function saveHotelTyped(dayId, hotelKey, e) {
+  e.stopPropagation();
+  const input = document.getElementById('hotelInput-' + dayId);
+  if (!input || !input.value.trim()) return;
+  const hotels = loadHotels();
+  hotels[hotelKey] = { name: input.value.trim(), address:'', placeId:null, lat:null, lng:null };
+  saveHotels(hotels);
+  clearDirCacheForHotel(hotelKey);
+  refreshHotelDisplay(dayId, hotelKey);
+  collapseHotelForm(dayId);
 }
 
 function toggleHotelSearch(dayId, hotelKey, e) {
@@ -1313,8 +1355,14 @@ function toggleHotelSearch(dayId, hotelKey, e) {
   if (!form) return;
   const isOpen = form.classList.toggle('open');
   if (isOpen) {
-    // Init the PlaceAutocompleteElement — it renders itself into the wrapper
-    setTimeout(() => initAutocompleteForDay(dayId, hotelKey), 50);
+    setTimeout(() => {
+      const input = document.getElementById('hotelInput-' + dayId);
+      if (input) { input.focus(); input.select(); }
+    }, 50);
+  } else {
+    // Close suggestions if form collapses
+    const sug = document.getElementById('hotelSuggestions-' + dayId);
+    if (sug) { sug.classList.remove('open'); sug.innerHTML = ''; }
   }
 }
 
@@ -1326,21 +1374,11 @@ function cancelHotelSearch(dayId, e) {
 function collapseHotelForm(dayId) {
   const form = document.getElementById('hotelForm-' + dayId);
   if (form) form.classList.remove('open');
+  const sug = document.getElementById('hotelSuggestions-' + dayId);
+  if (sug) { sug.classList.remove('open'); sug.innerHTML = ''; }
 }
 
-function saveHotelFromInput(dayId, hotelKey, e) {
-  e.stopPropagation();
-  // Save from fallback plain input inside wrapper
-  const wrapper = document.getElementById('hotelAutocompleteWrapper-' + dayId);
-  const input = wrapper ? wrapper.querySelector('input') : null;
-  if (!input || !input.value.trim()) return;
-  const hotels = loadHotels();
-  hotels[hotelKey] = { name: input.value.trim(), address:'', placeId:null, lat:null, lng:null };
-  saveHotels(hotels);
-  clearDirCacheForHotel(hotelKey);
-  refreshHotelDisplay(dayId, hotelKey);
-  collapseHotelForm(dayId);
-}
+// saveHotelFromInput replaced by saveHotelTyped
 
 function clearHotel(dayId, hotelKey, e) {
   e.stopPropagation();
