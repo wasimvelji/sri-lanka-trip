@@ -25,7 +25,7 @@
     if (window._mapTabOpen && typeof buildMap === 'function') buildMap();
   };
 </script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&callback=initMap" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&libraries=directions&callback=initMap" async defer></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -83,10 +83,11 @@
 
   /* ── DROPDOWN MENU ── */
   .menu-dropdown {
-    position:absolute; top:56px; right:16px; z-index:200;
+    position:fixed; top:56px; right:16px; z-index:1000;
     background:white; border-radius:14px; overflow:hidden;
     box-shadow:0 8px 30px rgba(0,0,0,0.25);
     display:none; min-width:180px;
+    max-width:calc(100vw - 32px);
   }
   .menu-dropdown.open { display:block; }
   .menu-item {
@@ -261,43 +262,161 @@
   .gm-iw-content { font-family:'Inter',sans-serif !important; }
 
   @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
+
+  /* ── OFFLINE INDICATOR ── */
+  .offline-pill {
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+    padding:7px 16px; border-radius:20px; font-size:12px; font-weight:600;
+    display:flex; align-items:center; gap:6px; z-index:500;
+    box-shadow:0 2px 12px rgba(0,0,0,0.2); transition:all .3s;
+    pointer-events:none; opacity:0;
+  }
+  .offline-pill.show { opacity:1; }
+  .offline-pill.offline { background:#C4613A; color:white; }
+  .offline-pill.online  { background:var(--green); color:white; }
+  .offline-dot { width:7px; height:7px; border-radius:50%; background:white; }
+
+  /* ── HOTEL FIELD ON DAY CARD ── */
+  .hotel-row {
+    display:flex; align-items:center; gap:8px;
+    padding:10px 0; border-bottom:1px solid var(--border);
+  }
+  .hotel-icon { font-size:15px; flex-shrink:0; }
+  .hotel-name {
+    flex:1; font-size:13px; font-weight:600; color:var(--teal);
+    min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .hotel-name.empty { color:var(--muted); font-weight:400; font-style:italic; }
+  .hotel-actions { display:flex; gap:6px; flex-shrink:0; }
+  .hotel-btn {
+    padding:5px 10px; border-radius:8px; border:none; cursor:pointer;
+    font-size:11px; font-weight:600; font-family:'Inter',sans-serif;
+  }
+  .hotel-btn-edit  { background:var(--sand-dark); color:var(--text); }
+  .hotel-btn-dir   { background:var(--teal); color:white; }
+  .hotel-btn-dir:disabled { background:var(--sand-dark); color:var(--muted); }
+
+  /* Hotel edit inline form */
+  .hotel-edit-form {
+    display:none; padding:10px 0 6px; border-bottom:1px solid var(--border);
+    flex-direction:column; gap:8px;
+  }
+  .hotel-edit-form.open { display:flex; }
+  .hotel-input {
+    width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:10px;
+    font-family:'Inter',sans-serif; font-size:13px; color:var(--text);
+    background:white; outline:none;
+  }
+  .hotel-input:focus { border-color:var(--teal); }
+  .hotel-save-row { display:flex; gap:8px; }
+  .hotel-save-btn {
+    flex:1; padding:8px; border:none; border-radius:8px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+  }
+  .hotel-save-btn.save    { background:var(--teal); color:white; }
+  .hotel-save-btn.cancel  { background:var(--sand-dark); color:var(--muted); }
+
+  /* ── DOCUMENTS ── */
+  .docs-header {
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;
+  }
+  .docs-title {
+    font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra);
+  }
+  .docs-add-btn {
+    padding:7px 14px; background:var(--teal); color:white; border:none;
+    border-radius:20px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600;
+    cursor:pointer;
+  }
+  .doc-card {
+    background:var(--card); border-radius:14px; padding:14px 16px;
+    margin-bottom:10px; border:1px solid var(--border);
+  }
+  .doc-card-header {
+    display:flex; justify-content:space-between; align-items:flex-start; gap:8px;
+  }
+  .doc-name  { font-size:14px; font-weight:700; color:var(--text); margin-bottom:3px; }
+  .doc-ref   { font-size:12px; color:var(--muted); margin-bottom:8px; }
+  .doc-actions { display:flex; gap:6px; flex-shrink:0; }
+  .doc-btn {
+    padding:5px 10px; border-radius:8px; border:none; cursor:pointer;
+    font-size:11px; font-weight:600; font-family:'Inter',sans-serif;
+  }
+  .doc-btn-open   { background:var(--teal); color:white; }
+  .doc-btn-edit   { background:var(--sand-dark); color:var(--text); }
+  .doc-btn-delete { background:#FFE8E8; color:#C0392B; }
+  .doc-empty {
+    text-align:center; padding:32px 20px; color:var(--muted); font-size:13px; line-height:1.6;
+  }
+
+  /* Doc edit modal */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:600;
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .modal-overlay.open { display:flex; }
+  .modal-sheet {
+    background:white; border-radius:20px 20px 0 0; padding:24px 20px 40px;
+    width:100%; max-width:480px; max-height:85vh; overflow-y:auto;
+  }
+  .modal-title {
+    font-family:'Playfair Display',serif; font-size:20px; font-weight:700;
+    color:var(--text); margin-bottom:18px;
+  }
+  .modal-field { margin-bottom:14px; }
+  .modal-label {
+    font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--muted); margin-bottom:5px; display:block;
+  }
+  .modal-input {
+    width:100%; padding:11px 14px; border:1.5px solid var(--border); border-radius:10px;
+    font-family:'Inter',sans-serif; font-size:14px; color:var(--text); outline:none;
+  }
+  .modal-input:focus { border-color:var(--teal); }
+  .modal-btns { display:flex; gap:10px; margin-top:20px; }
+  .modal-btn {
+    flex:1; padding:13px; border:none; border-radius:12px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:14px; font-weight:700;
+  }
+  .modal-btn.primary  { background:var(--teal); color:white; }
+  .modal-btn.secondary { background:var(--sand-dark); color:var(--muted); }
 </style>
 </head>
 <body>
 
 <!-- HERO -->
 <div class="hero" id="heroEl">
-  <img class="hero-img" src="IMG_2270.jpeg" alt="Sri Lanka">
+  <img class="hero-img" src="hero.jpg" alt="Sri Lanka">
   <div class="hero-overlay"></div>
   <div class="hero-inner">
     <div class="hero-top">
       <div>
-        <div class="hero-title">Sri Lanka</div>
-        <div class="hero-sub">20 Sep — 2 Oct 2026</div>
+        <div class="hero-sub" style="font-size:13px; margin-top:0;">20 Sep — 2 Oct 2026</div>
       </div>
       <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
     </div>
   </div>
-  <!-- Dropdown -->
-  <div class="menu-dropdown" id="menuDropdown">
-    <button class="menu-item" id="mi-itinerary" onclick="selectSection('itinerary')">
-      <span class="menu-item-icon">📅</span>
-      <span class="menu-item-label">Itinerary</span>
-      <span class="menu-item-check" id="mc-itinerary"></span>
-    </button>
-    <button class="menu-item" id="mi-map" onclick="selectSection('map')">
-      <span class="menu-item-icon">🗺️</span>
-      <span class="menu-item-label">Map</span>
-      <span class="menu-item-check" id="mc-map"></span>
-    </button>
-    <button class="menu-item" id="mi-prep" onclick="selectSection('prep')">
-      <span class="menu-item-icon">✅</span>
-      <span class="menu-item-label">Prep</span>
-      <span class="menu-item-check" id="mc-prep"></span>
-    </button>
-  </div>
+</div>
+
+<!-- DROPDOWN MENU (outside hero so z-index stacks above nav bar) -->
+<div class="menu-dropdown" id="menuDropdown">
+  <button class="menu-item" id="mi-itinerary" onclick="selectSection('itinerary')">
+    <span class="menu-item-icon">📅</span>
+    <span class="menu-item-label">Itinerary</span>
+    <span class="menu-item-check" id="mc-itinerary"></span>
+  </button>
+  <button class="menu-item" id="mi-map" onclick="selectSection('map')">
+    <span class="menu-item-icon">🗺️</span>
+    <span class="menu-item-label">Map</span>
+    <span class="menu-item-check" id="mc-map"></span>
+  </button>
+  <button class="menu-item" id="mi-prep" onclick="selectSection('prep')">
+    <span class="menu-item-icon">✅</span>
+    <span class="menu-item-label">Prep</span>
+    <span class="menu-item-check" id="mc-prep"></span>
+  </button>
 </div>
 
 <!-- NAV BAR -->
@@ -312,6 +431,7 @@
       <button class="prep-tab-btn active" onclick="switchPrep('checklist',this)">✅ Checklist</button>
       <button class="prep-tab-btn" onclick="switchPrep('budget',this)">💰 Budget</button>
       <button class="prep-tab-btn" onclick="switchPrep('essentials',this)">📋 Essentials</button>
+      <button class="prep-tab-btn" onclick="switchPrep('docs',this)">📎 Docs</button>
     </div>
 
     <!-- CHECKLIST -->
@@ -399,9 +519,19 @@
         <div class="info-row"><div class="info-icon">🛕</div><div><div class="info-name">Temple Etiquette</div><div class="info-detail">Cover shoulders + knees. Shoes off. No selfies with Buddha statues.</div></div></div>
         <div class="info-row"><div class="info-icon">🛺</div><div><div class="info-name">Tuk-tuks</div><div class="info-detail">Use PickMe where possible. If flagging one down, always agree price before getting in.</div></div></div>
       </div>
-    </div>
+    </div><!-- /prep-essentials -->
+
+    <!-- DOCUMENTS -->
+    <div class="prep-panel" id="prep-docs">
+      <div class="docs-header">
+        <span class="docs-title">Bookings &amp; Documents</span>
+        <button class="docs-add-btn" onclick="openDocModal()">+ Add</button>
+      </div>
+      <div id="docsList"></div>
+    </div><!-- /prep-docs -->
+
   </div>
-</div>
+</div><!-- /main-prep -->
 
 <!-- ══════════════════ TRIP PANEL ══════════════════ -->
 <div class="main-panel active" id="main-trip">
@@ -843,6 +973,32 @@ days.forEach(day => {
       </div>
     </div>`).join('');
 
+  const hotelData = loadHotel(day.id);
+  const hotelName = hotelData || '';
+  const hotelDisplay = hotelName
+    ? `<span class="hotel-name">${hotelName}</span>`
+    : `<span class="hotel-name empty">Tap to add hotel</span>`;
+  const hotelRowHTML = day.nights ? `
+    <div class="hotel-row" id="hotelRow-${day.id}">
+      <span class="hotel-icon">🏨</span>
+      ${hotelDisplay}
+      <div class="hotel-actions">
+        <button class="hotel-btn hotel-btn-edit" onclick="toggleHotelEdit('${day.id}',event)">✏️</button>
+        <button class="hotel-btn hotel-btn-dir" ${hotelName?'':'disabled'}
+          onclick="openDirections('${day.id}','${day.location}',event)"
+          id="dirBtn-${day.id}">Directions</button>
+      </div>
+    </div>
+    <div class="hotel-edit-form" id="hotelForm-${day.id}">
+      <input class="hotel-input" id="hotelInput-${day.id}" type="text"
+        placeholder="Hotel name (e.g. Grand Oriental Hotel, Colombo)"
+        value="${hotelName}">
+      <div class="hotel-save-row">
+        <button class="hotel-save-btn cancel" onclick="cancelHotelEdit('${day.id}',event)">Cancel</button>
+        <button class="hotel-save-btn save" onclick="saveHotel('${day.id}',event)">Save</button>
+      </div>
+    </div>` : '';
+
   card.innerHTML = `
     <div class="day-header">
       <div class="day-accent"></div>
@@ -858,7 +1014,7 @@ days.forEach(day => {
         </div>
       </div>
     </div>
-    <div class="day-body">${transportHTML}${actHTML}</div>`;
+    <div class="day-body">${hotelRowHTML}${transportHTML}${actHTML}</div>`;
 
   card.querySelector('.day-header').addEventListener('click', e => {
     if (e.target.closest('.map-btn')) return;
@@ -918,19 +1074,82 @@ function buildMap() {
 
   infoWindow = new google.maps.InfoWindow();
 
-  // Route polyline
-  new google.maps.Polyline({
-    path: routeCoords,
-    geodesic: true,
-    strokeColor: '#E8A030',
-    strokeOpacity: 0.7,
-    strokeWeight: 3,
-    icons: [{
-      icon: { path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW, scale: 3, strokeColor:'#E8A030', fillColor:'#E8A030', fillOpacity:1 },
-      offset: '50%', repeat: '120px'
-    }],
-    map: map,
+  // Draw real routes using Directions API
+  // Legs: type 'TRAIN' or 'DRIVING'
+  const routeLegs = [
+    { from:{lat:6.9271,lng:79.8612}, to:{lat:8.3114,lng:80.4037}, mode:'DRIVING', type:'train' },   // Colombo→Anuradhapura (train)
+    { from:{lat:8.3114,lng:80.4037}, to:{lat:7.2906,lng:80.6337}, mode:'DRIVING', type:'train' },   // Anuradhapura→Kandy
+    { from:{lat:7.2906,lng:80.6337}, to:{lat:6.9271,lng:79.8612}, mode:'DRIVING', type:'train' },   // Kandy→Colombo
+    { from:{lat:6.9271,lng:79.8612}, to:{lat:6.0535,lng:80.2210}, mode:'DRIVING', type:'train' },   // Colombo→Galle (coastal)
+    { from:{lat:6.0535,lng:80.2210}, to:{lat:6.0227,lng:80.8008}, mode:'DRIVING', type:'pickme' },  // Galle→Tangalle (PickMe/bus)
+    { from:{lat:6.0227,lng:80.8008}, to:{lat:5.9549,lng:80.5550}, mode:'DRIVING', type:'pickme' },  // Tangalle→Matara (PickMe/bus)
+    { from:{lat:5.9549,lng:80.5550}, to:{lat:6.9271,lng:79.8612}, mode:'DRIVING', type:'train' },   // Matara→Colombo (coastal train)
+  ];
+
+  const dirService = new google.maps.DirectionsService();
+  const trainStyle   = { strokeColor:'#E8A030', strokeOpacity:0.85, strokeWeight:4 };
+  const pickmeStyle  = { strokeColor:'#5B3A8A', strokeOpacity:0.8,  strokeWeight:3, strokeDashArray:'8 5' };
+
+  routeLegs.forEach(leg => {
+    dirService.route({
+      origin: leg.from,
+      destination: leg.to,
+      travelMode: google.maps.TravelMode[leg.mode],
+    }, (result, status) => {
+      if (status === 'OK') {
+        const style = leg.type === 'train' ? trainStyle : pickmeStyle;
+        const renderer = new google.maps.DirectionsRenderer({
+          map: map,
+          directions: result,
+          suppressMarkers: true,
+          polylineOptions: {
+            strokeColor:   style.strokeColor,
+            strokeOpacity: style.strokeOpacity,
+            strokeWeight:  style.strokeWeight,
+          },
+        });
+        // Dashed line for pickme/bus legs using icons
+        if (leg.type === 'pickme') {
+          const path = result.routes[0].overview_path;
+          new google.maps.Polyline({
+            path: path,
+            strokeColor: style.strokeColor,
+            strokeOpacity: 0,
+            strokeWeight: 3,
+            icons: [{
+              icon: { path:'M 0,-1 0,1', strokeOpacity:0.8, scale:3, strokeColor:style.strokeColor },
+              offset:'0', repeat:'12px'
+            }],
+            map: map,
+          });
+        }
+      } else {
+        // Fallback to straight line if directions fail
+        const style = leg.type === 'train' ? trainStyle : pickmeStyle;
+        new google.maps.Polyline({
+          path: [leg.from, leg.to],
+          strokeColor: style.strokeColor,
+          strokeOpacity: style.strokeOpacity * 0.6,
+          strokeWeight: style.strokeWeight,
+          map: map,
+        });
+      }
+    });
   });
+
+  // Legend for route types
+  const legendEl = document.getElementById('mapLegend');
+  const routeLegend = document.createElement('div');
+  routeLegend.style.cssText = 'display:flex;gap:14px;padding:8px 0 4px;width:100%;';
+  routeLegend.innerHTML = `
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#6B6B62;font-weight:600;">
+      <div style="width:20px;height:3px;background:#E8A030;border-radius:2px;"></div> Train
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:#6B6B62;font-weight:600;">
+      <div style="width:20px;height:3px;background:#5B3A8A;border-radius:2px;border:none;
+        background-image:repeating-linear-gradient(90deg,#5B3A8A 0,#5B3A8A 6px,transparent 6px,transparent 10px);
+        background-color:transparent;"></div> PickMe/Bus
+    </div>`;
 
   // Markers
   stops.forEach(stop => {
@@ -981,6 +1200,8 @@ function buildMap() {
       btn.onclick = () => flyToStop(stop.id);
       legend.appendChild(btn);
     });
+  // Insert route type legend before stop buttons
+  if (legendEl) legendEl.parentNode.insertBefore(routeLegend, legendEl);
 }
 
 function updateLegendActive(stopId) {
@@ -1016,8 +1237,162 @@ function showStopOnMap(stopId, e) {
   }, 150);
 }
 
+// ── HOTEL STORAGE ─────────────────────────────────────────
+const HOTEL_KEY = 'sl_hotels_v1';
+function loadHotels()  { try { return JSON.parse(localStorage.getItem(HOTEL_KEY)) || {}; } catch(e) { return {}; } }
+function saveHotels(o) { try { localStorage.setItem(HOTEL_KEY, JSON.stringify(o)); } catch(e) {} }
+function loadHotel(dayId) { return loadHotels()[dayId] || ''; }
+
+function toggleHotelEdit(dayId, e) {
+  e.stopPropagation();
+  const form = document.getElementById('hotelForm-' + dayId);
+  if (form) form.classList.toggle('open');
+}
+function cancelHotelEdit(dayId, e) {
+  e.stopPropagation();
+  const form = document.getElementById('hotelForm-' + dayId);
+  if (form) form.classList.remove('open');
+}
+function saveHotel(dayId, e) {
+  e.stopPropagation();
+  const input = document.getElementById('hotelInput-' + dayId);
+  const val = input ? input.value.trim() : '';
+  const hotels = loadHotels();
+  if (val) hotels[dayId] = val; else delete hotels[dayId];
+  saveHotels(hotels);
+  // Update display
+  const row = document.getElementById('hotelRow-' + dayId);
+  if (row) {
+    const nameEl = row.querySelector('.hotel-name');
+    const dirBtn = document.getElementById('dirBtn-' + dayId);
+    if (nameEl) {
+      nameEl.textContent = val || 'Tap to add hotel';
+      nameEl.classList.toggle('empty', !val);
+    }
+    if (dirBtn) dirBtn.disabled = !val;
+  }
+  const form = document.getElementById('hotelForm-' + dayId);
+  if (form) form.classList.remove('open');
+}
+function openDirections(dayId, location, e) {
+  e.stopPropagation();
+  const hotel = loadHotel(dayId);
+  if (!hotel) return;
+  const query = encodeURIComponent(hotel + ' ' + location + ' Sri Lanka');
+  window.open('https://maps.google.com/?q=' + query, '_blank');
+}
+
+// ── DOCUMENTS STORAGE ─────────────────────────────────────
+const DOCS_KEY = 'sl_docs_v1';
+function loadDocs()  { try { return JSON.parse(localStorage.getItem(DOCS_KEY)) || []; } catch(e) { return []; } }
+function saveDocs(a) { try { localStorage.setItem(DOCS_KEY, JSON.stringify(a)); } catch(e) {} }
+
+let editingDocId = null;
+
+function renderDocs() {
+  const list = document.getElementById('docsList');
+  if (!list) return;
+  const docs = loadDocs();
+  if (docs.length === 0) {
+    list.innerHTML = '<div class="doc-empty">No bookings added yet.<br>Tap <strong>+ Add</strong> to save your hotel confirmations, train tickets, and other links.</div>';
+    return;
+  }
+  list.innerHTML = docs.map(doc => `
+    <div class="doc-card">
+      <div class="doc-card-header">
+        <div>
+          <div class="doc-name">${doc.name}</div>
+          ${doc.ref ? `<div class="doc-ref">Ref: ${doc.ref}</div>` : ''}
+        </div>
+        <div class="doc-actions">
+          ${doc.url ? `<button class="doc-btn doc-btn-open" onclick="openDoc('${doc.id}')">Open</button>` : ''}
+          <button class="doc-btn doc-btn-edit" onclick="openDocModal('${doc.id}')">Edit</button>
+          <button class="doc-btn doc-btn-delete" onclick="deleteDoc('${doc.id}')">✕</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openDoc(id) {
+  const doc = loadDocs().find(d => d.id === id);
+  if (doc && doc.url) window.open(doc.url, '_blank');
+}
+
+function deleteDoc(id) {
+  if (!confirm('Remove this booking?')) return;
+  saveDocs(loadDocs().filter(d => d.id !== id));
+  renderDocs();
+}
+
+function openDocModal(id) {
+  editingDocId = id || null;
+  const modal = document.getElementById('docModal');
+  const title = document.getElementById('docModalTitle');
+  if (id) {
+    const doc = loadDocs().find(d => d.id === id);
+    if (doc) {
+      document.getElementById('docModalName').value = doc.name || '';
+      document.getElementById('docModalRef').value  = doc.ref  || '';
+      document.getElementById('docModalUrl').value  = doc.url  || '';
+    }
+    title.textContent = 'Edit Booking';
+  } else {
+    document.getElementById('docModalName').value = '';
+    document.getElementById('docModalRef').value  = '';
+    document.getElementById('docModalUrl').value  = '';
+    title.textContent = 'Add Booking';
+  }
+  modal.classList.add('open');
+}
+
+function closeDocModal() {
+  document.getElementById('docModal').classList.remove('open');
+  editingDocId = null;
+}
+
+function closeDocModalOutside(e) {
+  if (e.target === document.getElementById('docModal')) closeDocModal();
+}
+
+function saveDoc() {
+  const name = document.getElementById('docModalName').value.trim();
+  const ref  = document.getElementById('docModalRef').value.trim();
+  const url  = document.getElementById('docModalUrl').value.trim();
+  if (!name) { document.getElementById('docModalName').focus(); return; }
+  const docs = loadDocs();
+  if (editingDocId) {
+    const idx = docs.findIndex(d => d.id === editingDocId);
+    if (idx >= 0) docs[idx] = { ...docs[idx], name, ref, url };
+  } else {
+    docs.push({ id: Date.now().toString(), name, ref, url });
+  }
+  saveDocs(docs);
+  renderDocs();
+  closeDocModal();
+}
+
+// ── OFFLINE INDICATOR ──────────────────────────────────────
+function showOfflinePill(isOnline) {
+  const pill = document.getElementById('offlinePill');
+  const text = document.getElementById('offlineText');
+  if (!pill || !text) return;
+  if (isOnline) {
+    pill.className = 'offline-pill online show';
+    text.textContent = 'Back online';
+    setTimeout(() => pill.classList.remove('show'), 2500);
+  } else {
+    pill.className = 'offline-pill offline show';
+    text.textContent = 'Offline — map unavailable';
+  }
+}
+window.addEventListener('online',  () => showOfflinePill(true));
+window.addEventListener('offline', () => showOfflinePill(false));
+// Show on load if already offline
+if (!navigator.onLine) showOfflinePill(false);
+
 // ── INIT ──────────────────────────────────────────────────
 initChecks();
+renderDocs();
 // Set initial menu state
 document.getElementById('mi-itinerary').classList.add('active');
 document.getElementById('mc-itinerary').textContent = '✓';
@@ -1031,5 +1406,34 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<!-- OFFLINE INDICATOR -->
+<div class="offline-pill" id="offlinePill">
+  <span class="offline-dot"></span>
+  <span id="offlineText">Offline — map unavailable</span>
+</div>
+
+<!-- DOCUMENT MODAL -->
+<div class="modal-overlay" id="docModal" onclick="closeDocModalOutside(event)">
+  <div class="modal-sheet">
+    <div class="modal-title" id="docModalTitle">Add Booking</div>
+    <div class="modal-field">
+      <label class="modal-label">Name</label>
+      <input class="modal-input" id="docModalName" placeholder="e.g. Colombo Hotel — Sep 20" type="text">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reference / Confirmation Number</label>
+      <input class="modal-input" id="docModalRef" placeholder="e.g. BK-123456" type="text">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Link (Dropbox, Booking.com, etc.)</label>
+      <input class="modal-input" id="docModalUrl" placeholder="https://..." type="url">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeDocModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveDoc()">Save</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
