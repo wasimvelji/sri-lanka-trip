@@ -315,6 +315,20 @@ gmp-place-autocomplete { width:100%; display:block; }
   .lightbox-nav button { background:rgba(255,255,255,0.15); border:none; color:white; padding:8px 20px; border-radius:20px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; }
   .lightbox-counter { color:rgba(255,255,255,0.5); font-size:11px; margin-top:8px; }
 
+
+  /* ── UPDATE BANNER ── */
+  .update-banner {
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+    background:var(--teal); color:white; border-radius:20px;
+    padding:10px 20px; font-size:13px; font-weight:600;
+    display:none; align-items:center; gap:10px; z-index:500;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25); white-space:nowrap;
+  }
+  .update-banner.show { display:flex; }
+  .update-btn { background:var(--saffron); color:var(--teal); border:none;
+    border-radius:12px; padding:5px 12px; font-size:12px; font-weight:700;
+    cursor:pointer; font-family:'Inter',sans-serif; }
+
 </style>
 </head>
 <body>
@@ -2094,11 +2108,35 @@ function closeLightboxOutside(e) { if (e.target === document.getElementById('lig
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sri-lanka-trip/sw.js')
-      .then(r => console.log('SW registered:', r.scope))
+      .then(r => {
+        console.log('SW registered:', r.scope);
+        // Check for updates every time the app is focused
+        r.addEventListener('updatefound', () => {
+          const newSW = r.installing;
+          newSW.addEventListener('statechange', () => {
+            if (newSW.state === 'activated') showUpdateBanner();
+          });
+        });
+      })
       .catch(e => console.log('SW failed:', e));
   });
+  // Listen for SW_UPDATED message from activated service worker
+  navigator.serviceWorker.addEventListener('message', e => {
+    if (e.data && e.data.type === 'SW_UPDATED') showUpdateBanner();
+  });
+}
+
+function showUpdateBanner() {
+  const banner = document.getElementById('updateBanner');
+  if (banner) banner.classList.add('show');
 }
 </script>
+<!-- UPDATE BANNER -->
+<div class="update-banner" id="updateBanner">
+  🔄 App updated
+  <button class="update-btn" onclick="window.location.reload()">Reload</button>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLightboxOutside(event)">
   <button class="lightbox-close" onclick="closeLightbox()">✕</button>
