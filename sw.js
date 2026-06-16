@@ -1,4 +1,4 @@
-const CACHE_NAME = 'srilanka-trip-v1';
+const CACHE_NAME = 'srilanka-trip-v3';
 const BASE = '/sri-lanka-trip';
 const ASSETS = [
   BASE + '/',
@@ -6,6 +6,22 @@ const ASSETS = [
   BASE + '/manifest.json',
   BASE + '/icon-192.png',
   BASE + '/icon-512.png',
+  BASE + '/hero.jpg',
+  BASE + '/photos/colombo.jpg',
+  BASE + '/photos/rekawa.JPG',
+  BASE + '/photos/tangalle.jpg',
+  BASE + '/photos/galle.jpg',
+  BASE + '/photos/galle_1.jpg',
+  BASE + '/photos/kandy.jpg',
+  BASE + '/photos/kandy_1.jpg',
+  BASE + '/photos/Anuradhapura.jpg',
+  BASE + '/photos/Anuradhapura_1.jpg',
+  BASE + '/photos/Anuradhapura_2.jpg',
+  BASE + '/photos/dambulla.jpg',
+  BASE + '/photos/dambulla_1.jpg',
+  BASE + '/photos/sigiriya.jpg',
+  BASE + '/photos/sigiriya_1.jpg',
+  BASE + '/photos/sigiriya_2.jpg',
   'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&display=swap',
 ];
 
