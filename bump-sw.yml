@@ -1,0 +1,26 @@
+name: Bump SW cache version
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Bump service worker cache version
+        run: |
+          TIMESTAMP=$(date +%Y%m%d%H%M%S)
+          sed -i "s/const CACHE_NAME = 'srilanka-trip-[^']*'/const CACHE_NAME = 'srilanka-trip-${TIMESTAMP}'/" sw.js
+          echo "Cache version bumped to srilanka-trip-${TIMESTAMP}"
+
+      - name: Commit if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet sw.js || (git add sw.js && git commit -m "Auto-bump SW cache version [skip ci]")
+          git push
