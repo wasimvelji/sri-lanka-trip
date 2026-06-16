@@ -296,6 +296,25 @@ gmp-place-autocomplete { width:100%; display:block; }
   .connector-info strong { color:var(--text); font-weight:600; }
   .connector-maps { color:var(--teal); font-weight:600; text-decoration:none; margin-left:4px; }
 
+
+  /* ── PHOTO GALLERY ── */
+  .photo-strip { display:flex; gap:8px; overflow-x:auto; padding:10px 14px 8px; scrollbar-width:none; border-bottom:1px solid var(--border); }
+  .photo-strip::-webkit-scrollbar { display:none; }
+  .photo-card { flex-shrink:0; width:200px; height:130px; border-radius:10px; overflow:hidden; position:relative; cursor:pointer; background:var(--sand-dark); }
+  .photo-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .2s; }
+  .photo-card:active img { transform:scale(1.03); }
+  .photo-caption { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.6)); color:white; font-size:10px; font-weight:600; letter-spacing:.04em; padding:16px 8px 6px; }
+
+  /* Photo lightbox */
+  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:900; display:none; align-items:center; justify-content:center; flex-direction:column; padding:20px; }
+  .lightbox.open { display:flex; }
+  .lightbox img { max-width:100%; max-height:72vh; border-radius:8px; object-fit:contain; }
+  .lightbox-caption { color:rgba(255,255,255,0.8); font-size:13px; margin-top:12px; text-align:center; }
+  .lightbox-close { position:absolute; top:16px; right:20px; color:white; font-size:28px; cursor:pointer; line-height:1; background:none; border:none; padding:4px; }
+  .lightbox-nav { display:flex; gap:16px; margin-top:14px; }
+  .lightbox-nav button { background:rgba(255,255,255,0.15); border:none; color:white; padding:8px 20px; border-radius:20px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .lightbox-counter { color:rgba(255,255,255,0.5); font-size:11px; margin-top:8px; }
+
 </style>
 </head>
 <body>
@@ -550,6 +569,7 @@ const days = [
     id:'d1', date:'Sat 20 Sep', shortDate:'20', month:'Sep',
     title:'Arrival · Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Arrival', badgeType:'transit', nights:1, hotelKey:'colombo',
+    photos:[{ src:'photos/colombo.jpg', caption:'Colombo' }],
     timeline:[
       { type:'transport', mode:'flight', icon:'✈️',
         title:'Flight arrives at Bandaranaike Airport',
@@ -575,6 +595,7 @@ const days = [
     id:'d2', date:'Sun 21 Sep', shortDate:'21', month:'Sep',
     title:'Colombo → Anuradhapura', location:'Anuradhapura', mapStop:'anuradhapura',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'anuradhapura',
+    photos:[{ src:'photos/Anuradhapura.jpg', caption:'Anuradhapura — temple entrance' }, { src:'photos/Anuradhapura_1.jpg', caption:'Anuradhapura — sacred city' }, { src:'photos/Anuradhapura_2.jpg', caption:'Anuradhapura — dagoba' }],
     timeline:[
       { type:'activity', icon:'🌅', atype:'nature', name:'Early start — train departs 06:40', time:'06:00',
         desc:'Up early today. Pack the night before. Pick up snacks and water near the hotel before heading to the station — there\'s nothing much open at 06:00.',
@@ -609,6 +630,7 @@ const days = [
     id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
     title:'Sigiriya + Dambulla', location:'Anuradhapura', mapStop:'sigiriya',
     badge:'Day trips',
+    photos:[{ src:'photos/sigiriya.jpg', caption:'Sigiriya approach' }, { src:'photos/sigiriya_1.jpg', caption:'Sigiriya from afar' }, { src:'photos/sigiriya_2.jpg', caption:'Sigiriya aerial view' }, { src:'photos/dambulla.jpg', caption:'Dambulla cave interior' }, { src:'photos/dambulla_1.jpg', caption:'Dambulla cave statues' }],
     timeline:[
       { type:'transport', mode:'pickme', icon:'🚖',
         title:'PickMe to Dambulla Cave Temple',
@@ -641,6 +663,7 @@ const days = [
     id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
     title:'Anuradhapura → Kandy', location:'Kandy', mapStop:'kandy',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'kandy',
+    photos:[{ src:'photos/kandy.jpg', caption:'Kandy' }, { src:'photos/kandy_1.jpg', caption:'Kandy hills' }],
     timeline:[
       { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk or PickMe to Anuradhapura station',
@@ -675,6 +698,7 @@ const days = [
   {
     id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
     title:'Kandy', location:'Kandy', mapStop:'kandy',
+    photos:[{ src:'photos/kandy.jpg', caption:'Kandy' }, { src:'photos/kandy_1.jpg', caption:'Kandy hills' }],
     timeline:[
       { type:'transport', mode:'taxi', icon:'🚖',
         title:'Tuk-tuk to Peradeniya Gardens',
@@ -706,6 +730,7 @@ const days = [
     id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
     title:'Kandy → Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'colombo',
+    photos:[{ src:'photos/colombo.jpg', caption:'Colombo' }],
     timeline:[
       { type:'activity', icon:'🚶', atype:'culture', name:'Slow morning in Kandy', time:'Morning',
         desc:'Walk the lake, have a good breakfast.',
@@ -737,6 +762,7 @@ const days = [
     id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
     title:'Coastal Train → Galle', location:'Galle', mapStop:'galle',
     badge:'⭐ Highlight', nights:2, hotelKey:'galle',
+    photos:[{ src:'photos/galle.jpg', caption:'Galle lighthouse' }, { src:'photos/galle_1.jpg', caption:'Galle Fort ramparts' }],
     timeline:[
       { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Colombo Maradana station',
@@ -764,6 +790,7 @@ const days = [
   {
     id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
     title:'Galle', location:'Galle', mapStop:'galle',
+    photos:[{ src:'photos/galle.jpg', caption:'Galle lighthouse' }, { src:'photos/galle_1.jpg', caption:'Galle Fort ramparts' }],
     timeline:[
       { type:'activity', icon:'🚢', atype:'museum', name:'Maritime Archaeology Museum', time:'09:30',
         desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, ancient trade route maps. ~1.5 hours.',
@@ -786,6 +813,7 @@ const days = [
     id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
     title:'Galle → Tangalle', location:'Tangalle', mapStop:'tangalle',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'tangalle',
+    photos:[{ src:'photos/tangalle.jpg', caption:'Tangalle beach' }, { src:'photos/rekawa.JPG', caption:'Rekawa turtle beach' }],
     timeline:[
       { type:'transport', mode:'static', icon:'💳',
         title:'Withdraw cash before leaving Galle',
@@ -812,6 +840,7 @@ const days = [
   {
     id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
     title:'Tangalle', location:'Tangalle', mapStop:'tangalle',
+    photos:[{ src:'photos/tangalle.jpg', caption:'Tangalle beach' }, { src:'photos/rekawa.JPG', caption:'Rekawa turtle nesting' }],
     timeline:[
       { type:'activity', icon:'🏖️', atype:'beach', name:'Beach day', time:'All day',
         desc:'Swim, read, decompress. One of the quietest beaches on the south coast.',
@@ -832,6 +861,7 @@ const days = [
     id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
     title:'Tangalle → Matara → Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'colombo',
+    photos:[{ src:'photos/colombo.jpg', caption:'Colombo' }],
     timeline:[
       { type:'transport', mode:'pickme', icon:'🚖',
         title:'PickMe: Tangalle → Matara station',
@@ -858,6 +888,7 @@ const days = [
   {
     id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
     title:'Colombo · Sightseeing', location:'Colombo', mapStop:'colombo',
+    photos:[{ src:'photos/colombo.jpg', caption:'Colombo' }],
     timeline:[
       { type:'activity', icon:'🛕', atype:'temple', name:'Gangaramaya Temple', time:'09:00',
         desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia. ~2 hours.',
@@ -880,6 +911,7 @@ const days = [
     id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
     title:'Fly Home', location:'Colombo', mapStop:'colombo',
     badge:'Departure', badgeType:'transit',
+    photos:[{ src:'photos/colombo.jpg', caption:'Colombo' }],
     timeline:[
       { type:'activity', icon:'🌅', atype:'nature', name:'Free morning', time:'Morning',
         desc:'Slow breakfast, last walk along Galle Face Green.',
@@ -1226,6 +1258,20 @@ function renderDayBody(card, day) {
     hotelSec.id = 'hotelSec-' + day.id;
     renderHotelSection(hotelSec, day);
     body.appendChild(hotelSec);
+  }
+
+  // Photo strip
+  if (day.photos && day.photos.length) {
+    const strip = document.createElement('div');
+    strip.className = 'photo-strip';
+    day.photos.forEach((photo, i) => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      card.innerHTML = `<img src="${photo.src}" alt="${photo.caption}" loading="lazy"><div class="photo-caption">${photo.caption}</div>`;
+      card.onclick = () => openLightbox(day.photos, i);
+      strip.appendChild(card);
+    });
+    body.appendChild(strip);
   }
 
   if (!day.timeline || !day.timeline.length) return;
@@ -2022,6 +2068,28 @@ buildDayNav();
 buildDayCards();
 renderDocs();
 
+// ── LIGHTBOX ──────────────────────────────────────────────
+let _lbPhotos = [], _lbIdx = 0;
+function openLightbox(photos, idx) {
+  _lbPhotos = photos; _lbIdx = idx;
+  showLightboxPhoto();
+  document.getElementById('lightbox').classList.add('open');
+}
+function showLightboxPhoto() {
+  const p = _lbPhotos[_lbIdx];
+  document.getElementById('lightboxImg').src = p.src;
+  document.getElementById('lightboxImg').alt = p.caption;
+  document.getElementById('lightboxCaption').textContent = p.caption;
+  document.getElementById('lightboxNav').style.display = _lbPhotos.length > 1 ? 'flex' : 'none';
+  document.getElementById('lightboxCounter').textContent = _lbPhotos.length > 1 ? `${_lbIdx + 1} / ${_lbPhotos.length}` : '';
+}
+function lightboxNav(dir) {
+  _lbIdx = (_lbIdx + dir + _lbPhotos.length) % _lbPhotos.length;
+  showLightboxPhoto();
+}
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function closeLightboxOutside(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
+
 // Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -2031,5 +2099,17 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOutside(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img id="lightboxImg" src="" alt="">
+  <div class="lightbox-caption" id="lightboxCaption"></div>
+  <div class="lightbox-nav" id="lightboxNav">
+    <button onclick="lightboxNav(-1)">← Prev</button>
+    <button onclick="lightboxNav(1)">Next →</button>
+  </div>
+  <div class="lightbox-counter" id="lightboxCounter"></div>
+</div>
+
 </body>
 </html>
