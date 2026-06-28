@@ -339,7 +339,7 @@ gmp-place-autocomplete { width:100%; display:block; }
   <div class="hero-overlay"></div>
   <div class="hero-inner">
     <div class="hero-bottom">
-      <div class="hero-sub">20 Sep — 2 Oct 2026</div>
+      <div class="hero-sub">20 Sep — 3 Oct 2026</div>
       <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -535,6 +535,585 @@ gmp-place-autocomplete { width:100%; display:block; }
 // ═══════════════════════════════════════════════════════════
 const KNOWN = {
   airport:            { lat:7.1801,  lng:79.8843, name:'Bandaranaike International Airport' },
+  negombo_town:       { lat:7.2084,  lng:79.8358, name:'Negombo' },
+  colombo_fort_stn:   { lat:6.9347,  lng:79.8503, name:'Colombo Fort Railway Station' },
+  colombo_maradana:   { lat:6.9293,  lng:79.8553, name:'Colombo Maradana Station' },
+  anuradhapura_stn:   { lat:8.3350,  lng:80.4089, name:'Anuradhapura Railway Station' },
+  polgahawela_stn:    { lat:7.3307,  lng:80.3310, name:'Polgahawela Junction Station' },
+  galle_stn:          { lat:6.0480,  lng:80.2193, name:'Galle Railway Station' },
+  matara_stn:         { lat:5.9490,  lng:80.5370, name:'Matara Railway Station' },
+  matara_fort:        { lat:5.9500,  lng:80.5350, name:'Matara Dutch Fort' },
+  nanuoya_stn:        { lat:6.9720,  lng:80.7390, name:'Nanu Oya Railway Station' },
+  habarana_stn:       { lat:8.0459,  lng:80.7518, name:'Habarana Railway Station' },
+  sigiriya:           { lat:7.9570,  lng:80.7603, name:'Sigiriya Rock Fortress' },
+  dambulla:           { lat:7.8549,  lng:80.6506, name:'Dambulla Cave Temple' },
+  rekawa:             { lat:6.0256,  lng:80.8372, name:'Rekawa Turtle Beach' },
+  gangaramaya:        { lat:6.9167,  lng:79.8566, name:'Gangaramaya Temple, Colombo' },
+  national_museum:    { lat:6.9100,  lng:79.8609, name:'National Museum of Colombo' },
+  pettah:             { lat:6.9372,  lng:79.8541, name:'Pettah Bazaar, Colombo' },
+  galle_face_green:   { lat:6.9194,  lng:79.8451, name:'Galle Face Green, Colombo' },
+  barefoot:           { lat:6.8934,  lng:79.8572, name:'Barefoot Gallery & Bookshop, Colombo' },
+  dutch_church:       { lat:6.0280,  lng:80.2170, name:'Dutch Reformed Church, Galle' },
+  maritime_museum:    { lat:6.0280,  lng:80.2178, name:'Maritime Archaeology Museum, Galle' },
+  book_studio:        { lat:6.0346,  lng:80.2146, name:'Book Studio, Galle' },
+  samudra_books:      { lat:6.0354,  lng:80.2169, name:'Samudra Book Shop, Galle' },
+  galle_ramparts:     { lat:6.0262,  lng:80.2157, name:'Galle Fort Ramparts' },
+  galle_lighthouse:   { lat:6.0236,  lng:80.2142, name:'Galle Lighthouse' },
+  anuradhapura_ruins: { lat:8.3120,  lng:80.4026, name:'Anuradhapura Sacred City' },
+  habarana_stn:       { lat:8.0500,  lng:80.7500, name:'Habarana Railway Station' },
+  kandy_temple:       { lat:7.2937,  lng:80.6414, name:'Temple of the Tooth, Kandy' },
+  kandy_lake:         { lat:7.2907,  lng:80.6337, name:'Kandy Lake' },
+  tangalle_beach:     { lat:6.0240,  lng:80.7920, name:'Tangalle Beach' },
+  bundala:            { lat:6.1833,  lng:81.1167, name:'Bundala National Park' },
+  nuwara_eliya_town:  { lat:6.9497,  lng:80.7891, name:'Nuwara Eliya Town' },
+  gregory_lake:       { lat:6.9612,  lng:80.7735, name:'Gregory Lake, Nuwara Eliya' },
+  victoria_park:      { lat:6.9672,  lng:80.7812, name:'Victoria Park, Nuwara Eliya' },
+  hakgala_gardens:    { lat:6.9012,  lng:80.8023, name:'Hakgala Botanical Gardens' },
+  horton_plains:      { lat:6.8008,  lng:80.8117, name:'Horton Plains National Park' },
+  ella_town:          { lat:6.8728,  lng:81.0465, name:'Ella Town' },
+  nine_arch_bridge:   { lat:6.8796,  lng:81.0593, name:'Nine Arch Bridge, Ella' },
+  little_adams_peak:  { lat:6.8635,  lng:81.0523, name:"Little Adam's Peak, Ella" },
+  ravana_falls:       { lat:6.8761,  lng:81.0414, name:'Ravana Falls, Ella' },
+};
+
+DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sri Lanka Trip</title>
+<link rel="manifest" href="/sri-lanka-trip/manifest.json">
+<meta name="theme-color" content="#1B4D4A">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sri Lanka">
+<link rel="apple-touch-icon" href="/sri-lanka-trip/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+  window._mapsApiReady = false;
+  window._mapTabOpen   = false;
+  window.initMap = function() {
+    window._mapsApiReady = true;
+    if (window._mapTabOpen && typeof buildMap === 'function') buildMap();
+  };
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB35Mm-_sWjBjWmxwx_1EjmBVhLvlZtGBQ&v=weekly&libraries=places&callback=initMap" async defer></script>
+<style>
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+:root {
+  --teal:#1B4D4A; --teal-mid:#2A6B67; --teal-light:#3D8B86;
+  --sand:#F2E8D5; --sand-dark:#E5D8BF; --saffron:#E8A030;
+  --terra:#C4613A; --card:#FDFAF5; --text:#1A1A18;
+  --muted:#6B6B62; --border:#E0D8C8; --green:#2D7A4F; --purple:#5B3A8A;
+}
+html,body { height:100%; }
+body { font-family:'Inter',sans-serif; background:var(--sand); color:var(--text); max-width:480px; margin:0 auto; display:flex; flex-direction:column; }
+
+/* ── HERO ── */
+.hero { position:relative; flex-shrink:0; overflow:visible; height:180px; }
+.hero-img { width:100%; height:100%; object-fit:cover; object-position:center 40%; display:block; }
+.hero-overlay { position:absolute; inset:0; background:linear-gradient(to bottom,rgba(0,0,0,.1) 0%,rgba(0,0,0,.6) 100%); }
+.hero-inner { position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-end; padding:12px 16px; }
+.hero-bottom { display:flex; justify-content:space-between; align-items:flex-end; }
+.hero-sub { font-size:12px; color:rgba(255,255,255,.85); font-weight:500; letter-spacing:.03em; }
+.menu-btn { width:38px; height:38px; border:none; background:rgba(0,0,0,.35); border-radius:10px; cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; backdrop-filter:blur(4px); flex-shrink:0; }
+.menu-btn span { display:block; width:16px; height:2px; background:white; border-radius:2px; transition:all .2s; }
+
+/* ── DROPDOWN ── */
+.menu-dropdown { position:fixed; top:48px; right:12px; z-index:1000; background:white; border-radius:14px; overflow:hidden; box-shadow:0 8px 30px rgba(0,0,0,.25); display:none; min-width:180px; }
+.menu-dropdown.open { display:block; }
+.menu-item { display:flex; align-items:center; gap:12px; padding:13px 18px; border:none; background:none; width:100%; font-family:'Inter',sans-serif; font-size:14px; font-weight:600; color:var(--text); cursor:pointer; text-align:left; border-bottom:1px solid var(--border); transition:background .12s; }
+.menu-item:last-child { border-bottom:none; }
+.menu-item:hover { background:var(--sand); }
+.menu-item.active { color:var(--teal); }
+.menu-item-icon { font-size:17px; width:22px; text-align:center; }
+.menu-item-check { color:var(--saffron); font-size:13px; margin-left:auto; }
+
+/* ── NAV BAR ── */
+.nav-bar { background:var(--teal); padding:8px 16px 10px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; box-shadow:0 2px 10px rgba(0,0,0,.2); }
+.nav-label { font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.7); }
+
+/* ── PANELS ── */
+.main-panel { display:none; flex-direction:column; flex:1; min-height:0; }
+.main-panel.active { display:flex; }
+
+/* ── DAY NAV ── */
+.day-nav-wrapper { background:var(--teal); padding:2px 0 12px; flex-shrink:0; }
+.day-nav { display:flex; gap:5px; overflow-x:auto; padding:0 14px; scrollbar-width:none; }
+.day-nav::-webkit-scrollbar { display:none; }
+.day-pip { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:2px; cursor:pointer; padding:6px 9px; border-radius:8px; border:1.5px solid transparent; background:none; transition:background .15s; min-width:40px; }
+.day-pip:hover { background:rgba(255,255,255,.08); }
+.day-pip.active { background:var(--saffron); border-color:var(--saffron); }
+.day-pip-num { font-size:14px; font-weight:600; color:rgba(255,255,255,.9); line-height:1; }
+.day-pip.active .day-pip-num { color:var(--teal); }
+.day-pip-lbl { font-size:8px; letter-spacing:.05em; text-transform:uppercase; color:rgba(255,255,255,.45); font-weight:500; }
+.day-pip.active .day-pip-lbl { color:var(--teal); }
+
+/* ── TRIP PANELS ── */
+.trip-panel { display:none; flex:1; overflow-y:auto; }
+.trip-panel.active { display:block; }
+.itinerary-content { padding:14px 14px 80px; }
+
+/* ── MAP ── */
+#trip-map { display:none; flex-direction:column; flex:1; }
+#map { width:100%; height:calc(100vh - 300px); min-height:300px; }
+.map-legend { background:var(--card); padding:10px 14px; border-top:1px solid var(--border); flex-shrink:0; overflow-x:auto; }
+.map-legend-stops { display:flex; gap:6px; scrollbar-width:none; flex-wrap:nowrap; }
+.map-legend-stops::-webkit-scrollbar { display:none; }
+.legend-stop { flex-shrink:0; background:var(--teal); color:white; border:none; padding:5px 11px; border-radius:20px; font-family:'Inter',sans-serif; font-size:11px; font-weight:600; cursor:pointer; white-space:nowrap; }
+.legend-stop:hover { background:var(--teal-mid); }
+.legend-stop.active { background:var(--saffron); color:var(--teal); }
+.map-route-key { display:flex; gap:14px; padding:6px 0 2px; }
+.map-route-key span { font-size:10px; color:var(--muted); font-weight:600; display:flex; align-items:center; gap:4px; }
+
+/* ── PREP ── */
+.prep-content { padding:16px 14px 80px; overflow-y:auto; flex:1; }
+.prep-tabs { display:flex; gap:0; margin-bottom:14px; background:var(--sand-dark); border-radius:12px; padding:3px; }
+.prep-tab-btn { flex:1; padding:7px 2px; border:none; background:none; cursor:pointer; font-family:'Inter',sans-serif; font-size:10px; font-weight:600; color:var(--muted); border-radius:9px; transition:all .15s; }
+.prep-tab-btn.active { background:var(--card); color:var(--teal); box-shadow:0 1px 4px rgba(0,0,0,.1); }
+.prep-panel { display:none; }
+.prep-panel.active { display:block; }
+
+/* ── DAY CARD ── */
+.day-card { background:var(--card); border-radius:14px; margin-bottom:12px; border:1px solid var(--border); overflow:hidden; }
+.day-header { display:flex; align-items:stretch; cursor:pointer; user-select:none; -webkit-tap-highlight-color:transparent; }
+.day-accent { width:4px; flex-shrink:0; background:var(--teal-light); transition:background .2s; }
+.day-card.open .day-accent { background:var(--saffron); }
+.day-header-inner { flex:1; padding:12px 12px 12px 12px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.day-header-left { flex:1; min-width:0; }
+.day-date-row { display:flex; align-items:center; gap:7px; margin-bottom:2px; flex-wrap:wrap; }
+.day-date { font-size:10px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+.day-badge { font-size:9px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; background:var(--saffron); color:var(--teal); padding:2px 6px; border-radius:20px; }
+.day-badge.transit { background:var(--sand-dark); color:var(--muted); }
+.day-title { font-family:'Playfair Display',serif; font-size:16px; font-weight:600; color:var(--text); line-height:1.2; }
+.day-meta { font-size:11px; color:var(--muted); margin-top:2px; }
+.day-actions { display:flex; align-items:center; gap:5px; flex-shrink:0; }
+.map-btn { background:var(--teal); border:none; border-radius:7px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:13px; transition:background .15s; }
+.map-btn:hover { background:var(--teal-mid); }
+.day-chevron { font-size:17px; color:var(--muted); transition:transform .25s; line-height:1; }
+.day-card.open .day-chevron { transform:rotate(180deg); }
+.day-body { display:none; border-top:1px solid var(--border); }
+.day-card.open .day-body { display:block; }
+
+/* ── HOTEL SECTION ── */
+.hotel-section { padding:10px 14px; border-bottom:1px solid var(--border); }
+.hotel-row { display:flex; align-items:center; gap:8px; }
+.hotel-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+.hotel-name-display { flex:1; font-size:13px; font-weight:600; color:var(--teal); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hotel-name-display.empty { color:var(--muted); font-weight:400; font-style:italic; }
+.hotel-edit-btn { background:var(--sand-dark); border:none; border-radius:7px; padding:5px 9px; font-size:11px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; flex-shrink:0; }
+.hotel-dir-btn { background:var(--teal); color:white; border:none; border-radius:7px; padding:5px 9px; font-size:11px; font-weight:600; font-family:'Inter',sans-serif; cursor:pointer; flex-shrink:0; }
+.hotel-dir-btn:disabled { background:var(--sand-dark); color:var(--muted); cursor:default; }
+
+/* Places autocomplete form */
+.hotel-search-form { display:none; margin-top:8px; }
+.hotel-search-form.open { display:block; }
+.pac-container { z-index:2000 !important; font-family:'Inter',sans-serif !important; border-radius:10px !important; box-shadow:0 4px 20px rgba(0,0,0,.15) !important; }
+/* PlaceAutocompleteElement new API styling */
+gmp-place-autocomplete { width:100%; display:block; }
+.hotel-search-input { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); outline:none; background:white; }
+.hotel-search-input:focus { border-color:var(--teal); }
+.hotel-suggestions { background:white; border:1.5px solid var(--border); border-radius:10px; margin-top:4px; overflow:hidden; display:none; }
+.hotel-suggestions.open { display:block; }
+.hotel-suggestion { padding:10px 12px; font-size:13px; color:var(--text); cursor:pointer; border-bottom:1px solid var(--border); line-height:1.3; }
+.hotel-suggestion:last-child { border-bottom:none; }
+.hotel-suggestion:active { background:var(--sand); }
+.hotel-suggestion-name { font-weight:600; }
+.hotel-suggestion-addr { font-size:11px; color:var(--muted); margin-top:2px; }
+.hotel-search-btns { display:flex; gap:8px; margin-top:7px; }
+.hotel-search-save { flex:1; padding:9px; background:var(--teal); color:white; border:none; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; cursor:pointer; }
+.hotel-search-cancel { padding:9px 14px; background:var(--sand-dark); color:var(--muted); border:none; border-radius:9px; font-family:'Inter',sans-serif; font-size:13px; font-weight:600; cursor:pointer; }
+.hotel-clear-btn { width:100%; padding:7px; background:none; border:1px solid var(--border); border-radius:8px; font-family:'Inter',sans-serif; font-size:11px; color:var(--muted); cursor:pointer; margin-top:6px; }
+
+/* ── LOGISTICS SECTION ── */
+.logistics-section { padding:10px 14px; border-bottom:1px solid var(--border); }
+.logistics-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+.leg { display:flex; gap:10px; padding:8px 0; border-bottom:1px dashed var(--border); align-items:flex-start; }
+.leg:last-child { border-bottom:none; padding-bottom:0; }
+.leg-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+.leg-body { flex:1; min-width:0; }
+.leg-title { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; line-height:1.3; }
+.leg-detail { font-size:12px; color:var(--muted); line-height:1.45; }
+.leg-detail strong { color:var(--text); font-weight:600; }
+.leg-meta { display:flex; align-items:center; gap:8px; margin-top:5px; flex-wrap:wrap; }
+.leg-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap; }
+.leg-badge.train  { background:#FFF0DC; color:#8A5500; }
+.leg-badge.walk   { background:#DCFAEA; color:var(--green); }
+.leg-badge.taxi   { background:#F0DCFF; color:var(--purple); }
+.leg-badge.pickme { background:#F0DCFF; color:var(--purple); }
+.leg-badge.bus    { background:#DCF0FF; color:#1A5A8A; }
+.leg-badge.flight { background:#FFE8DC; color:var(--terra); }
+.leg-maps-btn { font-size:10px; font-weight:700; color:var(--teal); background:none; border:1px solid var(--teal); border-radius:20px; padding:2px 9px; cursor:pointer; font-family:'Inter',sans-serif; white-space:nowrap; }
+.leg-computing { font-size:11px; color:var(--muted); font-style:italic; }
+  .leg-dist { font-size:11px; color:var(--text); }
+  .leg-dist strong { font-weight:600; }
+.leg-unlock { font-size:11px; color:var(--muted); background:var(--sand); border-radius:8px; padding:7px 10px; margin-top:4px; }
+
+/* ── ACTIVITIES SECTION ── */
+.activities-section { padding:4px 14px 14px; }
+.activity { display:flex; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); }
+.activity:last-child { border-bottom:none; padding-bottom:0; }
+.act-left { width:34px; flex-shrink:0; }
+.act-icon { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.act-icon.temple  { background:#FFF0DC; }
+.act-icon.museum  { background:#DCF0FF; }
+.act-icon.nature  { background:#DCFAEA; }
+.act-icon.food    { background:#FFE8DC; }
+.act-icon.travel  { background:#F0DCFF; }
+.act-icon.beach   { background:#DCF5FF; }
+.act-icon.culture { background:#FFDCF0; }
+.act-icon.shop    { background:#FFFBDC; }
+.act-icon.night   { background:#2A2A3A; }
+.act-icon.info    { background:#F0F0F0; }
+.act-right { flex:1; }
+.act-time  { font-size:10px; font-weight:700; letter-spacing:.06em; color:var(--saffron); margin-bottom:2px; }
+.act-name  { font-size:13px; font-weight:600; color:var(--text); margin-bottom:3px; line-height:1.3; }
+.act-desc  { font-size:12px; color:var(--muted); line-height:1.45; }
+.act-tip   { margin-top:5px; background:var(--sand); border-left:3px solid var(--saffron); border-radius:0 6px 6px 0; padding:6px 9px; font-size:11px; color:var(--text); line-height:1.4; }
+.act-tip strong { color:var(--terra); font-weight:600; }
+.act-cost  { display:inline-block; margin-top:5px; font-size:10px; font-weight:700; color:var(--teal); background:rgba(27,77,74,.08); padding:2px 7px; border-radius:20px; }
+
+/* ── CHECKLIST ── */
+.checklist-section { background:var(--card); border-radius:14px; padding:16px 18px; margin-bottom:12px; border:1px solid var(--border); }
+.cl-group-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; }
+.cl-progress { font-size:11px; font-weight:600; color:var(--green); letter-spacing:0; text-transform:none; }
+.check-item { display:flex; align-items:flex-start; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); cursor:pointer; -webkit-tap-highlight-color:transparent; user-select:none; }
+.check-item:last-child { border-bottom:none; padding-bottom:0; }
+.check-item:first-child { padding-top:0; }
+.check-box { width:22px; height:22px; border-radius:6px; border:2px solid var(--border); flex-shrink:0; margin-top:1px; display:flex; align-items:center; justify-content:center; transition:all .15s; background:white; }
+.check-item.done .check-box { background:var(--green); border-color:var(--green); }
+.check-tick { font-size:12px; color:white; display:none; }
+.check-item.done .check-tick { display:block; }
+.check-content { flex:1; }
+.check-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.check-item.done .check-name { color:var(--muted); text-decoration:line-through; }
+.check-detail { font-size:11px; color:var(--muted); line-height:1.4; }
+.check-detail a { color:var(--teal-mid); text-decoration:none; font-weight:500; }
+.check-when { display:inline-block; margin-top:3px; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:2px 6px; border-radius:20px; }
+.when-asap  { background:#FFE8DC; color:var(--terra); }
+.when-weeks { background:#FFF5DC; color:#8A6500; }
+.when-days  { background:#DCFAEA; color:var(--green); }
+.when-pack  { background:#DCF0FF; color:#1A5A8A; }
+.reset-btn  { width:100%; padding:9px; background:none; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:var(--muted); cursor:pointer; margin-top:4px; }
+
+/* ── INFO CARDS ── */
+.info-card { background:var(--card); border-radius:14px; padding:16px 18px; margin-bottom:12px; border:1px solid var(--border); }
+.info-title { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); margin-bottom:12px; }
+.info-row { display:flex; align-items:flex-start; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+.info-row:last-child { border-bottom:none; padding-bottom:0; }
+.info-row:first-child { padding-top:0; }
+.info-icon { font-size:15px; width:26px; text-align:center; flex-shrink:0; margin-top:1px; }
+.info-name { font-size:13px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.info-detail { font-size:11px; color:var(--muted); line-height:1.4; }
+.info-detail a { color:var(--teal-mid); text-decoration:none; font-weight:500; }
+
+/* ── BUDGET ── */
+.budget-card { background:var(--teal); border-radius:14px; padding:16px 18px; margin-bottom:12px; color:white; }
+.budget-title { font-size:10px; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--saffron); margin-bottom:10px; }
+.budget-grid  { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.budget-item  { background:rgba(255,255,255,.08); border-radius:9px; padding:9px 11px; }
+.budget-cat   { font-size:10px; color:rgba(255,255,255,.5); text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+.budget-range { font-size:13px; font-weight:600; color:white; }
+.budget-total { margin-top:10px; border-top:1px solid rgba(255,255,255,.1); padding-top:10px; display:flex; justify-content:space-between; align-items:center; }
+.budget-total-label { font-size:12px; color:rgba(255,255,255,.6); }
+.budget-total-val { font-family:'Playfair Display',serif; font-size:19px; font-weight:600; color:var(--saffron); }
+
+/* ── DOCUMENTS ── */
+.docs-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.docs-title  { font-size:10px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; color:var(--terra); }
+.docs-add-btn { padding:6px 13px; background:var(--teal); color:white; border:none; border-radius:20px; font-family:'Inter',sans-serif; font-size:12px; font-weight:600; cursor:pointer; }
+.doc-card { background:var(--card); border-radius:13px; padding:13px 15px; margin-bottom:9px; border:1px solid var(--border); }
+.doc-name  { font-size:13px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.doc-ref   { font-size:11px; color:var(--muted); margin-bottom:7px; }
+.doc-actions { display:flex; gap:5px; flex-wrap:wrap; }
+.doc-btn { padding:5px 10px; border-radius:7px; border:none; cursor:pointer; font-size:11px; font-weight:600; font-family:'Inter',sans-serif; }
+.doc-btn-open   { background:var(--teal); color:white; }
+.doc-btn-edit   { background:var(--sand-dark); color:var(--text); }
+.doc-btn-delete { background:#FFE8E8; color:#C0392B; }
+.doc-empty { text-align:center; padding:28px 20px; color:var(--muted); font-size:13px; line-height:1.6; }
+
+/* ── MODAL ── */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:600; display:none; align-items:flex-end; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal-sheet { background:white; border-radius:20px 20px 0 0; padding:22px 18px 38px; width:100%; max-width:480px; max-height:85vh; overflow-y:auto; }
+.modal-title { font-family:'Playfair Display',serif; font-size:19px; font-weight:700; color:var(--text); margin-bottom:16px; }
+.modal-field { margin-bottom:13px; }
+.modal-label { font-size:10px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px; display:block; }
+.modal-input { width:100%; padding:10px 13px; border:1.5px solid var(--border); border-radius:10px; font-family:'Inter',sans-serif; font-size:13px; color:var(--text); outline:none; }
+.modal-input:focus { border-color:var(--teal); }
+.modal-btns { display:flex; gap:9px; margin-top:18px; }
+.modal-btn { flex:1; padding:12px; border:none; border-radius:11px; cursor:pointer; font-family:'Inter',sans-serif; font-size:13px; font-weight:700; }
+.modal-btn.primary  { background:var(--teal); color:white; }
+.modal-btn.secondary { background:var(--sand-dark); color:var(--muted); }
+
+/* ── OFFLINE PILL ── */
+.offline-pill { position:fixed; bottom:16px; left:50%; transform:translateX(-50%); padding:7px 16px; border-radius:20px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:6px; z-index:500; box-shadow:0 2px 12px rgba(0,0,0,.2); pointer-events:none; opacity:0; transition:opacity .3s; white-space:nowrap; }
+.offline-pill.show { opacity:1; }
+.offline-pill.offline { background:var(--terra); color:white; }
+.offline-pill.online  { background:var(--green); color:white; }
+.offline-dot { width:6px; height:6px; border-radius:50%; background:white; flex-shrink:0; }
+
+  /* ── UNIFIED TIMELINE ── */
+  .timeline-section { padding:0 14px 14px; }
+
+  /* Transport card */
+  .transport-item { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--border); align-items:flex-start; }
+  .transport-item:last-child { border-bottom:none; }
+  .ti-icon  { font-size:18px; flex-shrink:0; margin-top:1px; width:26px; text-align:center; }
+  .ti-body  { flex:1; }
+  .ti-time  { font-size:10px; font-weight:700; letter-spacing:.06em; color:var(--saffron); margin-bottom:2px; }
+  .ti-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:3px; line-height:1.3; }
+  .ti-detail { font-size:12px; color:var(--muted); line-height:1.45; margin-bottom:4px; }
+
+  /* Connector between stops */
+  .connector { display:flex; align-items:center; gap:8px; padding:5px 0 5px 12px; margin:0 0 0 -14px; position:relative; }
+  .connector-line { width:2px; height:28px; background:var(--border); border-radius:1px; flex-shrink:0; margin-left:11px; }
+  .connector-info { font-size:11px; color:var(--muted); line-height:1.4; flex:1; }
+  .connector-info.loading { font-style:italic; }
+  .connector-info strong { color:var(--text); font-weight:600; }
+  .connector-maps { color:var(--teal); font-weight:600; text-decoration:none; margin-left:4px; }
+
+
+  /* ── PHOTO GALLERY ── */
+  .photo-strip { display:flex; gap:8px; overflow-x:auto; padding:10px 14px 8px; scrollbar-width:none; border-bottom:1px solid var(--border); }
+  .photo-strip::-webkit-scrollbar { display:none; }
+  .photo-card { flex-shrink:0; width:200px; height:130px; border-radius:10px; overflow:hidden; position:relative; cursor:pointer; background:var(--sand-dark); }
+  .photo-card img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .2s; }
+  .photo-card:active img { transform:scale(1.03); }
+  .photo-caption { position:absolute; bottom:0; left:0; right:0; background:linear-gradient(transparent, rgba(0,0,0,0.6)); color:white; font-size:10px; font-weight:600; letter-spacing:.04em; padding:16px 8px 6px; }
+
+  /* Photo lightbox */
+  .lightbox { position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:900; display:none; align-items:center; justify-content:center; flex-direction:column; padding:20px; }
+  .lightbox.open { display:flex; }
+  .lightbox img { max-width:100%; max-height:72vh; border-radius:8px; object-fit:contain; }
+  .lightbox-caption { color:rgba(255,255,255,0.8); font-size:13px; margin-top:12px; text-align:center; }
+  .lightbox-close { position:absolute; top:16px; right:20px; color:white; font-size:28px; cursor:pointer; line-height:1; background:none; border:none; padding:4px; }
+  .lightbox-nav { display:flex; gap:16px; margin-top:14px; }
+  .lightbox-nav button { background:rgba(255,255,255,0.15); border:none; color:white; padding:8px 20px; border-radius:20px; font-size:13px; cursor:pointer; font-family:'Inter',sans-serif; }
+  .lightbox-counter { color:rgba(255,255,255,0.5); font-size:11px; margin-top:8px; }
+
+
+  /* ── UPDATE BANNER ── */
+  .update-banner {
+    position:fixed; bottom:16px; left:50%; transform:translateX(-50%);
+    background:var(--teal); color:white; border-radius:20px;
+    padding:10px 20px; font-size:13px; font-weight:600;
+    display:none; align-items:center; gap:10px; z-index:500;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25); white-space:nowrap;
+  }
+  .update-banner.show { display:flex; }
+  .update-btn { background:var(--saffron); color:var(--teal); border:none;
+    border-radius:12px; padding:5px 12px; font-size:12px; font-weight:700;
+    cursor:pointer; font-family:'Inter',sans-serif; }
+
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero" id="heroEl">
+  <img class="hero-img" src="hero.jpg" alt="Sri Lanka — Sigiriya">
+  <div class="hero-overlay"></div>
+  <div class="hero-inner">
+    <div class="hero-bottom">
+      <div class="hero-sub">20 Sep — 3 Oct 2026</div>
+      <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- DROPDOWN -->
+<div class="menu-dropdown" id="menuDropdown">
+  <button class="menu-item active" id="mi-itinerary" onclick="selectSection('itinerary')">
+    <span class="menu-item-icon">📅</span>
+    <span>Itinerary</span>
+    <span class="menu-item-check" id="mc-itinerary">✓</span>
+  </button>
+  <button class="menu-item" id="mi-map" onclick="selectSection('map')">
+    <span class="menu-item-icon">🗺️</span>
+    <span>Map</span>
+    <span class="menu-item-check" id="mc-map"></span>
+  </button>
+  <button class="menu-item" id="mi-prep" onclick="selectSection('prep')">
+    <span class="menu-item-icon">✅</span>
+    <span>Prep</span>
+    <span class="menu-item-check" id="mc-prep"></span>
+  </button>
+</div>
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <span class="nav-label" id="navLabel">Itinerary</span>
+</div>
+
+<!-- ══ TRIP PANEL ══ -->
+<div class="main-panel active" id="main-trip">
+  <!-- Day nav -->
+  <div class="day-nav-wrapper" id="dayNavWrapper">
+    <div class="day-nav" id="dayNav"></div>
+  </div>
+  <!-- Itinerary -->
+  <div class="trip-panel active" id="trip-itinerary">
+    <div class="itinerary-content" id="dayCards"></div>
+  </div>
+  <!-- Map -->
+  <div id="trip-map">
+    <div id="map"></div>
+    <div class="map-legend">
+      <div class="map-route-key" id="mapRouteKey"></div>
+      <div class="map-legend-stops" id="mapLegend"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PREP PANEL ══ -->
+<div class="main-panel" id="main-prep">
+  <div class="prep-content">
+    <div class="prep-tabs">
+      <button class="prep-tab-btn active" onclick="switchPrep('checklist',this)">✅ List</button>
+      <button class="prep-tab-btn" onclick="switchPrep('budget',this)">💰 Budget</button>
+      <button class="prep-tab-btn" onclick="switchPrep('essentials',this)">📋 Info</button>
+      <button class="prep-tab-btn" onclick="switchPrep('docs',this)">📎 Docs</button>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div class="prep-panel active" id="prep-checklist">
+      <div class="checklist-section">
+        <div class="cl-group-title">Do Immediately<span class="cl-progress" id="prog-asap"></span></div>
+        <div class="check-item" data-id="eta" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Apply for Sri Lanka ETA Visa</div><div class="check-detail">Apply at <a href="https://eta.gov.lk" target="_blank">eta.gov.lk</a> — ~$35–50, usually approved within 24hrs.</div><span class="check-when when-asap">Do now</span></div></div>
+        <div class="check-item" data-id="trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Verify train routes are running</div><div class="check-detail"><strong>Book in advance:</strong> Night Mail Colombo→Anuradhapura (Train 44089, AC Saloon LKR 2,000 or 2nd Reserved LKR 1,200) and Yal Devi Anuradhapura→Colombo (Train 44478, departs 14:20). Coastal trains Maradana→Galle and Matara→Colombo can be bought at the station. Book via <a href="https://12go.asia" target="_blank">12go.asia</a>. ⚠️ Verify all routes running after Cyclone Ditwah.</div><span class="check-when when-asap">Do now</span></div></div>
+        <div class="check-item" data-id="hotels" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Book accommodation (same hotel all 3 Colombo stays)</div><div class="check-detail">Booking.com, 3-star, score 8.0+. 7 bookings: Colombo (Sep 20–21, 29–Oct 2 — same hotel), Anuradhapura (Sep 21–23), Galle (Sep 23–24), Tangalle (Sep 24–26), Nuwara Eliya (Sep 26–28), Ella (Sep 28–29).</div><span class="check-when when-asap">Do now</span></div></div>
+        <div class="check-item" data-id="bank" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Notify your bank</div><div class="check-detail">Tell your bank you're in Sri Lanka Sep 20 – Oct 2.</div><span class="check-when when-asap">Do now</span></div></div>
+      </div>
+      <div class="checklist-section">
+        <div class="cl-group-title">6–8 Weeks Before<span class="cl-progress" id="prog-weeks"></span></div>
+        <div class="check-item" data-id="gp" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">GP / travel health appointment</div><div class="check-detail">Hep A, Typhoid, Tetanus booster. Ask about malaria tablets for Anuradhapura. Book 6–8 weeks out.</div><span class="check-when when-weeks">6–8 weeks before</span></div></div>
+        <div class="check-item" data-id="insurance" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Get travel insurance</div><div class="check-detail">Cover medical evacuation, cancellation, lost luggage. ~£20–40 for a single trip.</div><span class="check-when when-weeks">6–8 weeks before</span></div></div>
+        <div class="check-item" data-id="pickme" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download PickMe app</div><div class="check-detail">Sri Lanka's metered ride-hailing app. Set up before you go.</div><span class="check-when when-weeks">Before you leave</span></div></div>
+        <div class="check-item" data-id="booking-acc" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Create 12go.asia account</div><div class="check-detail">For booking hill country train reserved seats.</div><span class="check-when when-weeks">Before booking trains</span></div></div>
+      </div>
+      <div class="checklist-section">
+        <div class="cl-group-title">Day Before Flying<span class="cl-progress" id="prog-days"></span></div>
+        <div class="check-item" data-id="print-eta" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot your ETA</div><div class="check-detail">Needed at check-in and Sri Lankan immigration.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="print-hotels" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot hotel confirmations</div><div class="check-detail">Immigration may ask for your first accommodation address.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="print-trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot train tickets</div><div class="check-detail">Download 12go.asia / Bookaway tickets offline. Coastal train buy on the day.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="cash" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check travel card works</div><div class="check-detail">Withdraw rupees at airport ATM on arrival. Memorise your PIN.</div><span class="check-when when-days">Day before</span></div></div>
+        <div class="check-item" data-id="maps-dl" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download offline maps</div><div class="check-detail">Google Maps — download Sri Lanka before you travel.</div><span class="check-when when-days">Day before</span></div></div>
+            <div class="check-item" data-id="cricket" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check cricket schedule — Colombo</div><div class="check-detail">Check if there's a Test or ODI at R. Premadasa Stadium or SSC during your Colombo dates (Sep 20–21, Sep 25, Oct 3–4). Check <a href="https://www.espncricinfo.com" target="_blank">espncricinfo.com</a> in July 2026 when schedules confirm. Sri Lanka home games are atmospheric and intimate.</div><span class="check-when when-asap">Check Jul 2026</span></div></div>
+            <div class="check-item" data-id="concerts" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check Colombo events — music / concerts</div><div class="check-detail">Colombo has a growing live music scene. Check Resident Advisor and local Facebook groups for events in late Sep / early Oct 2026. The Nelum Pokuna Amphitheatre hosts big shows. Worth checking in August 2026.</div><span class="check-when when-asap">Check Aug 2026</span></div></div>
+      </div>
+      <div class="checklist-section">
+        <div class="cl-group-title">Pack<span class="cl-progress" id="prog-pack"></span></div>
+        <div class="check-item" data-id="p-adapter" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Type G plug adapter</div><div class="check-detail">UK-style 3-pin plugs. Not from UK — bring an adapter.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-deet" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">DEET insect repellent</div><div class="check-detail">Dengue fever island-wide. Use at dawn and dusk.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-sun" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">SPF 50+ sunscreen + hat</div><div class="check-detail">Equatorial sun. Reapply constantly.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-temple" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Temple clothes</div><div class="check-detail">Shoulders and knees covered. Lightweight linen.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-rain" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Light waterproof jacket</div><div class="check-detail">Tail end of monsoon. Short heavy rain. Packable mac.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-bag" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Travel backpack (35–45L)</div><div class="check-detail">Main luggage stays in Colombo. Not a wheeled suitcase.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-water" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Reusable water bottle</div><div class="check-detail">Never drink tap water.</div><span class="check-when when-pack">Pack</span></div></div>
+        <div class="check-item" data-id="p-bank" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Power bank (10,000mAh+)</div><div class="check-detail">Long train journeys with no plugs.</div><span class="check-when when-pack">Pack</span></div></div>
+      </div>
+      <button class="reset-btn" onclick="resetAll()">Reset all checks</button>
+    </div>
+
+    <!-- BUDGET -->
+    <div class="prep-panel" id="prep-budget">
+      <div class="budget-card">
+        <div class="budget-title">Budget Breakdown</div>
+        <div class="budget-grid">
+          <div class="budget-item"><div class="budget-cat">Accommodation</div><div class="budget-range">$420–540</div></div>
+          <div class="budget-item"><div class="budget-cat">Food</div><div class="budget-range">$180–240</div></div>
+          <div class="budget-item"><div class="budget-cat">Transport</div><div class="budget-range">$60–80</div></div>
+          <div class="budget-item"><div class="budget-cat">Entry Fees</div><div class="budget-range">~$100</div></div>
+          <div class="budget-item"><div class="budget-cat">Incidentals</div><div class="budget-range">~$30</div></div>
+          <div class="budget-item"><div class="budget-cat">Buffer</div><div class="budget-range">$50–100</div></div>
+        </div>
+        <div class="budget-total"><span class="budget-total-label">Total estimated spend</span><span class="budget-total-val">$790–990</span></div>
+      </div>
+      <div class="info-card">
+        <div class="info-title">Key Entry Fees</div>
+        <div class="info-row"><div class="info-icon">🪨</div><div><div class="info-name">Sigiriya Rock Fortress</div><div class="info-detail">$30 — biggest single cost. Government-set.</div></div></div>
+        <div class="info-row"><div class="info-icon">🏛️</div><div><div class="info-name">Anuradhapura Sacred City</div><div class="info-detail">~$25 day pass covering all sites.</div></div></div>
+        <div class="info-row"><div class="info-icon">🕌</div><div><div class="info-name">Dambulla Cave Temple</div><div class="info-detail">~$15</div></div></div>
+        <div class="info-row"><div class="info-icon">🛕</div><div><div class="info-name">Temple of the Tooth, Kandy</div><div class="info-detail">~$10</div></div></div>
+        <div class="info-row"><div class="info-icon">🌿</div><div><div class="info-name">Royal Botanic Gardens</div><div class="info-detail">~$15</div></div></div>
+        <div class="info-row"><div class="info-icon">🚢</div><div><div class="info-name">Maritime Museum, Galle</div><div class="info-detail">~$3</div></div></div>
+        <div class="info-row"><div class="info-icon">🏛️</div><div><div class="info-name">National Museum, Colombo</div><div class="info-detail">~$5 · Closed Tuesdays</div></div></div>
+      </div>
+      <div class="info-card">
+        <div class="info-title">Money Tips</div>
+        <div class="info-row"><div class="info-icon">💱</div><div><div class="info-name">Exchange rate</div><div class="info-detail">~300 LKR = $1. Check nearer the time.</div></div></div>
+        <div class="info-row"><div class="info-icon">🏧</div><div><div class="info-name">ATMs</div><div class="info-detail">Withdraw before Tangalle — fewer ATMs there. Also withdraw in Colombo before heading north to Anuradhapura.</div></div></div>
+        <div class="info-row"><div class="info-icon">💵</div><div><div class="info-name">Cash is king</div><div class="info-detail">Local restaurants, tuk-tuks, smaller hotels often won't take cards.</div></div></div>
+        <div class="info-row"><div class="info-icon">🍛</div><div><div class="info-name">Food costs</div><div class="info-detail">Rice and curry: $2–4. Kottu roti: ~$2. Tourist restaurant: $6–12. Budget $15–20/day.</div></div></div>
+      </div>
+    </div>
+
+    <!-- ESSENTIALS -->
+    <div class="prep-panel" id="prep-essentials">
+      <div class="info-card">
+        <div class="info-title">Key Info</div>
+        <div class="info-row"><div class="info-icon">🛂</div><div><div class="info-name">ETA Visa</div><div class="info-detail">Apply at <a href="https://eta.gov.lk" target="_blank">eta.gov.lk</a> — ~$35–50.</div></div></div>
+        <div class="info-row"><div class="info-icon">🚆</div><div><div class="info-name">Train Bookings</div><div class="info-detail">Hill country reserved: <a href="https://12go.asia" target="_blank">12go.asia</a> or <a href="https://bookaway.com" target="_blank">Bookaway.com</a>. Colombo–Galle coastal: unreserved, buy at the station. ⚠️ Check hill country route status — cyclone damage in 2025.</div></div></div>
+        <div class="info-row"><div class="info-icon">📱</div><div><div class="info-name">Apps</div><div class="info-detail"><strong>PickMe</strong> — metered tuk-tuks, no haggling. Dialog SIM at arrivals (~$5–10).</div></div></div>
+        <div class="info-row"><div class="info-icon">💊</div><div><div class="info-name">Health</div><div class="info-detail">Hep A + Typhoid recommended. Malaria tablets for Anuradhapura. DEET repellent. Bottled water only.</div></div></div>
+        <div class="info-row"><div class="info-icon">🌧️</div><div><div class="info-name">Weather</div><div class="info-detail">Tail end of south-west monsoon. Short heavy rain. Cultural Triangle drier than south coast.</div></div></div>
+        <div class="info-row"><div class="info-icon">🔌</div><div><div class="info-name">Plugs + Time</div><div class="info-detail">Type G (UK) plugs. UTC+5:30. Late Sep: 4.5 hrs ahead of UK (BST).</div></div></div>
+        <div class="info-row"><div class="info-icon">🛕</div><div><div class="info-name">Temple Etiquette</div><div class="info-detail">Cover shoulders + knees. Shoes off. No selfies with Buddha statues.</div></div></div>
+        <div class="info-row"><div class="info-icon">🛺</div><div><div class="info-name">Tuk-tuks</div><div class="info-detail">Use PickMe where possible. If flagging one down, always agree price before getting in.</div></div></div>
+      </div>
+    </div>
+
+    <!-- DOCUMENTS -->
+    <div class="prep-panel" id="prep-docs">
+      <div class="docs-header">
+        <span class="docs-title">Bookings &amp; Documents</span>
+        <button class="docs-add-btn" onclick="openDocModal()">+ Add</button>
+      </div>
+      <div id="docsList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- OFFLINE PILL -->
+<div class="offline-pill" id="offlinePill">
+  <span class="offline-dot"></span>
+  <span id="offlineText">Offline — map unavailable</span>
+</div>
+
+<!-- DOCUMENT MODAL -->
+<div class="modal-overlay" id="docModal" onclick="closeDocModalOutside(event)">
+  <div class="modal-sheet">
+    <div class="modal-title" id="docModalTitle">Add Booking</div>
+    <div class="modal-field">
+      <label class="modal-label">Name</label>
+      <input class="modal-input" id="docModalName" placeholder="e.g. Colombo Hotel — Sep 20" type="text">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Reference / Confirmation Number</label>
+      <input class="modal-input" id="docModalRef" placeholder="e.g. BK-123456" type="text">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">Link (Dropbox, Booking.com, etc.)</label>
+      <input class="modal-input" id="docModalUrl" placeholder="https://..." type="url">
+    </div>
+    <div class="modal-btns">
+      <button class="modal-btn secondary" onclick="closeDocModal()">Cancel</button>
+      <button class="modal-btn primary" onclick="saveDoc()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// KNOWN LOCATIONS
+// ═══════════════════════════════════════════════════════════
+const KNOWN = {
+  airport:            { lat:7.1801,  lng:79.8843, name:'Bandaranaike International Airport' },
+  negombo_town:       { lat:7.2084,  lng:79.8358, name:'Negombo' },
   colombo_fort_stn:   { lat:6.9347,  lng:79.8503, name:'Colombo Fort Railway Station' },
   colombo_maradana:   { lat:6.9293,  lng:79.8553, name:'Colombo Maradana Station' },
   anuradhapura_stn:   { lat:8.3350,  lng:80.4089, name:'Anuradhapura Railway Station' },
@@ -622,6 +1201,9 @@ const days = [
       { src:'photos/galle_face_green.jpg', caption:'Galle Face Green' },
     ],
     timeline:[
+      { type:'transport', mode:'static', icon:'🧳',
+        title:'Left luggage at Colombo Fort station',
+        detail:'Drop bags at the left luggage facility at Colombo Fort station on arrival — you\'re passing through it later anyway. Small fee. Collect at 14:30 before the 15:15 train. Spend the day completely unburdened.',  },
       { type:'activity', icon:'📚', atype:'shop', name:'Barefoot Gallery & Bookshop', time:'10:00',
         desc:'The best bookshop in Sri Lanka. Sri Lankan literature, handwoven textiles, notebooks, scarves. Ask for <em>The Seven Moons of Maali Almeida</em> and <em>Funny Boy</em>.',
         tip:'<strong>Hours:</strong> Mon–Sat 10:00–19:00. On Galle Road — 10 mins by PickMe from Fort.', place:'barefoot' },
@@ -845,6 +1427,9 @@ const days = [
       { src:'photos/galle_1.jpg', caption:'Galle Fort ramparts' },
     ],
     timeline:[
+      { type:'transport', mode:'static', icon:'🧳',
+        title:'Left luggage at Colombo Fort station',
+        detail:'Arrive from Ella with all your bags. Drop them at left luggage at Colombo Fort station — small fee, reliable. Collect at 14:00 before the 14:30 coastal train. Spend the morning completely unburdened.' },
       { type:'activity', icon:'📚', atype:'shop', name:'Barefoot Gallery + last shopping', time:'10:00',
         desc:'Last chance for Colombo shopping before the coast. Barefoot for books, Ceylon Tea Supermarket for estate tins, Colombo Coffee Company for local beans.',
         tip:'<strong>Hours:</strong> Barefoot opens 10:00. Leave for Maradana by 14:00.', place:'barefoot' },
@@ -1031,6 +1616,7 @@ const days = [
 // MAP DATA
 // ═══════════════════════════════════════════════════════════
 const mapStops = [
+  { id:'negombo',      label:'Negombo',       lat:7.2084, lng:79.8358, dates:'Sep 20', desc:'Arrival night. 10 mins from the airport. Beach town, good seafood, easy first evening.', color:'#1B4D4A' },
   { id:'colombo',      label:'Colombo',       lat:6.9271, lng:79.8612, dates:'Sep 20–21, Sep 26–27, Oct 2', desc:'Arrival, transit, final day and departure. Barefoot Bookshop, Gangaramaya, Pettah, Galle Face Green.', color:'#1B4D4A' },
   { id:'habarana',     label:'Habarana',      lat:8.0459, lng:80.7518, dates:'Sep 21–22', desc:'2 nights. Base for Cultural Triangle — Anuradhapura, Sigiriya and Dambulla all within 50km.', color:'#C4613A' },
   { id:'anuradhapura', label:'Anuradhapura',  lat:8.3114, lng:80.4037, dates:'Sep 22 day trip', desc:'Ancient sacred city — bicycle the ruins. ~50km from Habarana.', color:'#8B4513' },
