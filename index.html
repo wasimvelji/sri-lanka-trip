@@ -2123,7 +2123,7 @@ function closeLightboxOutside(e) { if (e.target === document.getElementById('lig
 // Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sri-lanka-trip/sw.js')
+    navigator.serviceWorker.register('/sri-lanka-trip/sw.js?v=BUILD_TIMESTAMP', { updateViaCache: 'none' })
       .then(r => {
         console.log('SW registered:', r.scope);
         // Check for updates every time the app is focused
