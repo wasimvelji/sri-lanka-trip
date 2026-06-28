@@ -339,7 +339,7 @@ gmp-place-autocomplete { width:100%; display:block; }
   <div class="hero-overlay"></div>
   <div class="hero-inner">
     <div class="hero-bottom">
-      <div class="hero-sub">20 Sep — 2 Oct 2026</div>
+      <div class="hero-sub">20 Sep — 4 Oct 2026</div>
       <button class="menu-btn" id="menuBtn" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
       </button>
@@ -573,7 +573,9 @@ const KNOWN = {
 // DAY DATA
 // ═══════════════════════════════════════════════════════════
 const days = [
-  // ── DAY 1 ─────────────────────────────────────────────────
+
+  // ── DAY 1 · Sat 20 Sep ────────────────────────────────────
+  // Arrive Colombo. Recover. One night.
   {
     id:'d1', date:'Sat 20 Sep', shortDate:'20', month:'Sep',
     title:'Arrival · Colombo', location:'Colombo', mapStop:'colombo',
@@ -589,12 +591,12 @@ const days = [
         badge:'flight', time:'16:20', place:'airport' },
       { type:'transport', mode:'static', icon:'📱',
         title:'Get a Dialog SIM card',
-        detail:'SIM stalls are in the Arrivals hall. Tourist SIM ~$8 including data. Dialog has the best coverage island-wide.' },
+        detail:'SIM stalls are in the Arrivals hall before you exit. Tourist SIM ~$8 including data. Dialog has the best coverage island-wide.' },
       { type:'transport', mode:'static', icon:'🏧',
         title:'Withdraw rupees at airport ATM',
         detail:'Withdraw ~15,000–20,000 LKR (~$50–65). More ATMs in Colombo Fort area.' },
       { type:'transport', mode:'taxi', icon:'🚖',
-        title:'Taxi to hotel',
+        title:'PickMe to hotel',
         detail:'Use PickMe app for a metered fare. Agree price before any non-metered taxi.',
         badge:'taxi', place:'airport', dest:'hotel:colombo' },
       { type:'activity', icon:'🍛', atype:'food', name:'First rice and curry', time:'19:30',
@@ -603,54 +605,84 @@ const days = [
     ]
   },
 
-  // ── DAY 2 ─────────────────────────────────────────────────
+  // ── DAY 2 · Sun 21 Sep ────────────────────────────────────
+  // Full day Colombo sightseeing. Board Night Mail 20:00.
   {
     id:'d2', date:'Sun 21 Sep', shortDate:'21', month:'Sep',
-    title:'Colombo → Anuradhapura', location:'Anuradhapura', mapStop:'anuradhapura',
-    badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'anuradhapura',
+    title:'Colombo · Sightseeing + Night Train', location:'Colombo', mapStop:'colombo',
+    badge:'Night train', badgeType:'transit',
+    photos:[
+      { src:'photos/colombo.jpg', caption:'Colombo' },
+      { src:'photos/gangaramaya.jpg', caption:'Gangaramaya Temple' },
+      { src:'photos/pettah.jpg', caption:'Pettah Bazaar' },
+      { src:'photos/galle_face_green.jpg', caption:'Galle Face Green' },
+    ],
+    timeline:[
+      { type:'activity', icon:'📚', atype:'shop', name:'Barefoot Gallery & Bookshop', time:'10:00',
+        desc:'The best bookshop in Sri Lanka. Curated Sri Lankan literature, handwoven textiles, notebooks, scarves, everyday objects. Ask for <em>The Seven Moons of Maali Almeida</em> and <em>Funny Boy</em>.',
+        tip:'<strong>Hours:</strong> Mon–Sat 10:00–19:00 · Sun 11:00–17:00. On Galle Road — 10 mins by PickMe from Fort.',
+        place:'barefoot' },
+      { type:'activity', icon:'🍵', atype:'shop', name:'Tea Triumph / Basilur Tea Gallery', time:'11:30',
+        desc:'Pick up three small tins of estate tea — Nuwara Eliya, Uva, and Dimbula. Small tins rather than one large one.',
+        tip:'<strong>Tip:</strong> You\'ll pass through Nuwara Eliya later — estate tea bought direct from the factory there is better quality and a better story.' },
+      { type:'activity', icon:'🏺', atype:'shop', name:'Lakpahana Craft Centre', time:'12:30',
+        desc:'One of Sri Lanka\'s longest-running artisan craft centres. Brass bookmarks, carved wooden tea scoops, handmade pottery, batik notebook covers.',
+        tip:'<strong>Near Viharamahadevi Park</strong> — PickMe from Barefoot. Allow 45 mins.' },
+      { type:'activity', icon:'🛕', atype:'temple', name:'Gangaramaya Temple', time:'14:00',
+        desc:'Eclectic Buddhist temple crammed with antiques and artifacts from across Asia. Part museum, part active place of worship.',
+        tip:'<strong>Entry:</strong> ~$3. Open until 10pm.', cost:'~$3', place:'gangaramaya' },
+      { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar', time:'15:30',
+        desc:'The old bazaar district — each street specialises in something different. Spices, fabric, electronics, food.',
+        tip:'<strong>Free.</strong>', place:'pettah' },
+      { type:'activity', icon:'🌊', atype:'nature', name:'Galle Face Green at sunset', time:'17:00',
+        desc:'Wide oceanfront promenade. Local families, kite flying, street food. Last look at the ocean before heading inland.',
+        tip:'<strong>Free.</strong> Sunset ~18:00. Have dinner nearby before heading to the station.', place:'galle_face_green' },
+      { type:'transport', mode:'walk', icon:'🚶',
+        title:'Walk to Colombo Fort station',
+        detail:'Head to Colombo Fort station for the Night Mail. Pack snacks and water for the overnight journey.',
+        badge:'walk', time:'19:30', place:'hotel:colombo', dest:'colombo_fort_stn' },
+      { type:'transport', mode:'train', icon:'🚆',
+        title:'Night Mail: Colombo Fort → Anuradhapura',
+        detail:'Train <strong>44089</strong> · Depart <strong>20:00</strong> · Arrive Anuradhapura <strong>00:05</strong> · Air Conditioned Saloon LKR 2,000 (~$6.50) or 2nd Class Reserved LKR 1,200 (~$4). <strong>Book in advance</strong> via 12go.asia.',
+        badge:'train', time:'20:00', place:'colombo_fort_stn', dest:'anuradhapura_stn' },
+    ]
+  },
+
+  // ── DAY 3 · Mon 22 Sep ────────────────────────────────────
+  // Arrive Anuradhapura 00:05. Rest. Sacred City afternoon.
+  {
+    id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
+    title:'Arrive Anuradhapura · Sacred City', location:'Anuradhapura', mapStop:'anuradhapura',
+    badge:'Arrive 00:05', badgeType:'transit', nights:2, hotelKey:'anuradhapura',
     photos:[
       { src:'photos/Anuradhapura.jpg', caption:'Anuradhapura — temple entrance' },
       { src:'photos/Anuradhapura_1.jpg', caption:'Anuradhapura — sacred city' },
       { src:'photos/Anuradhapura_2.jpg', caption:'Anuradhapura — dagoba' },
     ],
     timeline:[
-      { type:'activity', icon:'🏛️', atype:'culture', name:'Full day sightseeing in Colombo', time:'10:00',
-        desc:'Your only full day in Colombo at the start. Barefoot Gallery for books and gifts, National Museum, Gangaramaya Temple, Pettah Bazaar, Galle Face Green at sunset.',
-        tip:'<strong>Pace yourself</strong> — you\'re boarding a train at 20:00 tonight so no rush.', place:'gangaramaya' },
-      { type:'transport', mode:'walk', icon:'🚶',
-        title:'Walk to Colombo Fort station',
-        detail:'Head to Colombo Fort station for the Night Mail. Pack snacks and water for the journey.',
-        badge:'walk', time:'19:30', place:'hotel:colombo', dest:'colombo_fort_stn' },
-      { type:'transport', mode:'train', icon:'🚆',
-        title:'Night Mail: Colombo Fort → Anuradhapura',
-        detail:'Train <strong>44089</strong> · Depart <strong>20:00</strong> · Arrive Anuradhapura <strong>00:05</strong> · Air Conditioned Saloon LKR 2,000 (~$6.50) or 2nd Class Reserved LKR 1,200 (~$4). <strong>Book in advance</strong> — reserved seats only on this service.',
-        badge:'train', time:'20:00', place:'colombo_fort_stn', dest:'anuradhapura_stn' },
       { type:'transport', mode:'static', icon:'🏨',
-        title:'Arrive Anuradhapura ~00:05 — hotel pickup arranged',
-        detail:'<strong>Pre-arrange pickup with your hotel</strong> when booking — PickMe availability at midnight in Anuradhapura is unreliable. Most hotels are used to Night Mail arrivals and will send a driver. Get straight to bed — big day tomorrow.' },
-      { type:'transport', mode:'taxi', icon:'🚖',
-        title:'PickMe to hotel',
-        detail:'PickMe or tuk-tuk from Anuradhapura station to your hotel.',
-        badge:'taxi', place:'anuradhapura_stn', dest:'hotel:anuradhapura' },
-      { type:'activity', icon:'🏨', atype:'travel', name:'Check in · Anuradhapura', time:'11:00',
-        desc:'Drop bags and get your bearings. You have the whole afternoon.',
-        tip:'<strong>Tip:</strong> Ask hotel about bicycle rental — you\'ll want one this afternoon and tomorrow.' },
-      { type:'activity', icon:'🚲', atype:'culture', name:'Sacred City by Bicycle — first explore', time:'12:00',
+        title:'Arrive Anuradhapura 00:05 — pre-arranged hotel pickup',
+        detail:'<strong>Pre-arrange pickup with your hotel when booking</strong> — PickMe availability at midnight in Anuradhapura is unreliable. Most hotels are used to Night Mail arrivals and will send a driver. Get straight to bed.' },
+      { type:'activity', icon:'😴', atype:'travel', name:'Rest morning', time:'Morning',
+        desc:'You arrived at midnight. Slow morning — hotel breakfast, no rush.',
+        tip:'<strong>Bicycle rental:</strong> ask hotel to arrange one for this afternoon.' },
+      { type:'activity', icon:'🚲', atype:'culture', name:'Sacred City by Bicycle — first explore', time:'13:00',
         desc:'Hire a bicycle (~$3–5) and spend the afternoon exploring the ancient sacred city. Jetavanaramaya, Abhayagiri, the sacred Bo Tree, moonstone carvings.',
         tip:'<strong>Entry:</strong> ~$25 day pass covers all sites. Very peaceful in the afternoon.', cost:'~$25',
         place:'anuradhapura_ruins' },
       { type:'activity', icon:'🌅', atype:'nature', name:'Sunset at Abhayagiri Dagoba', time:'17:30',
         desc:'The ancient stupas glow gold at sunset. Cycle out and simply sit with it.',
-        tip:'<strong>Free</strong> with day pass. Very quiet by late afternoon.' },
-      { type:'activity', icon:'📚', atype:'shop', name:'Reading suggestion for tonight',
-        desc:'<em>Anil\'s Ghost</em> by Michael Ondaatje is partly set among the ancient statues of exactly this area — a forensic investigator uncovering wartime atrocities amid the ruins. Perfect to read here.',
-        tip:'Look for it at Barefoot in Colombo before you leave, or ask at your hotel.' },
+        tip:'<strong>Free</strong> with day pass.' },
+      { type:'activity', icon:'📚', atype:'culture', name:'Reading suggestion',
+        desc:'<em>Anil\'s Ghost</em> by Michael Ondaatje is partly set among the ancient statues here — a forensic investigator uncovering wartime atrocities amid the ruins. Also consider <em>The Seven Moons of Maali Almeida</em> — Booker Prize 2022, ideal gift.',
+        tip:'Look for both at Barefoot in Colombo before you leave.' },
     ]
   },
 
-  // ── DAY 3 ─────────────────────────────────────────────────
+  // ── DAY 4 · Tue 23 Sep ────────────────────────────────────
+  // Sigiriya + Dambulla day trips from Anuradhapura.
   {
-    id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
+    id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
     title:'Anuradhapura · Sigiriya + Dambulla', location:'Anuradhapura', mapStop:'sigiriya',
     badge:'Day trips',
     photos:[
@@ -680,110 +712,126 @@ const days = [
         detail:'Return via Dambulla. Stop for a late lunch on the way.',
         badge:'pickme', place:'sigiriya', dest:'hotel:anuradhapura' },
       { type:'activity', icon:'🚲', atype:'culture', name:'Sacred City continued', time:'16:00',
-        desc:'Back from the day trips with afternoon light remaining. Reach any sites you missed yesterday.',
+        desc:'Back with afternoon light remaining. Reach any sites you missed yesterday.',
         tip:'<strong>Day pass still valid.</strong> The ancient ponds and quieter western monasteries are worth finding.', place:'anuradhapura_ruins' },
     ]
   },
 
-  // ── DAY 4 ─────────────────────────────────────────────────
+  // ── DAY 5 · Wed 24 Sep ────────────────────────────────────
+  // Anuradhapura → Colombo. Train 14:20, arrive 19:03. Overnight Colombo.
   {
-    id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
-    title:'Anuradhapura → Colombo → Galle', location:'Galle', mapStop:'galle',
-    badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'galle',
+    id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
+    title:'Anuradhapura → Colombo', location:'Colombo', mapStop:'colombo',
+    badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'colombo',
+    photos:[
+      { src:'photos/colombo.jpg', caption:'Colombo' },
+    ],
+    timeline:[
+      { type:'activity', icon:'🌅', atype:'nature', name:'Morning free in Anuradhapura', time:'Morning',
+        desc:'Slow breakfast and a final wander before the afternoon train. Last chance to see anything you missed.',
+        tip:'<strong>Train departs 14:20</strong> — head to the station by 13:45.' },
+      { type:'transport', mode:'walk', icon:'🚶',
+        title:'Walk or PickMe to Anuradhapura station',
+        detail:'Head to Anuradhapura station in good time.',
+        badge:'walk', time:'13:45', place:'hotel:anuradhapura', dest:'anuradhapura_stn' },
+      { type:'transport', mode:'train', icon:'🚆',
+        title:'Yal Devi: Anuradhapura → Colombo Fort',
+        detail:'Train <strong>44478 Yal Devi</strong> · Depart <strong>14:20</strong> · Arrive Colombo Fort <strong>19:03</strong> · ~4.5 hours · Air Conditioned Saloon LKR 2,000 or 2nd Class Reserved LKR 1,200. <strong>Book in advance</strong> via 12go.asia.',
+        badge:'train', time:'14:20', place:'anuradhapura_stn', dest:'colombo_fort_stn' },
+      { type:'transport', mode:'taxi', icon:'🚖',
+        title:'PickMe to hotel',
+        detail:'Arrive Colombo Fort 19:03. PickMe to your hotel — same one as arrival night.',
+        badge:'taxi', place:'colombo_fort_stn', dest:'hotel:colombo' },
+      { type:'activity', icon:'🍽️', atype:'food', name:'Dinner near the Fort', time:'20:00',
+        desc:'Easy evening — find a good restaurant near the hotel. Early night.',
+        tip:'<strong>Tomorrow:</strong> coastal train to Galle departs Maradana 14:30. Full morning free.' },
+    ]
+  },
+
+  // ── DAY 6 · Thu 25 Sep ────────────────────────────────────
+  // Colombo morning shopping. Coastal train 14:30 → Galle 17:05.
+  {
+    id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
+    title:'Colombo → Galle', location:'Galle', mapStop:'galle',
+    badge:'Coastal train', badgeType:'transit', nights:1, hotelKey:'galle',
     photos:[
       { src:'photos/galle.jpg', caption:'Galle lighthouse' },
       { src:'photos/galle_1.jpg', caption:'Galle Fort ramparts' },
     ],
     timeline:[
-      { type:'transport', mode:'walk', icon:'🚶',
-        title:'Walk or PickMe to Anuradhapura station',
-        detail:'Head to Anuradhapura station for the morning train south.',
-        badge:'walk', place:'hotel:anuradhapura', dest:'anuradhapura_stn' },
-      { type:'transport', mode:'train', icon:'🚆',
-        title:'Train: Anuradhapura → Colombo Fort',
-        detail:'Train <strong>44478 Yal Devi</strong> · Depart <strong>14:20</strong> · Arrive Colombo Fort <strong>19:03</strong> · Air Conditioned Saloon LKR 2,000 (~$6.50) or 2nd Class Reserved LKR 1,200. <strong>Book in advance.</strong>',
-        badge:'train', time:'14:20', place:'anuradhapura_stn', dest:'colombo_fort_stn' },
-      { type:'activity', icon:'🏙️', atype:'culture', name:'Arrive Colombo · overnight stay', time:'19:03',
-        desc:'Arrive Colombo Fort 19:03. Check in to hotel — same one as your arrival night. Dinner near the Fort.',
-        tip:'<strong>Colombo overnight</strong> — forced by train timings but use the morning tomorrow well before the 14:30 coastal train south.' },
-      { type:'activity', icon:'📚', atype:'shop', name:'Barefoot Gallery & Bookshop', time:'10:30',
-        desc:'The best bookshop in Sri Lanka, plus handwoven textiles, notebooks, scarves, handmade stationery and beautiful everyday objects. Ask for <em>The Seven Moons of Maali Almeida</em> (Booker Prize 2022, set in Colombo) and <em>Funny Boy</em>.',
-        tip:'<strong>Hours:</strong> Mon–Sat 10:00–19:00 · Sun 11:00–17:00. On Galle Road — 10 mins by PickMe from Fort.',
-        place:'barefoot' },
-      { type:'activity', icon:'🍵', atype:'shop', name:'Tea Triumph / Basilur Tea Gallery', time:'12:00',
-        desc:'Pick up three small tins of estate tea — Nuwara Eliya, Uva, and Dimbula. Buy small tins rather than one large one. Basilur is near the Fort; Tea Triumph is a short PickMe ride.',
-        tip:'<strong>Tip:</strong> You\'ll also pass through Nuwara Eliya later in the trip — estate teas bought direct from the factory there are better quality and a better story.' },
-      { type:'activity', icon:'🏺', atype:'shop', name:'Lakpahana Craft Centre', time:'13:00',
-        desc:'One of Sri Lanka\'s longest-running artisan craft centres. Brass bookmarks, carved wooden tea scoops, handmade pottery, batik notebook covers, woven baskets. Nothing mass-produced.',
-        tip:'<strong>Near Viharamahadevi Park</strong> — PickMe from Barefoot. Allow 45 mins.' },
+      { type:'activity', icon:'📚', atype:'shop', name:'Barefoot Gallery & Bookshop', time:'10:00',
+        desc:'Return visit — last chance to pick up anything you missed yesterday. Also try Makeen Books or Jeya Book Centre nearby for signed copies of Sri Lankan titles.',
+        tip:'<strong>Hours:</strong> Mon–Sat 10:00–19:00. Ask specifically for signed copies.', place:'barefoot' },
+      { type:'activity', icon:'🏺', atype:'shop', name:'Ceylon Tea Supermarket / Colombo Coffee Company', time:'11:30',
+        desc:'Ceylon Tea Supermarket for estate tea tins. Colombo Coffee Company for Sri Lankan single-estate coffee beans — unusual and genuinely good gift.',
+        tip:'<strong>Near the Fort.</strong> Both walkable or a short PickMe.' },
       { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Colombo Maradana station',
-        detail:'Board at Maradana rather than Fort to get a window seat before the train fills up.',
-        badge:'walk', place:'barefoot', dest:'colombo_maradana' },
+        detail:'Board at Maradana rather than Fort — more chance of a window seat before the train fills up.',
+        badge:'walk', time:'14:10', place:'barefoot', dest:'colombo_maradana' },
       { type:'transport', mode:'train', icon:'🚆',
         title:'Coastal Train: Maradana → Galle',
-        detail:'Train <strong>8056</strong> · Depart <strong>14:30</strong> · Arrive Galle <strong>17:05</strong> · Air Conditioned Saloon LKR 1,100 (~$3.50). <strong>Sit on the RIGHT side</strong> — ocean the whole way. Or train 8058 departs 15:40, arrives 18:10 if you need more morning time.',
+        detail:'Train <strong>8056</strong> · Depart <strong>14:30</strong> · Arrive Galle <strong>17:05</strong> · ~2.5 hours · Air Conditioned Saloon LKR 1,100 (~$3.50). <strong>Sit on the RIGHT side</strong> — ocean the whole way. Buy at Maradana station. Backup: train 8058 departs 15:40, arrives 18:10.',
         badge:'train', time:'14:30', place:'colombo_maradana', dest:'galle_stn' },
       { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk from Galle station to hotel',
-        detail:'Galle station is just outside the Fort walls.',
+        detail:'Galle station is just outside the Fort walls — 5 min walk.',
         badge:'walk', place:'galle_stn', dest:'hotel:galle' },
-      { type:'activity', icon:'🌅', atype:'nature', name:'Rampart sunset', time:'18:30',
-        desc:'Drop bags and head straight to the ramparts. You\'ve arrived at the right time.',
-        tip:'<strong>Free.</strong> Sunset ~18:00 — you\'ll catch the last of it.', place:'galle_ramparts' },
+      { type:'activity', icon:'🌅', atype:'nature', name:'Rampart sunset', time:'17:30',
+        desc:'Drop bags and head straight to the ramparts. Perfect timing.',
+        tip:'<strong>Free.</strong> Sunset ~18:00.', place:'galle_ramparts' },
     ]
   },
 
-  // ── DAY 5 ─────────────────────────────────────────────────
+  // ── DAY 7 · Fri 26 Sep ────────────────────────────────────
+  // Full day Galle.
   {
-    id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
+    id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
     title:'Galle', location:'Galle', mapStop:'galle',
     photos:[
       { src:'photos/galle.jpg', caption:'Galle lighthouse' },
       { src:'photos/galle_1.jpg', caption:'Galle Fort ramparts' },
-      { src:'photos/galle_museum.jpeg', caption:'Maritime Museum' },
+      { src:'photos/galle_museum.jpeg', caption:'Maritime Archaeology Museum' },
     ],
     timeline:[
       { type:'activity', icon:'🚢', atype:'museum', name:'Maritime Archaeology Museum', time:'09:30',
-        desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, ancient trade route maps. ~1.5 hours.',
+        desc:'1671 Dutch warehouse — shipwreck artifacts, whale skeleton, ancient trade route maps. Allow 1.5 hours.',
         tip:'<strong>Entry:</strong> ~$3.', cost:'~$3', place:'maritime_museum' },
       { type:'activity', icon:'🕌', atype:'culture', name:'Dutch Reformed Church (1755)', time:'11:00',
         desc:'One of the oldest colonial buildings in Sri Lanka. Floor lined with Dutch colonial tombstones.',
         tip:'<strong>Free entry.</strong>', place:'dutch_church' },
       { type:'activity', icon:'☕', atype:'shop', name:'Book Studio · Coffee + Browse', time:'12:00',
-        desc:'Bookshop-café inside the Fort. Great coffee, great books. Ask specifically for Ondaatje and Selvadurai. Rated 5.0.',
-        tip:'<strong>Hours:</strong> Mon–Fri 06:30–20:00 · Sat–Sun 08:00–20:00. Ask if they stock Sri Lankan estate coffee beans — a few Galle Fort cafés have started carrying them.', place:'book_studio' },
-      { type:'activity', icon:'📗', atype:'shop', name:'Samudra Book Shop', time:'14:30',
-        desc:'10 min walk outside the Fort gate on Wakwella Rd. Small, personal, genuinely knowledgeable owner. Rated 5.0.',
-        tip:'<strong>Hours:</strong> Mon–Sat 08:00–20:00 · Sun 08:00–17:00. Good for secondhand Sri Lankan titles.', place:'samudra_books' },
-      { type:'activity', icon:'🍵', atype:'shop', name:'Basilur Tea Gallery — Galle Fort branch', time:'15:30',
-        desc:'Basilur has a beautiful branch inside the Fort. If you didn\'t get tea in Colombo, get it here — or top up with a Galle-specific blend. Small tins are the right format.',
-        tip:'<strong>Inside the Fort</strong> — easy to combine with the afternoon wander.' },
-      { type:'activity', icon:'🏺', atype:'shop', name:'Ceramics & craft shops — Church St and Pedlar St', time:'16:00',
-        desc:'The Fort\'s two main streets have several small ceramics and craft shops worth browsing. Look for a handmade mug — matte glaze, deep blue or off-white, speckled clay.',
-        tip:'<strong>No specific shop name</strong> — just wander and look. The quality varies but the good pieces are genuinely beautiful.', place:'galle_ramparts' },
-      { type:'activity', icon:'🌅', atype:'nature', name:'Rampart Sunset — Lighthouse End', time:'17:30',
-        desc:'Try the lighthouse end tonight for a different angle on the sea.',
-        tip:'<strong>Free.</strong> Last evening in Galle — find a good dinner spot on the ramparts.', place:'galle_lighthouse' },
-      { type:'activity', icon:'📚', atype:'culture', name:'Reading suggestion',
-        desc:'<em>The Hamilton Case</em> by Michelle de Kretser is set partly in the hill country and Nuwara Eliya — perfect to start tonight before you head that way. Also look for <em>Funny Boy</em> by Shyam Selvadurai, set in Colombo.',
-        tip:'Both should be available at Book Studio.' },
+        desc:'Bookshop-café inside the Fort. Best place in Galle to find Sri Lankan literature — ask for Ondaatje and Selvadurai. Rated 5.0.',
+        tip:'<strong>Hours:</strong> Mon–Fri 06:30–20:00 · Sat–Sun 08:00–20:00. Ask if they stock Sri Lankan estate coffee beans.', place:'book_studio' },
+      { type:'activity', icon:'📗', atype:'shop', name:'Samudra Book Shop', time:'14:00',
+        desc:'10 min walk outside the Fort gate on Wakwella Rd. Small, personal, knowledgeable owner. Rated 5.0.',
+        tip:'<strong>Hours:</strong> Mon–Sat 08:00–20:00 · Sun 08:00–17:00.', place:'samudra_books' },
+      { type:'activity', icon:'🍵', atype:'shop', name:'Basilur Tea Gallery — Galle Fort branch', time:'15:00',
+        desc:'Pick up estate tea tins here if you didn\'t in Colombo. Small tins of Nuwara Eliya, Uva, Dimbula.',
+        tip:'<strong>Inside the Fort.</strong>' },
+      { type:'activity', icon:'🏺', atype:'culture', name:'Ceramics browse — Church St and Pedlar St', time:'15:30',
+        desc:'The Fort\'s two main streets have small ceramics and craft shops. Look for a handmade mug — matte glaze, deep blue or off-white, speckled clay.',
+        tip:'<strong>No specific shop</strong> — just wander and look.', place:'galle_ramparts' },
+      { type:'activity', icon:'🌅', atype:'nature', name:'Rampart sunset — lighthouse end', time:'17:30',
+        desc:'Try the lighthouse end tonight for a different angle.',
+        tip:'<strong>Free.</strong> Last evening in Galle.', place:'galle_lighthouse' },
     ]
   },
 
-  // ── DAY 6 ─────────────────────────────────────────────────
+  // ── DAY 8 · Sat 27 Sep ────────────────────────────────────
+  // Galle → Tangalle. PickMe ~1.5hrs.
   {
-    id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
+    id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
     title:'Galle → Tangalle', location:'Tangalle', mapStop:'tangalle',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'tangalle',
     photos:[
       { src:'photos/tangalle.jpg', caption:'Tangalle beach' },
-      { src:'photos/rekawa.JPG', caption:'Rekawa turtle beach at night' },
+      { src:'photos/rekawa.JPG', caption:'Rekawa turtle beach' },
     ],
     timeline:[
       { type:'transport', mode:'static', icon:'💳',
         title:'Withdraw cash before leaving Galle',
-        detail:'Fewer ATMs in Tangalle. Withdraw enough for 2 nights — turtle trips, tuk-tuks, meals.' },
+        detail:'Fewer ATMs in Tangalle. Withdraw enough for 2 nights — turtle trips, tuk-tuks, safari, meals.' },
       { type:'transport', mode:'pickme', icon:'🚖',
         title:'PickMe: Galle → Tangalle',
         detail:'~1.5 hours east along the coast. Book a PickMe intercity ride.',
@@ -796,15 +844,16 @@ const days = [
         detail:'~20 mins east of Tangalle. Agree price before getting in — ~$3 each way.',
         badge:'taxi', time:'20:00', place:'hotel:tangalle', dest:'rekawa' },
       { type:'activity', icon:'🐢', atype:'nature', name:'Rekawa Turtle Beach', time:'20:00',
-        desc:'Sea turtles nest at night — October is peak season. Completely silent and extraordinary.',
-        tip:'<strong>Just show up ~20:00.</strong> Conservation fee ~$5. Local team guides you quietly. No flash photography.', cost:'~$5–8', place:'rekawa' },
+        desc:'Sea turtles nest at night. Completely silent and extraordinary.',
+        tip:'<strong>Just show up ~20:00.</strong> Conservation fee ~$5. No flash photography.', cost:'~$5–8', place:'rekawa' },
     ]
   },
 
-  // ── DAY 7 ─────────────────────────────────────────────────
+  // ── DAY 9 · Sun 28 Sep ────────────────────────────────────
+  // Tangalle. Bundala safari morning. Beach afternoon. Turtles evening.
   {
-    id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
-    title:'Tangalle', location:'Tangalle', mapStop:'tangalle',
+    id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
+    title:'Tangalle · Bundala + Beach + Turtles', location:'Tangalle', mapStop:'tangalle',
     photos:[
       { src:'photos/tangalle.jpg', caption:'Tangalle beach' },
       { src:'photos/rekawa.JPG', caption:'Rekawa turtle nesting' },
@@ -812,54 +861,56 @@ const days = [
     timeline:[
       { type:'transport', mode:'taxi', icon:'🚖',
         title:'Early jeep to Bundala National Park',
-        detail:'~45 mins west of Tangalle. Book through your hotel the night before. Depart 06:00 for the morning safari.',
+        detail:'~45 mins west of Tangalle. Book through your hotel the night before. Depart 06:00.',
         badge:'taxi', time:'06:00', place:'hotel:tangalle', dest:'bundala' },
-      { type:'activity', icon:'🐘', atype:'nature', name:'Bundala National Park — morning safari', time:'06:00',
-        desc:'One of Sri Lanka\'s quietest parks — elephants, flamingos, crocodiles, migratory birds. October is the start of wading bird migration season. Much less touristy than Yala.',
-        tip:'<strong>~$30–40</strong> for jeep hire including entry. Back by 10:00 — full afternoon free.', cost:'~$30–40' },
+      { type:'activity', icon:'🐘', atype:'nature', name:'Bundala National Park — morning safari', time:'06:45',
+        desc:'Elephants, flamingos, crocodiles, migratory birds. Much less touristy than Yala. October is the start of wading bird migration season.',
+        tip:'<strong>~$30–40</strong> for jeep hire including entry. Back by 10:00.', cost:'~$30–40' },
       { type:'activity', icon:'🏖️', atype:'beach', name:'Beach afternoon', time:'11:00',
-        desc:'Back from the safari with the whole afternoon. Swim, read, decompress.',
+        desc:'Swim, read, decompress. One of the quietest beaches on the south coast.',
         tip:'<strong>Tip:</strong> Walk east toward Rekawa for a more secluded stretch.', place:'tangalle_beach' },
       { type:'transport', mode:'taxi', icon:'🚖',
         title:'Tuk-tuk to Rekawa Turtle Beach',
-        detail:'~20 mins east of Tangalle. ~$3 each way.',
+        detail:'~20 mins east. ~$3 each way.',
         badge:'taxi', time:'20:00', place:'hotel:tangalle', dest:'rekawa' },
       { type:'activity', icon:'🐢', atype:'nature', name:'Rekawa Turtle Beach (second visit)', time:'20:00',
-        desc:'Different species nest on different nights — worth a second visit.',
+        desc:'Different species nest on different nights — worth coming back.',
         tip:'<strong>Optional.</strong> Same drill — tuk-tuk, ~20:00, conservation fee.', place:'rekawa' },
     ]
   },
 
-  // ── DAY 8 ─────────────────────────────────────────────────
+  // ── DAY 10 · Mon 29 Sep ───────────────────────────────────
+  // Tangalle → Nuwara Eliya. Bus via Wellawaya ~4hrs.
   {
-    id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
+    id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
     title:'Tangalle → Nuwara Eliya', location:'Nuwara Eliya', mapStop:'nuwaraeliya',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'nuwaraeliya',
     photos:[],
     timeline:[
       { type:'transport', mode:'bus', icon:'🚌',
         title:'Bus: Tangalle → Nuwara Eliya via Wellawaya',
-        detail:'~4 hours through beautiful hill country ascending from coast to 1,868m. Change at Wellawaya. <strong>Note:</strong> likely a local bus on this rural route — check r/srilanka for current conditions. The scenery is the entertainment regardless.',
+        detail:'~4 hours ascending from coast to 1,868m. Change at Wellawaya. <strong>Note:</strong> likely a local bus on this rural route — check r/srilanka for current conditions. The scenery is the entertainment.',
         badge:'bus', time:'08:00' },
       { type:'activity', icon:'🏘️', atype:'culture', name:'Arrive Nuwara Eliya · Check in', time:'12:00',
         desc:'Welcome to the hill station the British built to feel like home. Cold air, colonial bungalows, rose gardens. Completely surreal.',
-        tip:'<strong>Tip:</strong> Bring a layer — Nuwara Eliya sits at 1,868m. It genuinely gets cold at night.', place:'nuwara_eliya_town' },
+        tip:'<strong>Tip:</strong> Bring a layer — Nuwara Eliya sits at 1,868m. Cold at night.', place:'nuwara_eliya_town' },
       { type:'activity', icon:'🌿', atype:'nature', name:'Victoria Park', time:'14:00',
         desc:'Manicured Victorian park in the centre of town. Remarkable how un-Sri Lankan it feels.',
-        tip:'<strong>Entry:</strong> small fee. Good place to start getting your bearings.', place:'victoria_park' },
+        tip:'<strong>Entry:</strong> small fee. Good place to get your bearings.', place:'victoria_park' },
       { type:'activity', icon:'🚶', atype:'nature', name:'Gregory Lake walk', time:'16:00',
-        desc:'Walk around the lake as the mist comes in. Pedal boats available if the mood takes you.',
-        tip:'<strong>Free.</strong> The light here in late afternoon is extraordinary.', place:'gregory_lake' },
-      { type:'activity', icon:'📚', atype:'culture', name:'Reading suggestion for tonight',
-        desc:'<em>Running in the Family</em> by Michael Ondaatje — his memoir of returning to Sri Lanka — has precise descriptions of Nuwara Eliya. <em>The Hamilton Case</em> by Michelle de Kretser is set partly in exactly this hill country world.',
-        tip:'Read either tonight — you\'re in the landscape they describe.' },
+        desc:'Walk around the lake as the mist comes in. The light in late afternoon is extraordinary.',
+        tip:'<strong>Free.</strong>', place:'gregory_lake' },
+      { type:'activity', icon:'📚', atype:'culture', name:'Reading suggestion',
+        desc:'<em>Running in the Family</em> by Ondaatje and <em>The Hamilton Case</em> by de Kretser are both set partly in Nuwara Eliya. Read either tonight — you\'re in the landscape they describe.',
+        tip:'Pick up at Book Studio in Galle if you haven\'t already.' },
     ]
   },
 
-  // ── DAY 9 ─────────────────────────────────────────────────
+  // ── DAY 11 · Tue 30 Sep ───────────────────────────────────
+  // Nuwara Eliya. Horton Plains early. Tea estate. Town wander.
   {
-    id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
-    title:'Nuwara Eliya', location:'Nuwara Eliya', mapStop:'nuwaraeliya',
+    id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
+    title:'Nuwara Eliya · Horton Plains + Tea', location:'Nuwara Eliya', mapStop:'nuwaraeliya',
     photos:[],
     timeline:[
       { type:'transport', mode:'taxi', icon:'🚖',
@@ -867,88 +918,88 @@ const days = [
         detail:'~1 hour from Nuwara Eliya. <strong>Leave by 06:00</strong> — cloud covers World\'s End by 10am without fail. Book through your hotel the night before.',
         badge:'taxi', time:'06:00', place:'nuwara_eliya_town', dest:'horton_plains' },
       { type:'activity', icon:'⛰️', atype:'nature', name:'Horton Plains — World\'s End', time:'07:00',
-        desc:'A sheer 870m cliff drop into the jungle plains below — one of the most dramatic viewpoints in Sri Lanka. 9km circular walk through cloud forest, past Baker\'s Falls. Completely unlike anywhere else on the trip.',
+        desc:'A sheer 870m cliff drop into the jungle plains below. 9km circular walk through cloud forest, past Baker\'s Falls. One of the most dramatic viewpoints in Sri Lanka.',
         tip:'<strong>Entry:</strong> ~$25. Go early — cloud rolls in by 10am. Bring a layer, it\'s cold at altitude.', cost:'~$25' },
       { type:'activity', icon:'🌱', atype:'nature', name:'Tea factory visit + estate shop', time:'11:00',
-        desc:'Back by mid-morning. Pedro or Mackwoods tea estate — tours of the full production process, factory shops selling direct. Buy Nuwara Eliya single-estate tea here rather than a gift shop.',
-        tip:'<strong>Better story:</strong> "Bought at the estate where it was grown." ~$3–5 entry.',
-        place:'nuwara_eliya_town' },
-      { type:'activity', icon:'🌺', atype:'nature', name:'Hakgala Botanical Gardens', time:'11:00',
-        desc:'15km from town — the most beautiful gardens in Sri Lanka after Peradeniya. Roses, orchids, ferns. The altitude makes everything grow strangely.',
+        desc:'Pedro or Mackwoods tea estate — tours of the full production process. Factory shops sell direct. Buy Nuwara Eliya single-estate tea here rather than a gift shop.',
+        tip:'<strong>Better story:</strong> "Bought at the estate where it was grown." ~$3–5 entry.', place:'nuwara_eliya_town' },
+      { type:'activity', icon:'🌺', atype:'nature', name:'Hakgala Botanical Gardens', time:'13:00',
+        desc:'15km from town. Roses, orchids, ferns at altitude. The most beautiful gardens in Sri Lanka after Peradeniya.',
         tip:'<strong>Entry:</strong> ~$15. Tuk-tuk ~20 mins.', cost:'~$15', place:'hakgala_gardens' },
-      { type:'activity', icon:'🏙️', atype:'culture', name:'Nuwara Eliya town wander', time:'15:00',
-        desc:'The town itself is the attraction — Tudor post office, red phone boxes, a golf course, a Hindu temple next to a colonial hotel. Wander without a plan.',
-        tip:'<strong>Hill Club Hotel</strong> is worth walking through for a drink — colonial grandeur, hunting trophies, dress code after 6pm.', place:'nuwara_eliya_town' },
+      { type:'activity', icon:'🏙️', atype:'culture', name:'Nuwara Eliya town wander', time:'16:00',
+        desc:'Tudor post office, red phone boxes, a golf course, a Hindu temple next to a colonial hotel. Wander without a plan.',
+        tip:'<strong>Hill Club Hotel</strong> is worth walking through for a drink — colonial grandeur, dress code after 6pm.', place:'nuwara_eliya_town' },
     ]
   },
 
-  // ── DAY 10 ────────────────────────────────────────────────
+  // ── DAY 12 · Wed 1 Oct ────────────────────────────────────
+  // Nuwara Eliya → Ella. Bus ~1.5hrs.
   {
-    id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
+    id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
     title:'Nuwara Eliya → Ella', location:'Ella', mapStop:'ella',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'ella',
     photos:[],
     timeline:[
       { type:'transport', mode:'bus', icon:'🚌',
         title:'Bus: Nuwara Eliya → Ella',
-        detail:'~1.5–2 hours through the heart of tea country. Buses run regularly from Nuwara Eliya bus station. <strong>Note:</strong> likely a local bus rather than an air-conditioned coach — check conditions on r/srilanka closer to the date. PickMe intercity is the fallback if the bus is poor (~$15–20, no awkward silences either).',
+        detail:'~1.5–2 hours through the heart of tea country. Buses run regularly from Nuwara Eliya bus station. <strong>Note:</strong> likely a local bus — check r/srilanka closer to the date. PickMe intercity is the fallback (~$15–20).',
         badge:'bus', time:'09:00' },
       { type:'activity', icon:'🏘️', atype:'culture', name:'Arrive Ella · Check in', time:'11:00',
-        desc:'Small mountain town. Much more touristy than Nuwara Eliya but in a relaxed way. Good food, good views.',
+        desc:'Small mountain town. Much more touristy than Nuwara Eliya but in a relaxed way. Good food, valley views.',
         tip:'<strong>Tip:</strong> Book a guesthouse with a valley view if possible.', place:'ella_town' },
       { type:'activity', icon:'☕', atype:'shop', name:'Sri Lankan estate coffee — Ella', time:'11:30',
-        desc:'Ella is one of the few places in Sri Lanka where you can find locally grown coffee beans. Ask at Ceylon Sliders or Matey Hut on the main strip — both serve Sri Lankan single-origin and some sell small bags of beans to take home.',
-        tip:'<strong>Ask specifically:</strong> "Do you sell bags of Sri Lankan estate coffee?" Not all places do, but the ones that do usually have a direct connection to the estate. A much more unusual gift than tea — most people don\'t know Sri Lanka grows coffee.', place:'ella_town' },
+        desc:'Ask at Ceylon Sliders or Matey Hut on the main strip — both serve Sri Lankan single-origin and some sell small bags of beans to take home.',
+        tip:'<strong>Ask:</strong> "Do you sell bags of Sri Lankan estate coffee?" A much more unusual gift than tea.', place:'ella_town' },
       { type:'transport', mode:'taxi', icon:'🚖',
         title:'Tuk-tuk to Ravana Falls',
-        detail:'~10 mins from Ella town. Ask your hotel or flag one down on the main strip. ~$2 each way.',
+        detail:'~10 mins from Ella town. ~$2 each way.',
         badge:'taxi', place:'ella_town', dest:'ravana_falls' },
-      { type:'activity', icon:'💧', atype:'nature', name:'Ravana Falls', time:'11:30',
-        desc:'25m waterfall cascading down the hillside. One of the widest waterfalls in Sri Lanka. Named after the demon king Ravana from the Ramayana — legend says he held Sita captive in a cave here.',
-        tip:'<strong>Free.</strong> ~10 mins from town. Can be busy midday — go before lunch.', place:'ravana_falls' },
+      { type:'activity', icon:'💧', atype:'nature', name:'Ravana Falls', time:'12:30',
+        desc:'25m waterfall named after the demon king Ravana from the Ramayana. Free, 10 mins from town.',
+        tip:'<strong>Free.</strong> Go before lunch — can be busy midday.', place:'ravana_falls' },
       { type:'transport', mode:'walk', icon:'🚶',
         title:'Walk to Nine Arch Bridge viewpoint',
         detail:'~2km walk from Ella town. Follow signs from the main street.',
         badge:'walk', place:'ella_town', dest:'nine_arch_bridge' },
-      { type:'activity', icon:'🌉', atype:'culture', name:'Nine Arch Bridge', time:'13:00',
-        desc:'Colonial-era stone viaduct through jungle. Sit at the viewpoint and wait for a train to cross — it happens every couple of hours. The most photographed sight in Sri Lanka for good reason.',
+      { type:'activity', icon:'🌉', atype:'culture', name:'Nine Arch Bridge', time:'14:00',
+        desc:'Colonial-era stone viaduct through jungle. Sit at the viewpoint and wait for a train to cross — it happens every couple of hours.',
         tip:'<strong>Free.</strong> Check the train timetable at your hotel so you know when to be there.', place:'nine_arch_bridge' },
       { type:'activity', icon:'⛰️', atype:'nature', name:'Little Adam\'s Peak', time:'16:00',
-        desc:'Easy 3km hike from town with panoramic views over the valley. One of the best easy walks in Sri Lanka.',
-        tip:'<strong>Free.</strong> Allow 1.5–2 hours. Go late afternoon for the best light.', place:'little_adams_peak' },
+        desc:'Easy 3km hike with panoramic views over the valley. One of the best easy walks in Sri Lanka.',
+        tip:'<strong>Free.</strong> Allow 1.5–2 hours. Late afternoon light is best.', place:'little_adams_peak' },
     ]
   },
 
-  // ── DAY 11 ────────────────────────────────────────────────
+  // ── DAY 13 · Thu 2 Oct ────────────────────────────────────
+  // Ella → Matara. Bus ~2.5hrs. Evening in Matara. Early train tomorrow.
   {
-    id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
+    id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
     title:'Ella → Matara', location:'Matara', mapStop:'matara',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'matara',
-    photos:[
-      { src:'photos/colombo.jpg', caption:'Colombo' },
-    ],
+    photos:[],
     timeline:[
       { type:'activity', icon:'🌅', atype:'nature', name:'Early morning at Nine Arch Bridge', time:'07:00',
-        desc:'If you missed a train crossing yesterday, the early morning is magical — mist in the valley, cool air.',
-        tip:'<strong>Check train times</strong> the night before so you know when to be there.', place:'nine_arch_bridge' },
+        desc:'If you missed a train crossing yesterday, this is your last chance. Morning mist in the valley.',
+        tip:'<strong>Check train times</strong> the night before.', place:'nine_arch_bridge' },
       { type:'transport', mode:'bus', icon:'🚌',
         title:'Bus: Ella → Matara',
-        detail:'~2.5 hours descending from the hill country to the coast. Scenic throughout — you drop from mountain air back to sea level.',
-        badge:'bus', time:'13:00', place:'ella_town', dest:'matara_stn' },
-      { type:'activity', icon:'🏘️', atype:'culture', name:'Arrive Matara · Check in', time:'15:30',
-        desc:'Matara is a transit stop, not a destination — but it has a Dutch fort, a lighthouse, and a decent seafront. A few hours to explore before an early night.',
-        tip:'<strong>Stay near the station</strong> — you\'re catching the 06:05 train tomorrow morning. 5-10 min walk is ideal.' },
-      { type:'activity', icon:'🌊', atype:'nature', name:'Matara seafront evening', time:'17:00',
-        desc:'Walk the seafront and the small Dutch fort. Nothing to rival Galle but pleasant enough for an evening. Find a good spot for dinner.',
+        detail:'~2.5 hours descending from the hill country to the coast. Scenic throughout.',
+        badge:'bus', time:'10:00', place:'ella_town', dest:'matara_stn' },
+      { type:'activity', icon:'🏘️', atype:'culture', name:'Arrive Matara · Check in', time:'12:30',
+        desc:'Transit stop, not a destination — but the Dutch fort, lighthouse and seafront are worth an evening.',
+        tip:'<strong>Stay near the station</strong> — catching the 06:05 train tomorrow. 5-10 min walk ideal.' },
+      { type:'activity', icon:'🌊', atype:'nature', name:'Matara seafront + Dutch fort', time:'15:00',
+        desc:'Walk the seafront and explore the small Dutch fort. Nothing to rival Galle but pleasant for an evening. Find a good dinner spot.',
         tip:'<strong>Early night.</strong> Train departs 06:05 — be at the station by 05:45.' },
     ]
   },
 
-  // ── DAY 12 ────────────────────────────────────────────────
+  // ── DAY 14 · Fri 3 Oct ────────────────────────────────────
+  // Matara → Colombo. Coastal train 06:05, arrive 09:07. Full day Colombo.
   {
-    id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
-    title:'Matara → Colombo · Sightseeing', location:'Colombo', mapStop:'colombo',
-    badge:'Travel day', badgeType:'transit',
+    id:'d14', date:'Fri 3 Oct', shortDate:'3', month:'Oct',
+    title:'Matara → Colombo · Final Day', location:'Colombo', mapStop:'colombo',
+    badge:'Coastal train', badgeType:'transit', nights:1, hotelKey:'colombo',
     photos:[
       { src:'photos/colombo.jpg', caption:'Colombo' },
       { src:'photos/gangaramaya.jpg', caption:'Gangaramaya Temple' },
@@ -958,54 +1009,49 @@ const days = [
     timeline:[
       { type:'transport', mode:'train', icon:'🚆',
         title:'Coastal Train: Matara → Colombo Maradana',
-        detail:'Train <strong>8059</strong> · Depart <strong>06:05</strong> · Arrive Maradana <strong>08:58</strong> · ~3 hours. <strong>Sit on the LEFT side</strong> heading north — ocean the whole way. LKR 1,400 (~$4.50). Buy at Matara station.',
+        detail:'Train <strong>8059</strong> · Depart <strong>06:05</strong> · Arrive Maradana <strong>08:58</strong> · ~3 hours · Air Conditioned Saloon LKR 1,400 (~$4.50). <strong>Sit on the LEFT side</strong> heading north — ocean the whole way. Buy at Matara station.',
         badge:'train', time:'06:05', place:'matara_stn', dest:'colombo_fort_stn' },
-      { type:'transport', mode:'walk', icon:'🚶',
-        title:'Walk or PickMe to hotel',
-        detail:'Back to your Colombo hotel. Drop bags and freshen up — full day ahead.',
-        badge:'walk', place:'colombo_fort_stn', dest:'hotel:colombo' },
-      { type:'activity', icon:'📚', atype:'shop', name:'Barefoot Gallery & Bookshop', time:'10:00',
-        desc:'Return visit if you didn\'t get everything in transit. Last chance for <em>The Seven Moons of Maali Almeida</em> (Booker Prize 2022 — perfect gift), handwoven pouches, notebooks, scarves.',
-        tip:'<strong>Hours:</strong> Mon–Sat 10:00–19:00 · Sun 11:00–17:00. Also try Makeen Books or Jeya Book Centre nearby — ask for signed copies.', place:'barefoot' },
-      { type:'activity', icon:'🪵', atype:'shop', name:'Lakpahana or Ceylon Tea Supermarket', time:'11:00',
-        desc:'Lakpahana for brass bookmarks, wooden tea scoops, handmade pottery. Ceylon Tea Supermarket near the Fort for a broader estate tea selection.',
-        tip:'<strong>Ceylon Tea Supermarket</strong> stocks small-batch single-estate tins from across the island.' },
-      { type:'activity', icon:'☕', atype:'shop', name:'Colombo Coffee Company', time:'12:00',
-        desc:'One of the few places in Colombo that roasts locally and stocks Sri Lankan estate coffee beans. A small bag of Sri Lankan coffee is a more unusual gift than tea — most people don\'t know the island grows it.',
-        tip:'<strong>Near the Fort area.</strong> Ask specifically for single-estate Sri Lankan beans rather than blends. Café Kumbuk is another good option nearby for a coffee stop.' },
-      { type:'activity', icon:'🏛️', atype:'museum', name:'National Museum of Colombo', time:'12:00',
-        desc:'3,000 years of Sri Lankan history across 15 rooms. Allow 2 hours.',
-        tip:'<strong>Closed Tuesdays.</strong> Oct 1 is a Wednesday — fine. Entry ~$5.', cost:'~$5', place:'national_museum' },
-      { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar', time:'14:30',
-        desc:'The old bazaar district — each street specialises in something different. Spices, fabric, electronics, food.',
-        tip:'<strong>Free.</strong> Best in mid-afternoon.', place:'pettah' },
+      { type:'transport', mode:'taxi', icon:'🚖',
+        title:'PickMe to hotel',
+        detail:'Arrive Maradana 08:58. PickMe to your Colombo hotel. Drop bags and freshen up.',
+        badge:'taxi', place:'colombo_fort_stn', dest:'hotel:colombo' },
+      { type:'activity', icon:'🏛️', atype:'museum', name:'National Museum of Colombo', time:'10:00',
+        desc:'3,000 years of Sri Lankan history. Allow 2 hours.',
+        tip:'<strong>Closed Tuesdays.</strong> Oct 3 is a Friday — fine. Entry ~$5.', cost:'~$5', place:'national_museum' },
+      { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar', time:'12:30',
+        desc:'The old bazaar district — each street specialises in something different.',
+        tip:'<strong>Free.</strong>', place:'pettah' },
+      { type:'activity', icon:'📚', atype:'shop', name:'Last bookshop stop', time:'14:00',
+        desc:'Vijitha Yapa near the Fort for a broad local selection. Makeen Books or Jeya Book Centre / IBH Readers Paradise for signed copies.',
+        tip:'<strong>Ask:</strong> "Do you have signed copies by Sri Lankan authors?"' },
       { type:'activity', icon:'🌊', atype:'nature', name:'Galle Face Green', time:'17:00',
-        desc:'Wide oceanfront promenade. Local families, kite flying, street food. Beautiful at sunset.',
-        tip:'<strong>Free.</strong> Sunset ~18:00. A very local Colombo experience.', place:'galle_face_green' },
-      { type:'activity', icon:'✨', atype:'night', name:'Fireflies — Kelani River (evening)', time:'19:30',
-        desc:'Evening boat trip through mangroves on the Kelani River to see bioluminescent fireflies. About 1.5 hours from Colombo. September-October is good timing. Completely magical and unlike anything else on the trip.',
-        tip:'<strong>Book in advance</strong> through your hotel or operators like Cinnamon Nature Trails. ~$20–30 per person. Allow 4 hours total including travel.' },
+        desc:'Final evening on the oceanfront promenade. Kite flying, street food, sunset.',
+        tip:'<strong>Free.</strong> Sunset ~18:00.', place:'galle_face_green' },
+      { type:'activity', icon:'✨', atype:'nature', name:'Fireflies — Kelani River', time:'19:30',
+        desc:'Evening boat trip through mangroves to see bioluminescent fireflies. September-October is good timing. Magical last night activity.',
+        tip:'<strong>Book in advance</strong> via your hotel or Cinnamon Nature Trails. ~$20–30. Allow 4 hours total.' },
     ]
   },
 
-  // ── DAY 13 ────────────────────────────────────────────────
+  // ── DAY 15 · Sat 4 Oct ────────────────────────────────────
+  // Depart Colombo. Flight 20:20.
   {
-    id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
-    title:'Colombo · Last Day', location:'Colombo', mapStop:'colombo',
+    id:'d15', date:'Sat 4 Oct', shortDate:'4', month:'Oct',
+    title:'Colombo · Depart', location:'Colombo', mapStop:'colombo',
+    badge:'Departure', badgeType:'transit',
     photos:[
-      { src:'photos/galle_face_green.jpg', caption:'Galle Face Green' },
-      { src:'photos/colombo.jpg', caption:'Colombo' },
+      { src:'photos/galle_face_green.jpg', caption:'Galle Face Green — farewell' },
     ],
     timeline:[
-      { type:'activity', icon:'🌅', atype:'nature', name:'Morning walk — Galle Face Green', time:'08:00',
-        desc:'Last morning in Sri Lanka. Walk along the promenade as the city wakes up.',
-        tip:'<strong>Free.</strong>', place:'galle_face_green' },
-      { type:'activity', icon:'📚', atype:'shop', name:'Last bookshop stop', time:'10:00',
-        desc:'Vijitha Yapa near the Fort for a broad local selection. Makeen Books or Jeya Book Centre / IBH Readers Paradise if hunting for signed copies.',
-        tip:'<strong>Ask:</strong> \'Do you have signed copies by Sri Lankan authors?\' or \'Any special editions of Seven Moons?\' — worth trying.' },
+      { type:'activity', icon:'🌅', atype:'nature', name:'Last morning — Galle Face Green', time:'08:00',
+        desc:'Slow breakfast, final walk along the promenade as the city wakes up.',
+        tip:'<strong>Leave for airport by 17:00 at the latest.</strong>', place:'galle_face_green' },
+      { type:'activity', icon:'📚', atype:'shop', name:'Last chance — bookshops', time:'10:00',
+        desc:'Barefoot or Vijitha Yapa for anything you still want. Last chance to stock up on Sri Lankan literature.',
+        tip:'<strong>Hours:</strong> Barefoot opens 10:00 Mon–Sat.' },
       { type:'transport', mode:'taxi', icon:'🚖',
-        title:'Taxi to Airport',
-        detail:'Use PickMe or ask hotel to book. Leave by <strong>17:00</strong> for a 20:20 flight. ~$10–15.',
+        title:'Taxi to Bandaranaike Airport',
+        detail:'Use PickMe or ask hotel to book. Leave by <strong>17:00</strong> for a 20:20 flight. ~$10–15, ~45 mins.',
         badge:'taxi', time:'17:00', place:'hotel:colombo', dest:'airport' },
       { type:'transport', mode:'flight', icon:'✈️',
         title:'Flight departs 20:20',
@@ -1013,21 +1059,22 @@ const days = [
         badge:'flight', time:'20:20', place:'airport' },
     ]
   },
+
 ];
 
 // ═══════════════════════════════════════════════════════════
 // MAP DATA
 // ═══════════════════════════════════════════════════════════
 const mapStops = [
-  { id:'colombo',      label:'Colombo',       lat:6.9271, lng:79.8612, dates:'Sep 20 + Sep 29–Oct 2', desc:'Arrival, transit, and final sightseeing. Barefoot Bookshop, National Museum, Gangaramaya, Pettah, Galle Face Green.', color:'#1B4D4A' },
-  { id:'anuradhapura', label:'Anuradhapura',  lat:8.3114, lng:80.4037, dates:'Sep 21–23', desc:'2 nights. Ancient sacred city — cycle the ruins. Day trips to Dambulla and Sigiriya.', color:'#C4613A' },
+  { id:'colombo',      label:'Colombo',       lat:6.9271, lng:79.8612, dates:'Sep 20–21, Sep 24–25, Oct 3–4', desc:'Arrival, transit, and final sightseeing. Barefoot Bookshop, National Museum, Gangaramaya, Pettah, Galle Face Green.', color:'#1B4D4A' },
+  { id:'anuradhapura', label:'Anuradhapura',  lat:8.3114, lng:80.4037, dates:'Sep 22–23', desc:'2 nights. Ancient sacred city — cycle the ruins. Day trips to Dambulla and Sigiriya.', color:'#C4613A' },
   { id:'sigiriya',     label:'Sigiriya',      lat:7.9570, lng:80.7603, dates:'Sep 22 day trip', desc:'5th-century rock fortress. $30 entry.', color:'#8B4513' },
   { id:'dambulla',     label:'Dambulla',      lat:7.8549, lng:80.6506, dates:'Sep 22 day trip', desc:'Cave temple with 2,000-year-old Buddhist frescoes. $15 entry.', color:'#8B4513' },
-  { id:'galle',        label:'Galle',         lat:6.0535, lng:80.2210, dates:'Sep 23–24', desc:'1 night. Coastal train arrival. Dutch Fort, Maritime Museum, Book Studio, rampart sunsets.', color:'#E8A030' },
+  { id:'galle',        label:'Galle',         lat:6.0535, lng:80.2210, dates:'Sep 25–26', desc:'1 night. Coastal train arrival. Dutch Fort, Maritime Museum, Book Studio, rampart sunsets.', color:'#E8A030' },
   { id:'tangalle',     label:'Tangalle',      lat:6.0227, lng:80.8008, dates:'Sep 25–26', desc:'2 nights. Quiet beach. Rekawa turtle nesting at 20:00.', color:'#2D7A4F' },
   { id:'nuwaraeliya',  label:'Nuwara Eliya',  lat:6.9497, lng:80.7891, dates:'Sep 27–28', desc:'2 nights. Colonial hill station at 1,868m. Tea estates, Victoria Park, Gregory Lake, Hakgala Gardens.', color:'#5B3A8A' },
   { id:'ella',         label:'Ella',          lat:6.8728, lng:81.0465, dates:'Sep 29', desc:'1 night. Nine Arch Bridge, Little Adam\'s Peak hike, mountain town.', color:'#2A6B67' },
-  { id:'matara',       label:'Matara',        lat:5.9549, lng:80.5550, dates:'Oct 2 overnight', desc:'Transit stop — arrive afternoon from Ella, evening by the seafront and Dutch fort, catch the 06:05 coastal train north to Colombo next morning.', color:'#888888' },
+  { id:'matara',       label:'Matara',        lat:5.9549, lng:80.5550, dates:'Oct 2', desc:'Transit stop — arrive afternoon from Ella, evening by the seafront and Dutch fort, catch the 06:05 coastal train north to Colombo next morning.', color:'#888888' },
 ];
 
 const routeLegs = [
