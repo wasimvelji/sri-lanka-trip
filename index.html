@@ -424,6 +424,8 @@ gmp-place-autocomplete { width:100%; display:block; }
         <div class="check-item" data-id="print-trains" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Screenshot train tickets</div><div class="check-detail">Download 12go.asia / Bookaway tickets offline. Coastal train buy on the day.</div><span class="check-when when-days">Day before</span></div></div>
         <div class="check-item" data-id="cash" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check travel card works</div><div class="check-detail">Withdraw rupees at airport ATM on arrival. Memorise your PIN.</div><span class="check-when when-days">Day before</span></div></div>
         <div class="check-item" data-id="maps-dl" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Download offline maps</div><div class="check-detail">Google Maps — download Sri Lanka before you travel.</div><span class="check-when when-days">Day before</span></div></div>
+            <div class="check-item" data-id="cricket" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check cricket schedule — Colombo</div><div class="check-detail">Check if there's a Test or ODI at R. Premadasa Stadium or SSC during your Colombo dates (Sep 20–21, Sep 25, Oct 3–4). Check <a href="https://www.espncricinfo.com" target="_blank">espncricinfo.com</a> in July 2026 when schedules confirm. Sri Lanka home games are atmospheric and intimate.</div><span class="check-when when-asap">Check Jul 2026</span></div></div>
+            <div class="check-item" data-id="concerts" onclick="toggleCheck(this)"><div class="check-box"><span class="check-tick">✓</span></div><div class="check-content"><div class="check-name">Check Colombo events — music / concerts</div><div class="check-detail">Colombo has a growing live music scene. Check Resident Advisor and local Facebook groups for events in late Sep / early Oct 2026. The Nelum Pokuna Amphitheatre hosts big shows. Worth checking in August 2026.</div><span class="check-when when-asap">Check Aug 2026</span></div></div>
       </div>
       <div class="checklist-section">
         <div class="cl-group-title">Pack<span class="cl-progress" id="prog-pack"></span></div>
@@ -577,7 +579,7 @@ const days = [
   // ── DAY 1 · Sat 20 Sep ────────────────────────────────────
   // Arrive Colombo. Recover. One night.
   {
-    id:'d1', date:'Sat 20 Sep', shortDate:'20', month:'Sep',
+    id:'d1', date:'Sun 20 Sep', shortDate:'20', month:'Sep',
     title:'Arrival · Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Arrival', badgeType:'transit', nights:1, hotelKey:'colombo',
     photos:[
@@ -608,7 +610,7 @@ const days = [
   // ── DAY 2 · Sun 21 Sep ────────────────────────────────────
   // Full day Colombo sightseeing. Board Night Mail 20:00.
   {
-    id:'d2', date:'Sun 21 Sep', shortDate:'21', month:'Sep',
+    id:'d2', date:'Mon 21 Sep', shortDate:'21', month:'Sep',
     title:'Colombo · Sightseeing + Night Train', location:'Colombo', mapStop:'colombo',
     badge:'Night train', badgeType:'transit',
     photos:[
@@ -651,7 +653,7 @@ const days = [
   // ── DAY 3 · Mon 22 Sep ────────────────────────────────────
   // Arrive Anuradhapura 00:05. Rest. Sacred City afternoon.
   {
-    id:'d3', date:'Mon 22 Sep', shortDate:'22', month:'Sep',
+    id:'d3', date:'Tue 22 Sep', shortDate:'22', month:'Sep',
     title:'Arrive Anuradhapura · Sacred City', location:'Anuradhapura', mapStop:'anuradhapura',
     badge:'Arrive 00:05', badgeType:'transit', nights:2, hotelKey:'anuradhapura',
     photos:[
@@ -673,6 +675,9 @@ const days = [
       { type:'activity', icon:'🌅', atype:'nature', name:'Sunset at Abhayagiri Dagoba', time:'17:30',
         desc:'The ancient stupas glow gold at sunset. Cycle out and simply sit with it.',
         tip:'<strong>Free</strong> with day pass.' },
+      { type:'activity', icon:'🛕', atype:'temple', name:'Temple life at dusk', time:'17:30',
+        desc:'As the day cools, the ancient city comes alive with devotees. White-clad pilgrims at the sacred Bo Tree, monks in saffron robes, incense and jasmine. Anuradhapura is an active pilgrimage city — this is most visible at dusk.',
+        tip:'<strong>Free.</strong> Just walk slowly and observe. No photography of worshippers without permission.' },
       { type:'activity', icon:'📚', atype:'culture', name:'Reading suggestion',
         desc:'<em>Anil\'s Ghost</em> by Michael Ondaatje is partly set among the ancient statues here — a forensic investigator uncovering wartime atrocities amid the ruins. Also consider <em>The Seven Moons of Maali Almeida</em> — Booker Prize 2022, ideal gift.',
         tip:'Look for both at Barefoot in Colombo before you leave.' },
@@ -682,7 +687,7 @@ const days = [
   // ── DAY 4 · Tue 23 Sep ────────────────────────────────────
   // Sigiriya + Dambulla day trips from Anuradhapura.
   {
-    id:'d4', date:'Tue 23 Sep', shortDate:'23', month:'Sep',
+    id:'d4', date:'Wed 23 Sep', shortDate:'23', month:'Sep',
     title:'Anuradhapura · Sigiriya + Dambulla', location:'Anuradhapura', mapStop:'sigiriya',
     badge:'Day trips',
     photos:[
@@ -720,7 +725,7 @@ const days = [
   // ── DAY 5 · Wed 24 Sep ────────────────────────────────────
   // Anuradhapura → Colombo. Train 14:20, arrive 19:03. Overnight Colombo.
   {
-    id:'d5', date:'Wed 24 Sep', shortDate:'24', month:'Sep',
+    id:'d5', date:'Thu 24 Sep', shortDate:'24', month:'Sep',
     title:'Anuradhapura → Colombo', location:'Colombo', mapStop:'colombo',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'colombo',
     photos:[
@@ -751,7 +756,7 @@ const days = [
   // ── DAY 6 · Thu 25 Sep ────────────────────────────────────
   // Colombo morning shopping. Coastal train 14:30 → Galle 17:05.
   {
-    id:'d6', date:'Thu 25 Sep', shortDate:'25', month:'Sep',
+    id:'d6', date:'Fri 25 Sep', shortDate:'25', month:'Sep',
     title:'Colombo → Galle', location:'Galle', mapStop:'galle',
     badge:'Coastal train', badgeType:'transit', nights:1, hotelKey:'galle',
     photos:[
@@ -786,7 +791,7 @@ const days = [
   // ── DAY 7 · Fri 26 Sep ────────────────────────────────────
   // Full day Galle.
   {
-    id:'d7', date:'Fri 26 Sep', shortDate:'26', month:'Sep',
+    id:'d7', date:'Sat 26 Sep', shortDate:'26', month:'Sep',
     title:'Galle', location:'Galle', mapStop:'galle',
     photos:[
       { src:'photos/galle.jpg', caption:'Galle lighthouse' },
@@ -821,7 +826,7 @@ const days = [
   // ── DAY 8 · Sat 27 Sep ────────────────────────────────────
   // Galle → Tangalle. PickMe ~1.5hrs.
   {
-    id:'d8', date:'Sat 27 Sep', shortDate:'27', month:'Sep',
+    id:'d8', date:'Sun 27 Sep', shortDate:'27', month:'Sep',
     title:'Galle → Tangalle', location:'Tangalle', mapStop:'tangalle',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'tangalle',
     photos:[
@@ -852,7 +857,7 @@ const days = [
   // ── DAY 9 · Sun 28 Sep ────────────────────────────────────
   // Tangalle. Bundala safari morning. Beach afternoon. Turtles evening.
   {
-    id:'d9', date:'Sun 28 Sep', shortDate:'28', month:'Sep',
+    id:'d9', date:'Mon 28 Sep', shortDate:'28', month:'Sep',
     title:'Tangalle · Bundala + Beach + Turtles', location:'Tangalle', mapStop:'tangalle',
     photos:[
       { src:'photos/tangalle.jpg', caption:'Tangalle beach' },
@@ -882,7 +887,7 @@ const days = [
   // ── DAY 10 · Mon 29 Sep ───────────────────────────────────
   // Tangalle → Nuwara Eliya. Bus via Wellawaya ~4hrs.
   {
-    id:'d10', date:'Mon 29 Sep', shortDate:'29', month:'Sep',
+    id:'d10', date:'Tue 29 Sep', shortDate:'29', month:'Sep',
     title:'Tangalle → Nuwara Eliya', location:'Nuwara Eliya', mapStop:'nuwaraeliya',
     badge:'Travel day', badgeType:'transit', nights:2, hotelKey:'nuwaraeliya',
     photos:[],
@@ -909,7 +914,7 @@ const days = [
   // ── DAY 11 · Tue 30 Sep ───────────────────────────────────
   // Nuwara Eliya. Horton Plains early. Tea estate. Town wander.
   {
-    id:'d11', date:'Tue 30 Sep', shortDate:'30', month:'Sep',
+    id:'d11', date:'Wed 30 Sep', shortDate:'30', month:'Sep',
     title:'Nuwara Eliya · Horton Plains + Tea', location:'Nuwara Eliya', mapStop:'nuwaraeliya',
     photos:[],
     timeline:[
@@ -929,13 +934,16 @@ const days = [
       { type:'activity', icon:'🏙️', atype:'culture', name:'Nuwara Eliya town wander', time:'16:00',
         desc:'Tudor post office, red phone boxes, a golf course, a Hindu temple next to a colonial hotel. Wander without a plan.',
         tip:'<strong>Hill Club Hotel</strong> is worth walking through for a drink — colonial grandeur, dress code after 6pm.', place:'nuwara_eliya_town' },
+      { type:'activity', icon:'🪔', atype:'culture', name:'Vap Poya — temple evening', time:'18:00',
+        desc:'Today is Vap Poya, a full moon Poya day — one of the most important Buddhist holidays of the year, marking the end of the Vas retreat when monks emerge after three months of seclusion. Temples will be lit with oil lamps, white-clad devotees making offerings of flowers and incense.',
+        tip:'<strong>Walk to the nearest temple at dusk.</strong> Nuwara Eliya has a large Tamil Hindu population too — kovils (Hindu temples) will also be active. Just observe quietly. One of those unplanned travel moments.', place:'nuwara_eliya_town' },
     ]
   },
 
   // ── DAY 12 · Wed 1 Oct ────────────────────────────────────
   // Nuwara Eliya → Ella. Bus ~1.5hrs.
   {
-    id:'d12', date:'Wed 1 Oct', shortDate:'1', month:'Oct',
+    id:'d12', date:'Thu 1 Oct', shortDate:'1', month:'Oct',
     title:'Nuwara Eliya → Ella', location:'Ella', mapStop:'ella',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'ella',
     photos:[],
@@ -973,7 +981,7 @@ const days = [
   // ── DAY 13 · Thu 2 Oct ────────────────────────────────────
   // Ella → Matara. Bus ~2.5hrs. Evening in Matara. Early train tomorrow.
   {
-    id:'d13', date:'Thu 2 Oct', shortDate:'2', month:'Oct',
+    id:'d13', date:'Fri 2 Oct', shortDate:'2', month:'Oct',
     title:'Ella → Matara', location:'Matara', mapStop:'matara',
     badge:'Travel day', badgeType:'transit', nights:1, hotelKey:'matara',
     photos:[],
@@ -997,7 +1005,7 @@ const days = [
   // ── DAY 14 · Fri 3 Oct ────────────────────────────────────
   // Matara → Colombo. Coastal train 06:05, arrive 09:07. Full day Colombo.
   {
-    id:'d14', date:'Fri 3 Oct', shortDate:'3', month:'Oct',
+    id:'d14', date:'Sat 3 Oct', shortDate:'3', month:'Oct',
     title:'Matara → Colombo · Final Day', location:'Colombo', mapStop:'colombo',
     badge:'Coastal train', badgeType:'transit', nights:1, hotelKey:'colombo',
     photos:[
@@ -1017,7 +1025,7 @@ const days = [
         badge:'taxi', place:'colombo_fort_stn', dest:'hotel:colombo' },
       { type:'activity', icon:'🏛️', atype:'museum', name:'National Museum of Colombo', time:'10:00',
         desc:'3,000 years of Sri Lankan history. Allow 2 hours.',
-        tip:'<strong>Closed Tuesdays.</strong> Oct 3 is a Friday — fine. Entry ~$5.', cost:'~$5', place:'national_museum' },
+        tip:'<strong>Closed Tuesdays.</strong> Oct 3 is a Saturday — fine. Entry ~$5.', cost:'~$5', place:'national_museum' },
       { type:'activity', icon:'🏛️', atype:'culture', name:'Pettah Bazaar', time:'12:30',
         desc:'The old bazaar district — each street specialises in something different.',
         tip:'<strong>Free.</strong>', place:'pettah' },
@@ -1036,7 +1044,7 @@ const days = [
   // ── DAY 15 · Sat 4 Oct ────────────────────────────────────
   // Depart Colombo. Flight 20:20.
   {
-    id:'d15', date:'Sat 4 Oct', shortDate:'4', month:'Oct',
+    id:'d15', date:'Sun 4 Oct', shortDate:'4', month:'Oct',
     title:'Colombo · Depart', location:'Colombo', mapStop:'colombo',
     badge:'Departure', badgeType:'transit',
     photos:[
