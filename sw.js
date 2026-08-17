@@ -1,4 +1,4 @@
-const CACHE_NAME = 'srilanka-trip-v4';
+const CACHE_NAME = 'srilanka-trip-BUILD_TIMESTAMP';
 const BASE = '/sri-lanka-trip';
 const ASSETS = [
   BASE + '/',
@@ -31,10 +31,8 @@ const ASSETS = [
   BASE + '/photos/kandy_museum.webp',
   BASE + '/photos/kandy_gardens.jpg',
   BASE + '/photos/kandy_temple.jpg',
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Inter:wght@300;400;500;600&display=swap',
 ];
 
-// Install — cache all assets then activate immediately
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -43,7 +41,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// Activate — delete old caches and take control immediately
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
@@ -52,7 +49,6 @@ self.addEventListener('activate', event => {
       ))
       .then(() => self.clients.claim())
       .then(() => {
-        // Notify all open tabs that a new version is active
         self.clients.matchAll({ type: 'window' }).then(clients => {
           clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' }));
         });
@@ -60,15 +56,11 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch — cache first, network fallback
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-
-  // Always network for Google Maps/APIs
   if (url.hostname.includes('googleapis.com') || url.hostname.includes('gstatic.com')) {
     return;
   }
-
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
