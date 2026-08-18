@@ -1,4 +1,4 @@
-const CACHE_NAME = 'srilanka-trip-BUILD_TIMESTAMP';
+const CACHE_NAME = 'srilanka-trip-20260818201639';
 const BASE = '/sri-lanka-trip';
 const ASSETS = [
   BASE + '/',
