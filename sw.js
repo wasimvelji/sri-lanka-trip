@@ -1,7 +1,6 @@
-const CACHE_NAME = 'srilanka-trip-20260818201639';
+const CACHE_NAME = 'srilanka-trip-20260822';
 const BASE = '/sri-lanka-trip';
 const ASSETS = [
-  BASE + '/',
   BASE + '/index.html',
   BASE + '/manifest.json',
   BASE + '/icon-192.png',
@@ -33,34 +32,67 @@ const ASSETS = [
   BASE + '/photos/kandy_temple.jpg',
 ];
 
+// Install — cache all assets
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => Promise.allSettled(ASSETS.map(url => cache.add(url))))
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      ))
-      .then(() => self.clients.claim())
       .then(() => {
-        self.clients.matchAll({ type: 'window' }).then(clients => {
-          clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' }));
-        });
+        console.log('SW installed:', CACHE_NAME);
+        // Don't skipWaiting here — wait for message from page
       })
   );
 });
 
+// Listen for SKIP_WAITING from the page
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Activate — delete old caches
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => {
+          console.log('Deleting old cache:', k);
+          return caches.delete(k);
+        })
+      ))
+      .then(() => self.clients.claim())
+  );
+});
+
+// Fetch strategy:
+// - index.html: network first, fall back to cache
+// - everything else: cache first, fall back to network
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
+
+  // Skip Google APIs
   if (url.hostname.includes('googleapis.com') || url.hostname.includes('gstatic.com')) {
     return;
   }
+
+  // Network-first for index.html — always get fresh content
+  if (url.pathname === BASE + '/' || url.pathname === BASE + '/index.html') {
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Cache-first for everything else (photos, assets)
   event.respondWith(
     caches.match(event.request).then(cached => {
       if (cached) return cached;
