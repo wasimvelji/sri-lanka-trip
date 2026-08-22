@@ -2208,109 +2208,45 @@ function lightboxNav(dir) {
 function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
 function closeLightboxOutside(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
 
-// Service Worker — inlined as Blob so any change to index.html triggers update
+// Service Worker
+// VERSION: change this number each time you edit the file in GitHub
+const SW_VERSION = '20260822';
+
 if ('serviceWorker' in navigator) {
-  // Each deploy gets a unique version from the file's last-modified time
-  const SW_VERSION = document.lastModified;
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('/sri-lanka-trip/sw.js?v=' + SW_VERSION, { updateViaCache: 'none' });
+      console.log('SW registered, version:', SW_VERSION);
 
-  const swCode = `
-const CACHE_NAME = 'srilanka-trip-${encodeURIComponent(SW_VERSION)}';
-const BASE = '/sri-lanka-trip';
-const ASSETS = [
-  BASE + '/',
-  BASE + '/index.html',
-  BASE + '/manifest.json',
-  BASE + '/icon-192.png',
-  BASE + '/icon-512.png',
-  BASE + '/hero.jpg',
-  BASE + '/photos/colombo.jpg',
-  BASE + '/photos/rekawa.JPG',
-  BASE + '/photos/tangalle.jpg',
-  BASE + '/photos/galle.jpg',
-  BASE + '/photos/galle_1.jpg',
-  BASE + '/photos/kandy.jpg',
-  BASE + '/photos/kandy_1.jpg',
-  BASE + '/photos/Anuradhapura.jpg',
-  BASE + '/photos/Anuradhapura_1.jpg',
-  BASE + '/photos/Anuradhapura_2.jpg',
-  BASE + '/photos/dambulla.jpg',
-  BASE + '/photos/dambulla_1.jpg',
-  BASE + '/photos/sigiriya.jpg',
-  BASE + '/photos/sigiriya_1.jpg',
-  BASE + '/photos/sigiriya_2.jpg',
-  BASE + '/photos/galle_face_green.jpg',
-  BASE + '/photos/galle_museum.jpeg',
-  BASE + '/photos/colombo_museum.jpeg',
-  BASE + '/photos/pettah.jpg',
-  BASE + '/photos/gangaramaya.jpg',
-  BASE + '/photos/kandy_lake.jpg',
-  BASE + '/photos/kandy_museum.webp',
-  BASE + '/photos/kandy_gardens.jpg',
-  BASE + '/photos/kandy_temple.jpg',
-];
+      // If there's already a waiting SW, activate it now
+      if (reg.waiting) {
+        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+      }
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => Promise.allSettled(ASSETS.map(url => cache.add(url))))
-      .then(() => self.skipWaiting())
-  );
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys()
-      .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
-      ))
-      .then(() => self.clients.claim())
-      .then(() => {
-        self.clients.matchAll({ type: 'window' }).then(clients => {
-          clients.forEach(client => client.postMessage({ type: 'SW_UPDATED' }));
+      reg.addEventListener('updatefound', () => {
+        const newSW = reg.installing;
+        newSW.addEventListener('statechange', () => {
+          if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+            // New SW installed — tell it to activate immediately
+            newSW.postMessage({ type: 'SKIP_WAITING' });
+          }
+          if (newSW.state === 'activated') {
+            showUpdateBanner();
+          }
         });
-      })
-  );
-});
-
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
-  if (url.hostname.includes('googleapis.com') || url.hostname.includes('gstatic.com')) return;
-  event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (event.request.method === 'GET' && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => {
-        if (event.request.mode === 'navigate') return caches.match(BASE + '/index.html');
       });
-    })
-  );
-});
-`;
-
-  const blob = new Blob([swCode], { type: 'application/javascript' });
-  const swUrl = URL.createObjectURL(blob);
-
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register(swUrl, { updateViaCache: 'none' })
-      .then(r => {
-        console.log('SW registered via blob');
-        r.addEventListener('updatefound', () => {
-          const newSW = r.installing;
-          newSW.addEventListener('statechange', () => {
-            if (newSW.state === 'activated') showUpdateBanner();
-          });
-        });
-      })
-      .catch(e => console.log('SW failed:', e));
+    } catch(e) {
+      console.log('SW failed:', e);
+    }
   });
 
-  navigator.serviceWorker.addEventListener('message', e => {
-    if (e.data && e.data.type === 'SW_UPDATED') showUpdateBanner();
+  // When SW activates, reload to get fresh content
+  let refreshing = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!refreshing) {
+      refreshing = true;
+      showUpdateBanner();
+    }
   });
 }
 
